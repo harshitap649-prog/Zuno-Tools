@@ -60,7 +60,7 @@ export default function UUIDGenerator() {
                   max="100"
                   value={count}
                   onChange={(e) => setCount(Math.min(100, Math.max(1, Number(e.target.value))))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
                 />
               </div>
               <button

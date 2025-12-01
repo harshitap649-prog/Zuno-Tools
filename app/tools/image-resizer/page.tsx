@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -15,6 +15,8 @@ export default function ImageResizer() {
   const [maintainAspectRatio, setMaintainAspectRatio] = useState(true)
   const [originalDimensions, setOriginalDimensions] = useState({ width: 0, height: 0 })
   const [loading, setLoading] = useState(false)
+  const isInitialMount = useRef(true)
+  const prevDimensions = useRef({ width: 0, height: 0 })
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -139,6 +141,32 @@ export default function ImageResizer() {
     setHeight(600)
   }
 
+  // Auto-resize when dimensions change
+  useEffect(() => {
+    // Skip on initial mount
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      prevDimensions.current = { width, height }
+      return
+    }
+
+    // Only auto-resize if image is loaded and dimensions actually changed
+    if (image && width > 0 && height > 0 && originalDimensions.width > 0) {
+      const dimensionsChanged = 
+        prevDimensions.current.width !== width || 
+        prevDimensions.current.height !== height
+
+      if (dimensionsChanged) {
+        prevDimensions.current = { width, height }
+        const timeoutId = setTimeout(() => {
+          resizeImage()
+        }, 500) // Debounce for 500ms
+
+        return () => clearTimeout(timeoutId)
+      }
+    }
+  }, [width, height])
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -215,7 +243,7 @@ export default function ImageResizer() {
                       ) : resizedImage ? (
                         <img src={resizedImage} alt="Resized" className="w-full h-auto max-h-[300px] sm:max-h-[400px] object-contain" />
                       ) : (
-                        <div className="flex items-center justify-center h-48 sm:h-64 text-gray-400 text-sm sm:text-base px-4 text-center">
+                        <div className="flex items-center justify-center h-48 sm:h-64 text-gray-900 text-sm sm:text-base px-4 text-center">
                           <p>Adjust dimensions and click "Resize Image"</p>
                         </div>
                       )}
@@ -268,7 +296,7 @@ export default function ImageResizer() {
                               setHeight(preset.h)
                             }
                           }}
-                          className="px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-primary-400 transition-colors"
+                          className="px-3 py-1.5 text-xs text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-primary-400 transition-colors"
                         >
                           {preset.label}
                         </button>
@@ -297,7 +325,7 @@ export default function ImageResizer() {
                             }
                           }
                         }}
-                        className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         min="1"
                         max="10000"
                         placeholder="Width"
@@ -323,7 +351,7 @@ export default function ImageResizer() {
                             }
                           }
                         }}
-                        className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         min="1"
                         max="10000"
                         placeholder="Height"

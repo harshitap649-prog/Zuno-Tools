@@ -1,16 +1,17 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import MobileBottomNav from '@/components/MobileBottomNav'
 import { 
   Image, FileText, Sparkles, Mic, QrCode, 
   GraduationCap, FileCheck, Type, 
   Scissors, Maximize2, Languages,
   Minimize2, RefreshCw, Hash, Lock, Link as LinkIcon,
   Palette, Calculator, Clock, Key, Code, Search, X,
-  Crop, RotateCw, Globe
+  Crop, RotateCw, Globe, Heart
 } from 'lucide-react'
 
 const tools = [
@@ -290,6 +291,24 @@ const tools = [
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
+  const [favorites, setFavorites] = useState<string[]>([])
+
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('zuno-favorites')
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites))
+    }
+  }, [])
+
+  const toggleFavorite = (toolId: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const updatedFavorites = favorites.includes(toolId)
+      ? favorites.filter(id => id !== toolId)
+      : [...favorites, toolId]
+    setFavorites(updatedFavorites)
+    localStorage.setItem('zuno-favorites', JSON.stringify(updatedFavorites))
+  }
 
   const filteredTools = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -303,28 +322,28 @@ export default function Home() {
   }, [searchQuery])
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-16 md:pb-0">
       <Navbar />
       
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative bg-transparent py-12 sm:py-16 md:py-20 overflow-hidden">
+        <section className="relative bg-transparent py-8 sm:py-12 md:py-20 overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 animate-fade-in">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-3 sm:mb-6 animate-fade-in">
                 All-in-One
                 <span className="block bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
                   Professional Tools
                 </span>
               </h1>
-              <p className="text-base sm:text-lg md:text-xl text-gray-900 max-w-3xl mx-auto mb-6 sm:mb-8 px-4 animate-slide-up">
+              <p className="text-sm sm:text-lg md:text-xl text-gray-900 max-w-3xl mx-auto mb-5 sm:mb-8 px-4 animate-slide-up">
                 Transform images, create PDFs, generate AI-powered content, and boost your productivity 
                 with our comprehensive suite of professional tools.
               </p>
               
               {/* Search Bar */}
-              <div className="max-w-2xl mx-auto mb-6 sm:mb-8">
+              <div className="max-w-2xl mx-auto mb-5 sm:mb-8">
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <input
@@ -332,7 +351,7 @@ export default function Home() {
                     placeholder="Search for tools..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 sm:py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base shadow-sm text-gray-900 placeholder:text-gray-400"
+                    className="w-full pl-12 pr-12 py-3.5 sm:py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-base shadow-sm text-gray-900 placeholder:text-gray-400 bg-white"
                   />
                   {searchQuery && (
                     <button
@@ -347,7 +366,7 @@ export default function Home() {
 
               <Link
                 href="/tools"
-                className="inline-block bg-gradient-to-r from-primary-600 to-primary-400 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95"
+                className="inline-block bg-gradient-to-r from-primary-600 to-primary-400 text-white px-8 sm:px-10 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 touch-manipulation"
               >
                 Explore All Tools
               </Link>
@@ -356,44 +375,53 @@ export default function Home() {
         </section>
 
         {/* Tools Grid */}
-        <section className="py-12 sm:py-16 md:py-20 bg-transparent">
+        <section className="py-8 sm:py-12 md:py-20 bg-transparent">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+            <div className="text-center mb-6 sm:mb-12">
+              <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                 Powerful Tools at Your Fingertips
               </h2>
-              <p className="text-base sm:text-lg md:text-xl text-gray-900 px-4">
+              <p className="text-sm sm:text-lg md:text-xl text-gray-900 px-4">
                 Everything you need to get things done, all in one place
               </p>
             </div>
 
             {filteredTools.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
                 {filteredTools.map((tool) => {
                 const Icon = tool.icon
                 if (!Icon) {
                   console.error(`Icon is undefined for tool: ${tool.id}`)
                   return null
                 }
+                const isFavorite = favorites.includes(tool.id)
                 return (
-                  <Link
-                    key={tool.id}
-                    href={tool.href}
-                    className="group relative bg-white rounded-lg sm:rounded-xl shadow-sm sm:shadow-md hover:shadow-lg sm:hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
-                  >
-                    <div className={`absolute top-0 left-0 right-0 h-0.5 sm:h-1 bg-gradient-to-r ${tool.color}`}></div>
-                    <div className="p-2 sm:p-4 lg:p-6">
-                      <div className={`inline-flex p-1.5 sm:p-2 lg:p-3 rounded-md sm:rounded-lg bg-gradient-to-r ${tool.color} mb-2 sm:mb-3 lg:mb-4 group-hover:scale-110 transition-transform`}>
-                        {Icon && <Icon className="h-3.5 w-3.5 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />}
+                  <div key={tool.id} className="relative group">
+                    <Link
+                      href={tool.href}
+                      className="block bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-0 flex flex-col active:scale-95 touch-manipulation"
+                    >
+                      <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${tool.color}`}></div>
+                      <div className="p-4 sm:p-5 lg:p-6 flex flex-col items-center text-center flex-grow">
+                        <div className={`inline-flex p-3 sm:p-3.5 lg:p-4 rounded-2xl bg-gradient-to-r ${tool.color} mb-3 sm:mb-4 group-active:scale-95 transition-transform shadow-lg`}>
+                          {Icon && <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" strokeWidth={2.5} />}
+                        </div>
+                        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
+                          {tool.name}
+                        </h3>
+                        <p className="text-gray-600 text-xs sm:text-sm lg:text-xs leading-relaxed line-clamp-3 flex-grow">
+                          {tool.description}
+                        </p>
                       </div>
-                      <h3 className="text-xs sm:text-base lg:text-lg font-semibold text-gray-900 mb-1 sm:mb-2 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
-                        {tool.name}
-                      </h3>
-                      <p className="text-gray-900 text-[10px] sm:text-xs lg:text-sm leading-tight line-clamp-2 sm:line-clamp-none">
-                        {tool.description}
-                      </p>
-                    </div>
-                  </Link>
+                    </Link>
+                    <button
+                      onClick={(e) => toggleFavorite(tool.id, e)}
+                      className="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all touch-manipulation active:scale-90 z-10"
+                      aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                      <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+                    </button>
+                  </div>
                 )
               })}
               </div>
@@ -455,6 +483,7 @@ export default function Home() {
       </main>
 
       <Footer />
+      <MobileBottomNav />
     </div>
   )
 }

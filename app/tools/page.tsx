@@ -1,16 +1,17 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import MobileBottomNav from '@/components/MobileBottomNav'
 import { 
   Image, FileText, Sparkles, Mic, QrCode, 
   GraduationCap, FileCheck, Type, Scissors, 
   Maximize2, Languages, ArrowRight, Minimize2,
   RefreshCw, Hash, Lock, Link as LinkIcon,
   Palette, Calculator, Clock, Key, Code, Search, X,
-  Crop, RotateCw, Globe, Filter
+  Crop, RotateCw, Globe, Filter, Heart
 } from 'lucide-react'
 
 const allTools = [
@@ -294,9 +295,50 @@ export default function ToolsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [mobileCategoryMenuOpen, setMobileCategoryMenuOpen] = useState(false)
+  const [favorites, setFavorites] = useState<string[]>([])
+  const [showFavorites, setShowFavorites] = useState(false)
+  const [showRecent, setShowRecent] = useState(false)
+
+  // Load favorites and check URL params
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('zuno-favorites')
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites))
+    }
+
+    // Check URL params
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('favorites') === 'true') {
+      setShowFavorites(true)
+    }
+    if (params.get('recent') === 'true') {
+      setShowRecent(true)
+    }
+  }, [])
+
+  const toggleFavorite = (toolId: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const updatedFavorites = favorites.includes(toolId)
+      ? favorites.filter(id => id !== toolId)
+      : [...favorites, toolId]
+    setFavorites(updatedFavorites)
+    localStorage.setItem('zuno-favorites', JSON.stringify(updatedFavorites))
+  }
 
   const filteredTools = useMemo(() => {
     let filtered = allTools
+
+    // Filter by favorites
+    if (showFavorites) {
+      filtered = filtered.filter(tool => favorites.includes(tool.id))
+    }
+
+    // Filter by recent
+    if (showRecent) {
+      const recent = JSON.parse(localStorage.getItem('zuno-recent-tools') || '[]')
+      filtered = filtered.filter(tool => recent.includes(tool.id))
+    }
 
     // Filter by category
     if (selectedCategory !== 'All') {
@@ -314,25 +356,25 @@ export default function ToolsPage() {
     }
 
     return filtered
-  }, [searchQuery, selectedCategory])
+  }, [searchQuery, selectedCategory, favorites, showFavorites, showRecent])
 
   return (
-    <div className="min-h-screen flex flex-col bg-transparent">
+    <div className="min-h-screen flex flex-col bg-transparent pb-16 md:pb-0">
       <Navbar />
       
-      <main className="flex-grow py-6 sm:py-8 md:py-12">
+      <main className="flex-grow py-5 sm:py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 sm:mb-12">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
+          <div className="text-center mb-6 sm:mb-12">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-4">
               All Tools
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-gray-900 max-w-2xl mx-auto px-4">
+            <p className="text-sm sm:text-lg md:text-xl text-gray-900 max-w-2xl mx-auto px-4">
               Discover our complete collection of professional tools
             </p>
           </div>
 
           {/* Search Bar */}
-          <div className="mb-6 sm:mb-8">
+          <div className="mb-5 sm:mb-8">
             <div className="relative max-w-2xl mx-auto">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -340,7 +382,7 @@ export default function ToolsPage() {
                 placeholder="Search tools by name, description, or category..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-12 py-3 sm:py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base text-gray-900 placeholder:text-gray-400"
+                className="w-full pl-12 pr-12 py-3.5 sm:py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-base text-gray-900 placeholder:text-gray-400 bg-white shadow-sm"
               />
               {searchQuery && (
                 <button
@@ -376,10 +418,10 @@ export default function ToolsPage() {
           <div className="mb-4 md:hidden">
             <button
               onClick={() => setMobileCategoryMenuOpen(!mobileCategoryMenuOpen)}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-lg font-medium transition-all ${
+              className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-semibold transition-all touch-manipulation active:scale-95 ${
                 selectedCategory !== 'All'
-                  ? 'bg-primary-600 text-white shadow-md'
-                  : 'bg-white text-gray-900 border border-gray-300'
+                  ? 'bg-primary-600 text-white shadow-lg'
+                  : 'bg-white text-gray-900 border-2 border-gray-200 shadow-sm'
               }`}
             >
               <div className="flex items-center space-x-2">
@@ -391,7 +433,7 @@ export default function ToolsPage() {
 
             {/* Mobile Category Menu */}
             {mobileCategoryMenuOpen && (
-              <div className="mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-3 space-y-1 max-h-64 overflow-y-auto">
+              <div className="mt-3 bg-white border-2 border-gray-200 rounded-2xl shadow-xl p-2 space-y-1 max-h-64 overflow-y-auto">
                 {categories.map((category) => (
                   <button
                     key={category}
@@ -399,10 +441,10 @@ export default function ToolsPage() {
                       setSelectedCategory(category)
                       setMobileCategoryMenuOpen(false)
                     }}
-                    className={`w-full text-left px-4 py-2.5 rounded-md font-medium transition-all ${
+                    className={`w-full text-left px-4 py-3 rounded-xl font-medium transition-all touch-manipulation active:scale-95 ${
                       selectedCategory === category
-                        ? 'bg-primary-600 text-white'
-                        : 'text-gray-900 hover:bg-gray-100'
+                        ? 'bg-primary-600 text-white shadow-md'
+                        : 'text-gray-900 hover:bg-gray-50'
                     }`}
                   >
                     {category}
@@ -412,8 +454,40 @@ export default function ToolsPage() {
             )}
           </div>
 
+          {/* Filter Indicators */}
+          {(showFavorites || showRecent) && (
+            <div className="mb-4 flex items-center justify-center gap-2 flex-wrap">
+              {showFavorites && (
+                <button
+                  onClick={() => {
+                    setShowFavorites(false)
+                    window.history.replaceState({}, '', '/tools')
+                  }}
+                  className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium flex items-center gap-2"
+                >
+                  <Heart className="h-4 w-4 fill-current" />
+                  Favorites ({favorites.length})
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+              {showRecent && (
+                <button
+                  onClick={() => {
+                    setShowRecent(false)
+                    window.history.replaceState({}, '', '/tools')
+                  }}
+                  className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium flex items-center gap-2"
+                >
+                  <Clock className="h-4 w-4" />
+                  Recent
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Results Count */}
-          {(searchQuery || selectedCategory !== 'All') && (
+          {(searchQuery || selectedCategory !== 'All' || showFavorites || showRecent) && (
             <div className="mb-4 text-center text-gray-900">
               Found {filteredTools.length} tool{filteredTools.length !== 1 ? 's' : ''}
             </div>
@@ -421,40 +495,46 @@ export default function ToolsPage() {
 
           {/* Tools Grid */}
           {filteredTools.length > 0 ? (
-            <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
               {filteredTools.map((tool) => {
               const Icon = tool.icon
               if (!Icon) {
                 console.error(`Icon is undefined for tool: ${tool.id}`)
                 return null
               }
+              const isFavorite = favorites.includes(tool.id)
               return (
-                <Link
-                  key={tool.id}
-                  href={`/tools/${tool.id}`}
-                  className="group bg-white rounded-lg sm:rounded-xl shadow-sm sm:shadow-md hover:shadow-lg sm:hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
-                >
-                  <div className={`h-0.5 sm:h-2 bg-gradient-to-r ${tool.color}`}></div>
-                  <div className="p-2 sm:p-4 lg:p-6">
-                    <div className="flex items-start justify-between mb-1.5 sm:mb-3 lg:mb-4">
-                      <div className={`inline-flex p-1.5 sm:p-2 lg:p-3 rounded-md sm:rounded-lg bg-gradient-to-r ${tool.color} group-hover:scale-110 transition-transform`}>
-                        {Icon && <Icon className="h-3.5 w-3.5 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />}
+                <div key={tool.id} className="relative group">
+                  <Link
+                    href={`/tools/${tool.id}`}
+                    className="block bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-0 flex flex-col active:scale-95 touch-manipulation"
+                  >
+                    <div className={`h-1.5 bg-gradient-to-r ${tool.color}`}></div>
+                    <div className="p-4 sm:p-5 lg:p-6 flex flex-col items-center text-center flex-grow">
+                      <div className={`inline-flex p-3 sm:p-3.5 lg:p-4 rounded-2xl bg-gradient-to-r ${tool.color} mb-3 sm:mb-4 group-active:scale-95 transition-transform shadow-lg`}>
+                        {Icon && <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" strokeWidth={2.5} />}
                       </div>
-                      <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all hidden sm:block" />
+                      <div className="mb-2">
+                        <span className="text-[10px] sm:text-xs font-semibold text-primary-600 bg-primary-50 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg">
+                          {tool.category}
+                        </span>
+                      </div>
+                      <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
+                        {tool.name}
+                      </h3>
+                      <p className="text-gray-600 text-xs sm:text-sm lg:text-xs leading-relaxed line-clamp-3 flex-grow">
+                        {tool.description}
+                      </p>
                     </div>
-                    <div className="mb-1 sm:mb-2">
-                      <span className="text-[9px] sm:text-xs font-semibold text-primary-600 bg-primary-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
-                        {tool.category}
-                      </span>
-                    </div>
-                    <h3 className="text-xs sm:text-base lg:text-lg font-semibold text-gray-900 mb-1 sm:mb-2 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
-                      {tool.name}
-                    </h3>
-                    <p className="text-gray-900 text-[10px] sm:text-xs lg:text-sm leading-tight line-clamp-2 sm:line-clamp-none">
-                      {tool.description}
-                    </p>
-                  </div>
-                </Link>
+                  </Link>
+                  <button
+                    onClick={(e) => toggleFavorite(tool.id, e)}
+                    className="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all touch-manipulation active:scale-90 z-10"
+                    aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                  >
+                    <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+                  </button>
+                </div>
               )
             })}
             </div>
@@ -478,6 +558,7 @@ export default function ToolsPage() {
       </main>
 
       <Footer />
+      <MobileBottomNav />
     </div>
   )
 }

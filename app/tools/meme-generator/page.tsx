@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import MobileBottomNav from '@/components/MobileBottomNav'
 import { Upload, Download, X, Image as ImageIcon, Type, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import html2canvas from 'html2canvas'
@@ -79,54 +80,55 @@ export default function MemeGenerator() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       
-      <main className="flex-grow py-6 sm:py-8 md:py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 mb-3 sm:mb-4">
-              <ImageIcon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+      <main className="flex-grow py-4 sm:py-6 md:py-8 pb-16 md:pb-0">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+          {/* Compact Header */}
+          <div className="text-center mb-4 sm:mb-6">
+            <div className="inline-flex p-1.5 sm:p-2 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 mb-2 sm:mb-3 shadow-md">
+              <ImageIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Meme Generator</h1>
-            <p className="text-sm sm:text-base text-gray-900 px-4">Create hilarious memes with custom text and images</p>
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-1">Meme Generator</h1>
+            <p className="text-xs sm:text-sm text-gray-600 px-2">Create hilarious memes with custom text and images</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-            {/* Controls */}
-            <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+            {/* Controls - Compact Design */}
+            <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4">
               {!image ? (
                 <div
                   {...getRootProps()}
-                  className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
+                  className={`border-2 border-dashed rounded-xl p-6 sm:p-8 md:p-10 text-center cursor-pointer transition-all touch-manipulation active:scale-95 ${
                     isDragActive
-                      ? 'border-primary-500 bg-primary-50'
-                      : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'
+                      ? 'border-primary-500 bg-primary-50 scale-95'
+                      : 'border-gray-200 hover:border-primary-400 hover:bg-gray-50'
                   }`}
                 >
                   <input {...getInputProps()} />
-                  <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-lg font-medium text-gray-900 mb-2">
+                  <Upload className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400 mx-auto mb-2 sm:mb-3" />
+                  <p className="text-sm sm:text-base font-medium text-gray-900 mb-1">
                     {isDragActive ? 'Drop the image here' : 'Drag & drop an image here'}
                   </p>
-                  <p className="text-sm text-gray-900">or click to select a file</p>
+                  <p className="text-xs sm:text-sm text-gray-600">or click to select a file</p>
                 </div>
               ) : (
                 <>
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-semibold text-gray-900">Customize Your Meme</h2>
+                  <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-sm sm:text-base font-bold text-gray-900">Customize</h2>
                     <button
                       onClick={reset}
-                      className="flex items-center space-x-2 text-gray-900 hover:text-gray-900"
+                      className="flex items-center space-x-1 text-xs sm:text-sm text-gray-600 hover:text-gray-900 transition-colors touch-manipulation active:scale-95"
                     >
-                      <X className="h-5 w-5" />
-                      <span>Reset</span>
+                      <X className="h-4 w-4" />
+                      <span className="hidden sm:inline">Reset</span>
                     </button>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-900 mb-2">
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                         Top Text
                       </label>
                       <input
@@ -134,12 +136,12 @@ export default function MemeGenerator() {
                         value={topText}
                         onChange={(e) => setTopText(e.target.value)}
                         placeholder="Enter top text..."
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-gray-900 placeholder:text-gray-400 transition-all"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-900 mb-2">
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                         Bottom Text
                       </label>
                       <input
@@ -147,22 +149,22 @@ export default function MemeGenerator() {
                         value={bottomText}
                         onChange={(e) => setBottomText(e.target.value)}
                         placeholder="Enter bottom text..."
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-gray-900 placeholder:text-gray-400 transition-all"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-900 mb-2">
-                        Font Size: {fontSize}px
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        Font Size: <span className="text-primary-600 font-bold">{fontSize}px</span>
                       </label>
-                      <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2 sm:space-x-3">
                         <input
                           type="range"
                           min="20"
                           max="100"
                           value={fontSize}
                           onChange={(e) => setFontSize(Number(e.target.value))}
-                          className="flex-1"
+                          className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
                         />
                         <input
                           type="number"
@@ -175,19 +177,19 @@ export default function MemeGenerator() {
                               setFontSize(value)
                             }
                           }}
-                          className="w-20 px-2 py-1 border border-gray-300 rounded-lg text-sm"
+                          className="w-16 sm:w-20 px-2 py-1.5 text-xs sm:text-sm border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-gray-900"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-900 mb-2">
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                         Font Style
                       </label>
                       <select
                         value={fontFamily}
                         onChange={(e) => setFontFamily(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-gray-900 bg-white transition-all"
                       >
                         {fontOptions.map((font) => (
                           <option key={font.value} value={font.value}>
@@ -197,36 +199,42 @@ export default function MemeGenerator() {
                       </select>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-2">
+                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                           Text Color
                         </label>
-                        <input
-                          type="color"
-                          value={textColor}
-                          onChange={(e) => setTextColor(e.target.value)}
-                          className="w-full h-10 rounded-lg cursor-pointer"
-                        />
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="color"
+                            value={textColor}
+                            onChange={(e) => setTextColor(e.target.value)}
+                            className="w-full h-9 sm:h-10 rounded-xl cursor-pointer border-2 border-gray-200"
+                          />
+                          <span className="text-xs text-gray-600 font-mono hidden sm:inline">{textColor}</span>
+                        </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-2">
+                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                           Stroke Color
                         </label>
-                        <input
-                          type="color"
-                          value={strokeColor}
-                          onChange={(e) => setStrokeColor(e.target.value)}
-                          className="w-full h-10 rounded-lg cursor-pointer"
-                        />
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="color"
+                            value={strokeColor}
+                            onChange={(e) => setStrokeColor(e.target.value)}
+                            className="w-full h-9 sm:h-10 rounded-xl cursor-pointer border-2 border-gray-200"
+                          />
+                          <span className="text-xs text-gray-600 font-mono hidden sm:inline">{strokeColor}</span>
+                        </div>
                       </div>
                     </div>
 
                     <button
                       onClick={downloadMeme}
-                      className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2"
+                      className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 text-white px-4 py-2.5 sm:py-3 rounded-xl font-bold text-sm sm:text-base hover:shadow-lg transition-all flex items-center justify-center space-x-2 touch-manipulation active:scale-95"
                     >
-                      <Download className="h-5 w-5" />
+                      <Download className="h-4 w-4 sm:h-5 sm:w-5" />
                       <span>Download Meme</span>
                     </button>
                   </div>
@@ -234,20 +242,25 @@ export default function MemeGenerator() {
               )}
             </div>
 
-            {/* Preview */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Preview</h2>
-              <div className="border rounded-lg overflow-hidden bg-gray-100">
+            {/* Preview - Compact Design */}
+            <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-3 sm:p-4 md:p-5">
+              <div className="flex justify-between items-center mb-2 sm:mb-3">
+                <h2 className="text-sm sm:text-base font-bold text-gray-900">Preview</h2>
+                {image && (
+                  <span className="text-xs text-gray-500 hidden sm:inline">Live Preview</span>
+                )}
+              </div>
+              <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-gray-50">
                 {image ? (
                   <div
                     ref={memeRef}
-                    className="relative"
+                    className="relative bg-white"
                     style={{ maxWidth: '100%' }}
                   >
-                    <img src={image} alt="Meme" className="w-full h-auto" />
+                    <img src={image} alt="Meme" className="w-full h-auto block" />
                     {topText && (
                       <div
-                        className="absolute top-4 left-0 right-0 text-center px-4"
+                        className="absolute top-2 sm:top-4 left-0 right-0 text-center px-2 sm:px-4"
                         style={{
                           fontSize: `${fontSize}px`,
                           fontFamily: fontFamily,
@@ -262,7 +275,7 @@ export default function MemeGenerator() {
                     )}
                     {bottomText && (
                       <div
-                        className="absolute bottom-4 left-0 right-0 text-center px-4"
+                        className="absolute bottom-2 sm:bottom-4 left-0 right-0 text-center px-2 sm:px-4"
                         style={{
                           fontSize: `${fontSize}px`,
                           fontFamily: fontFamily,
@@ -277,10 +290,10 @@ export default function MemeGenerator() {
                     )}
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center h-64 text-gray-400">
+                  <div className="flex items-center justify-center h-48 sm:h-64 text-gray-400">
                     <div className="text-center">
-                      <Type className="h-12 w-12 mx-auto mb-2" />
-                      <p>Upload an image to start creating</p>
+                      <Type className="h-8 w-8 sm:h-10 sm:w-10 mx-auto mb-2" />
+                      <p className="text-xs sm:text-sm">Upload an image to start</p>
                     </div>
                   </div>
                 )}
@@ -291,6 +304,7 @@ export default function MemeGenerator() {
       </main>
 
       <Footer />
+      <MobileBottomNav />
     </div>
   )
 }

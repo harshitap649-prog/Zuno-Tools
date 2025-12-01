@@ -59,7 +59,12 @@ body {
 }
 
 /* Mobile optimizations */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  /* Add padding for mobile bottom navigation */
+  body {
+    padding-bottom: 64px;
+  }
+  
   /* Improve text readability on mobile */
   body {
     -webkit-font-smoothing: antialiased;
