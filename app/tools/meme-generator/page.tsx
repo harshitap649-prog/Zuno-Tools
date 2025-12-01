@@ -2,12 +2,12 @@
 
 import { useState, useCallback, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import MobileBottomNav from '@/components/MobileBottomNav'
 import { Upload, Download, X, Image as ImageIcon, Type, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import html2canvas from 'html2canvas'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 export default function MemeGenerator() {
   const [image, setImage] = useState<string | null>(null)
@@ -18,6 +18,7 @@ export default function MemeGenerator() {
   const [textColor, setTextColor] = useState('#ffffff')
   const [strokeColor, setStrokeColor] = useState('#000000')
   const memeRef = useRef<HTMLDivElement>(null)
+  const { triggerPopunder } = usePopunderAd()
 
   const fontOptions = [
     { name: 'Impact', value: 'Impact, Arial Black, sans-serif' },
@@ -63,6 +64,10 @@ export default function MemeGenerator() {
       link.download = 'meme.png'
       link.href = canvas.toDataURL('image/png')
       link.click()
+      
+      // Trigger popunder ad after 2 seconds
+      triggerPopunder()
+      
       toast.success('Meme downloaded!')
     } catch (error) {
       toast.error('Failed to download meme')
@@ -81,8 +86,6 @@ export default function MemeGenerator() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <Navbar />
-      
       <main className="flex-grow py-4 sm:py-6 md:py-8 pb-16 md:pb-0">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           {/* Compact Header */}

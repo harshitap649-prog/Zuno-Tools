@@ -2,10 +2,10 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Upload, Download, X, Loader2, Scissors, Palette } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 export default function BackgroundRemover() {
   const [image, setImage] = useState<string | null>(null)
@@ -17,6 +17,7 @@ export default function BackgroundRemover() {
   const imageRef = useRef<HTMLImageElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const modelLoadedRef = useRef(false)
+  const { triggerPopunder } = usePopunderAd()
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -108,10 +109,14 @@ export default function BackgroundRemover() {
   }, [image, modelLoading])
 
   const removeBackground = async () => {
-    if (!image) return
+    if (!image) {
+      toast.error('Please upload an image first')
+      return
+    }
 
     setLoading(true)
     let timeoutId: NodeJS.Timeout | null = null
+    let processingTimeout: NodeJS.Timeout | null = null
     
     try {
       toast.loading('Loading AI model...', { id: 'processing' })
@@ -119,19 +124,45 @@ export default function BackgroundRemover() {
       // Dynamic import with timeout
       const importPromise = import('@imgly/background-removal')
       const timeoutPromise = new Promise((_, reject) => {
-        timeoutId = setTimeout(() => reject(new Error('Model loading timeout')), 30000)
+        timeoutId = setTimeout(() => reject(new Error('Model loading timeout')), 45000)
       })
       
-      // @ts-ignore
-      const { removeBackground: removeBg } = await Promise.race([importPromise, timeoutPromise]) as any
+      let removeBg: any
+      try {
+        const module = await Promise.race([importPromise, timeoutPromise]) as any
+        removeBg = module.removeBackground || module.default?.removeBackground
+        if (!removeBg) {
+          throw new Error('Background removal function not found in module')
+        }
+      } catch (importError) {
+        console.error('Import error:', importError)
+        throw new Error('Failed to load background removal library. Please refresh the page and try again.')
+      }
       
       if (timeoutId) clearTimeout(timeoutId)
       
       toast.loading('Processing image...', { id: 'processing' })
       
       // Convert data URL to blob
-      const response = await fetch(image)
-      const blob = await response.blob()
+      let blob: Blob
+      try {
+        const response = await fetch(image)
+        if (!response.ok) {
+          throw new Error('Failed to fetch image')
+        }
+        blob = await response.blob()
+      } catch (fetchError) {
+        console.error('Fetch error:', fetchError)
+        // Fallback: convert data URL directly to blob
+        const base64Data = image.split(',')[1]
+        const byteCharacters = atob(base64Data)
+        const byteNumbers = new Array(byteCharacters.length)
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i)
+        }
+        const byteArray = new Uint8Array(byteNumbers)
+        blob = new Blob([byteArray], { type: 'image/png' })
+      }
       
       // Limit image size for performance
       const maxSize = 1500
@@ -139,9 +170,12 @@ export default function BackgroundRemover() {
       
       if (blob.size > 2 * 1024 * 1024) { // If larger than 2MB
         const img = new Image()
+        img.crossOrigin = 'anonymous'
         img.src = image
-        await new Promise((resolve) => {
+        await new Promise((resolve, reject) => {
           img.onload = resolve
+          img.onerror = reject
+          setTimeout(() => reject(new Error('Image load timeout')), 10000)
         })
         
         const canvas = document.createElement('canvas')
@@ -151,7 +185,7 @@ export default function BackgroundRemover() {
           canvas.width = img.width * scale
           canvas.height = img.height * scale
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-          const resizedBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve))
+          const resizedBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png', 0.95))
           if (resizedBlob) {
             processBlob = resizedBlob
           }
@@ -159,30 +193,33 @@ export default function BackgroundRemover() {
       }
       
       // Remove background using the library
-      const processingTimeout = setTimeout(() => {
+      processingTimeout = setTimeout(() => {
         toast.loading('Processing takes longer for high-quality images...', { id: 'processing' })
       }, 5000)
       
-      // Prepare options with selected color hint if available
+      // Prepare options
       const options: any = {
         outputFormat: 'image/png',
         progress: (key: string, current: number, total: number) => {
           const percentage = Math.round((current / total) * 100)
-          if (percentage % 10 === 0 || percentage === 100) { // Update every 10% to reduce UI updates
+          if (percentage % 10 === 0 || percentage === 100) {
             toast.loading(`Processing: ${percentage}%`, { id: 'processing' })
           }
         }
       }
       
       // If user selected a background color, we'll use it as a hint
-      // Note: The library may not directly support color hints, but we can pre-process
       let finalBlob = processBlob
       if (selectedColor) {
         // Pre-process image to enhance background removal based on selected color
         const img = new Image()
-        img.src = URL.createObjectURL(processBlob)
-        await new Promise((resolve) => {
+        img.crossOrigin = 'anonymous'
+        const objectUrl = URL.createObjectURL(processBlob)
+        img.src = objectUrl
+        await new Promise((resolve, reject) => {
           img.onload = resolve
+          img.onerror = reject
+          setTimeout(() => reject(new Error('Image load timeout')), 10000)
         })
         
         const canvas = document.createElement('canvas')
@@ -197,39 +234,49 @@ export default function BackgroundRemover() {
           
           // Enhance areas similar to selected color (this helps the AI)
           const threshold = 60
-          const dataArray = Array.from(data)
-          for (let i = 0; i < dataArray.length; i += 4) {
-            const r = dataArray[i]
-            const g = dataArray[i + 1]
-            const b = dataArray[i + 2]
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i]
+            const g = data[i + 1]
+            const b = data[i + 2]
             const dist = Math.abs(r - selectedColor.r) + Math.abs(g - selectedColor.g) + Math.abs(b - selectedColor.b)
             
             if (dist < threshold) {
               // Make similar colors more uniform to help AI detection
-              dataArray[i] = selectedColor.r
-              dataArray[i + 1] = selectedColor.g
-              dataArray[i + 2] = selectedColor.b
+              data[i] = selectedColor.r
+              data[i + 1] = selectedColor.g
+              data[i + 2] = selectedColor.b
             }
-          }
-          // Copy back to original array
-          for (let i = 0; i < dataArray.length; i++) {
-            data[i] = dataArray[i]
           }
           
           ctx.putImageData(imageData, 0, 0)
-          finalBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve)) || processBlob
+          const processedBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png', 0.95))
+          if (processedBlob) {
+            finalBlob = processedBlob
+          }
         }
+        URL.revokeObjectURL(objectUrl)
       }
       
+      // Call the background removal function
       const blobResult = await removeBg(finalBlob, options)
       
-      clearTimeout(processingTimeout)
+      if (processingTimeout) clearTimeout(processingTimeout)
+      
+      if (!blobResult) {
+        throw new Error('Background removal returned no result')
+      }
       
       // Convert blob to data URL
       const reader = new FileReader()
       const dataUrl = await new Promise<string>((resolve, reject) => {
-        reader.onloadend = () => resolve(reader.result as string)
-        reader.onerror = reject
+        reader.onloadend = () => {
+          if (reader.result) {
+            resolve(reader.result as string)
+          } else {
+            reject(new Error('Failed to read blob result'))
+          }
+        }
+        reader.onerror = () => reject(new Error('FileReader error'))
         reader.readAsDataURL(blobResult)
       })
       
@@ -237,13 +284,18 @@ export default function BackgroundRemover() {
       toast.success('Background removed successfully!', { id: 'processing' })
     } catch (error) {
       console.error('Background removal error:', error)
-      if (error instanceof Error && error.message.includes('timeout')) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      
+      if (errorMessage.includes('timeout')) {
         toast.error('Processing took too long. Try a smaller image or refresh the page.', { id: 'processing' })
+      } else if (errorMessage.includes('Failed to load')) {
+        toast.error('Failed to load AI model. Please refresh the page and try again.', { id: 'processing' })
       } else {
-        toast.error('Failed to remove background. Please try again.', { id: 'processing' })
+        toast.error(`Failed to remove background: ${errorMessage}. Please try again.`, { id: 'processing' })
       }
     } finally {
       if (timeoutId) clearTimeout(timeoutId)
+      if (processingTimeout) clearTimeout(processingTimeout)
       setLoading(false)
     }
   }
@@ -255,6 +307,9 @@ export default function BackgroundRemover() {
     link.download = 'background-removed.png'
     link.href = processedImage
     link.click()
+    
+    // Trigger popunder ad after 2 seconds
+    triggerPopunder()
   }
 
   const reset = () => {
@@ -266,8 +321,6 @@ export default function BackgroundRemover() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">

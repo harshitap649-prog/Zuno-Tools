@@ -2,15 +2,16 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Upload, Download, X, RotateCw, RotateCcw } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 export default function ImageRotator() {
   const [image, setImage] = useState<string | null>(null)
   const [rotatedImage, setRotatedImage] = useState<string | null>(null)
   const [rotation, setRotation] = useState(0)
+  const { triggerPopunder } = usePopunderAd()
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -68,6 +69,9 @@ export default function ImageRotator() {
     link.download = `rotated-${rotation}deg.png`
     link.href = rotatedImage
     link.click()
+    
+    // Trigger popunder ad after 2 seconds
+    triggerPopunder()
   }
 
   const reset = () => {
@@ -78,8 +82,6 @@ export default function ImageRotator() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">

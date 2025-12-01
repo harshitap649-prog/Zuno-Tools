@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react'
 import JsBarcode from 'jsbarcode'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Hash, Download } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 export default function BarcodeGenerator() {
   const [text, setText] = useState('123456789012')
@@ -14,6 +14,7 @@ export default function BarcodeGenerator() {
   const [height, setHeight] = useState(100)
   const [displayValue, setDisplayValue] = useState(true)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const { triggerPopunder } = usePopunderAd()
 
   useEffect(() => {
     if (text.trim() && canvasRef.current) {
@@ -37,6 +38,10 @@ export default function BarcodeGenerator() {
     link.download = `barcode-${text}.png`
     link.href = canvasRef.current.toDataURL('image/png')
     link.click()
+    
+    // Trigger popunder ad after 2 seconds
+    triggerPopunder()
+    
     toast.success('Barcode downloaded!')
   }
 
@@ -54,8 +59,6 @@ export default function BarcodeGenerator() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">

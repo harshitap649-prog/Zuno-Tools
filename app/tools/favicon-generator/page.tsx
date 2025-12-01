@@ -2,15 +2,16 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Upload, Download, X, Image as ImageIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 export default function FaviconGenerator() {
   const [image, setImage] = useState<string | null>(null)
   const [favicons, setFavicons] = useState<{ size: number; dataUrl: string }[]>([])
   const sizes = [16, 32, 48, 64, 128, 256]
+  const { triggerPopunder } = usePopunderAd()
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -66,6 +67,9 @@ export default function FaviconGenerator() {
     link.download = `favicon-${size}x${size}.png`
     link.href = dataUrl
     link.click()
+    
+    // Trigger popunder ad after 2 seconds
+    triggerPopunder()
   }
 
   const downloadAll = () => {
@@ -75,6 +79,9 @@ export default function FaviconGenerator() {
       }, favicon.size * 10)
     })
     toast.success('Downloading all favicons...')
+    
+    // Trigger popunder ad after 2 seconds (only once for download all)
+    triggerPopunder()
   }
 
   const reset = () => {
@@ -84,8 +91,6 @@ export default function FaviconGenerator() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">

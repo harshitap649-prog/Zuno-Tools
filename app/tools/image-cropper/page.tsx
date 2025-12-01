@@ -2,10 +2,10 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Upload, Download, X, Crop, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 export default function ImageCropper() {
   const [image, setImage] = useState<string | null>(null)
@@ -16,6 +16,7 @@ export default function ImageCropper() {
   const [cropHeight, setCropHeight] = useState(200)
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 })
   const imageRef = useRef<HTMLImageElement>(null)
+  const { triggerPopunder } = usePopunderAd()
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -90,6 +91,9 @@ export default function ImageCropper() {
     link.download = 'cropped-image.png'
     link.href = croppedImage
     link.click()
+    
+    // Trigger popunder ad after 2 seconds
+    triggerPopunder()
   }
 
   const reset = () => {
@@ -103,8 +107,6 @@ export default function ImageCropper() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">

@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react'
 import QRCode from 'qrcode'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { QrCode as QrCodeIcon, Download } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 export default function QRGenerator() {
   const [text, setText] = useState('')
@@ -15,6 +15,7 @@ export default function QRGenerator() {
   const [errorCorrectionLevel, setErrorCorrectionLevel] = useState<'L' | 'M' | 'Q' | 'H'>('M')
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const { triggerPopunder } = usePopunderAd()
 
   useEffect(() => {
     if (text.trim() && canvasRef.current) {
@@ -47,13 +48,15 @@ export default function QRGenerator() {
     link.download = 'qrcode.png'
     link.href = qrCodeUrl
     link.click()
+    
+    // Trigger popunder ad after 2 seconds
+    triggerPopunder()
+    
     toast.success('QR code downloaded!')
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">

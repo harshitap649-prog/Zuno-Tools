@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Mic, Play, Pause, Volume2, Loader2, Download } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 export default function TextToSpeech() {
   const [text, setText] = useState('')
@@ -16,6 +16,7 @@ export default function TextToSpeech() {
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
   const synthRef = useRef<SpeechSynthesis | null>(null)
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
+  const { triggerPopunder } = usePopunderAd()
 
   if (typeof window !== 'undefined' && !synthRef.current) {
     synthRef.current = window.speechSynthesis
@@ -146,6 +147,9 @@ export default function TextToSpeech() {
       link.click()
       URL.revokeObjectURL(url)
       
+      // Trigger popunder ad after 2 seconds
+      triggerPopunder()
+      
       toast.success('Audio downloaded successfully!', { id: 'download' })
     } catch (error) {
       console.error('Download error:', error)
@@ -168,8 +172,6 @@ export default function TextToSpeech() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">

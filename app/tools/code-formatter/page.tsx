@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Code, Copy, Check, Download } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 type Language = 'json' | 'javascript' | 'html' | 'css' | 'xml'
 
@@ -13,6 +13,7 @@ export default function CodeFormatter() {
   const [formattedCode, setFormattedCode] = useState('')
   const [language, setLanguage] = useState<Language>('json')
   const [copied, setCopied] = useState(false)
+  const { triggerPopunder } = usePopunderAd()
 
   const formatCode = () => {
     if (!code.trim()) {
@@ -116,6 +117,9 @@ export default function CodeFormatter() {
     link.download = `formatted.${extension}`
     link.click()
     URL.revokeObjectURL(url)
+    
+    // Trigger popunder ad after 2 seconds
+    triggerPopunder()
   }
 
   const reset = () => {
@@ -125,8 +129,6 @@ export default function CodeFormatter() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">

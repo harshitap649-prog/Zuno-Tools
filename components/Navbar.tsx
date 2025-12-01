@@ -10,7 +10,6 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navLinks = [
-    { href: '/', label: 'Home' },
     { href: '/tools', label: 'All Tools' },
   ]
 
@@ -19,10 +18,10 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="bg-gradient-to-r from-primary-600 to-primary-400 p-2 rounded-lg group-hover:scale-110 transition-transform">
+            <div className="bg-gradient-to-r from-pink-600 to-pink-400 p-2 rounded-lg group-hover:scale-110 transition-transform">
               <Sparkles className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
+            <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-pink-600 to-pink-400 bg-clip-text text-transparent">
               Zuno Tools
             </span>
           </Link>
@@ -35,8 +34,8 @@ export default function Navbar() {
                 href={link.href}
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   pathname === link.href
-                    ? 'text-primary-600 bg-primary-50'
-                    : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                    ? 'text-pink-600 bg-pink-50'
+                    : 'text-pink-600 hover:text-pink-700 hover:bg-pink-50'
                 }`}
               >
                 {link.label}
@@ -46,7 +45,7 @@ export default function Navbar() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
+            className="md:hidden p-2 rounded-md text-pink-600 hover:bg-pink-50"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -63,8 +62,8 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
                   pathname === link.href
-                    ? 'text-primary-600 bg-primary-50'
-                    : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                    ? 'text-pink-600 bg-pink-50'
+                    : 'text-pink-600 hover:text-pink-700 hover:bg-pink-50'
                 }`}
               >
                 {link.label}

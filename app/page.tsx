@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import MobileBottomNav from '@/components/MobileBottomNav'
 import { 
@@ -289,6 +288,44 @@ const tools = [
   },
 ]
 
+function BannerAd({ id }: { id: string }) {
+  const adRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    // Set atOptions in window scope
+    ;(window as any).atOptions = {
+      'key': '34970aed813cbee86887c4caa5c6c712',
+      'format': 'iframe',
+      'height': 50,
+      'width': 320,
+      'params': {}
+    }
+
+    // Create and append the invoke script
+    const script = document.createElement('script')
+    script.type = 'text/javascript'
+    script.src = '//www.highperformanceformat.com/34970aed813cbee86887c4caa5c6c712/invoke.js'
+    script.async = true
+    containerRef.current.appendChild(script)
+
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.innerHTML = ''
+      }
+      delete (window as any).atOptions
+    }
+  }, [id])
+
+  return (
+    <div className="col-span-2 lg:col-span-3 md:hidden flex justify-center items-center py-4">
+      <div ref={containerRef} id={`ad-container-${id}`} className="w-full max-w-[320px] h-[50px] flex items-center justify-center"></div>
+    </div>
+  )
+}
+
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
   const [favorites, setFavorites] = useState<string[]>([])
@@ -323,20 +360,32 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col pb-16 md:pb-0">
-      <Navbar />
-      
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative bg-transparent py-8 sm:py-12 md:py-20 overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center">
-              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-3 sm:mb-6 animate-fade-in">
+              <div className="flex flex-col items-center justify-center mb-4 sm:mb-6 animate-fade-in">
+                <div className="relative inline-flex items-center justify-center mb-4 sm:mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-2xl opacity-30 animate-pulse"></div>
+                  <div className="relative bg-gradient-to-r from-pink-500 to-rose-500 p-3 sm:p-4 rounded-2xl shadow-xl">
+                    <Sparkles className="h-8 w-8 sm:h-10 sm:w-10 text-white" strokeWidth={2.5} />
+                  </div>
+                </div>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight">
+                  <span className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
+                    Zuno Tools
+                  </span>
+                </h1>
+                <div className="mt-2 sm:mt-3 h-1 w-24 sm:w-32 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full mx-auto"></div>
+              </div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-6 animate-fade-in">
                 All-in-One
                 <span className="block bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
                   Professional Tools
                 </span>
-              </h1>
+              </h2>
               <p className="text-sm sm:text-lg md:text-xl text-gray-900 max-w-3xl mx-auto mb-5 sm:mb-8 px-4 animate-slide-up">
                 Transform images, create PDFs, generate AI-powered content, and boost your productivity 
                 with our comprehensive suite of professional tools.
@@ -388,40 +437,45 @@ export default function Home() {
 
             {filteredTools.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-                {filteredTools.map((tool) => {
+                {filteredTools.map((tool, index) => {
                 const Icon = tool.icon
                 if (!Icon) {
                   console.error(`Icon is undefined for tool: ${tool.id}`)
                   return null
                 }
                 const isFavorite = favorites.includes(tool.id)
+                const showAd = (index + 1) % 10 === 0 && index > 0
+                
                 return (
-                  <div key={tool.id} className="relative group">
-                    <Link
-                      href={tool.href}
-                      className="block bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-0 flex flex-col active:scale-95 touch-manipulation"
-                    >
-                      <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${tool.color}`}></div>
-                      <div className="p-4 sm:p-5 lg:p-6 flex flex-col items-center text-center flex-grow">
-                        <div className={`inline-flex p-3 sm:p-3.5 lg:p-4 rounded-2xl bg-gradient-to-r ${tool.color} mb-3 sm:mb-4 group-active:scale-95 transition-transform shadow-lg`}>
-                          {Icon && <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" strokeWidth={2.5} />}
+                  <>
+                    <div key={tool.id} className="relative group">
+                      <Link
+                        href={tool.href}
+                        className="block bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-0 flex flex-col active:scale-95 touch-manipulation"
+                      >
+                        <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${tool.color}`}></div>
+                        <div className="p-4 sm:p-5 lg:p-6 flex flex-col items-center text-center flex-grow">
+                          <div className={`inline-flex p-3 sm:p-3.5 lg:p-4 rounded-2xl bg-gradient-to-r ${tool.color} mb-3 sm:mb-4 group-active:scale-95 transition-transform shadow-lg`}>
+                            {Icon && <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" strokeWidth={2.5} />}
+                          </div>
+                          <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
+                            {tool.name}
+                          </h3>
+                          <p className="text-gray-600 text-xs sm:text-sm lg:text-xs leading-relaxed line-clamp-3 flex-grow">
+                            {tool.description}
+                          </p>
                         </div>
-                        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
-                          {tool.name}
-                        </h3>
-                        <p className="text-gray-600 text-xs sm:text-sm lg:text-xs leading-relaxed line-clamp-3 flex-grow">
-                          {tool.description}
-                        </p>
-                      </div>
-                    </Link>
-                    <button
-                      onClick={(e) => toggleFavorite(tool.id, e)}
-                      className="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all touch-manipulation active:scale-90 z-10"
-                      aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                      <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
-                    </button>
-                  </div>
+                      </Link>
+                      <button
+                        onClick={(e) => toggleFavorite(tool.id, e)}
+                        className="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all touch-manipulation active:scale-90 z-10"
+                        aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                      >
+                        <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+                      </button>
+                    </div>
+                    {showAd && <BannerAd key={`ad-${index}`} id={`${index}`} />}
+                  </>
                 )
               })}
               </div>

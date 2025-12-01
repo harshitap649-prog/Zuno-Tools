@@ -2,16 +2,17 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Upload, Download, X, Loader2, RefreshCw } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 export default function ImageConverter() {
   const [image, setImage] = useState<string | null>(null)
   const [convertedImage, setConvertedImage] = useState<string | null>(null)
   const [format, setFormat] = useState<'png' | 'jpg' | 'webp'>('png')
   const [loading, setLoading] = useState(false)
+  const { triggerPopunder } = usePopunderAd()
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -70,6 +71,9 @@ export default function ImageConverter() {
     link.download = `converted-image.${format}`
     link.href = convertedImage
     link.click()
+    
+    // Trigger popunder ad after 2 seconds
+    triggerPopunder()
   }
 
   const reset = () => {
@@ -80,8 +84,6 @@ export default function ImageConverter() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">

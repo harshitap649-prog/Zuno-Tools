@@ -2,11 +2,11 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Upload, Download, X, FileText, FileImage, Image as ImageIcon, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import jsPDF from 'jspdf'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 export default function PDFTools() {
   const [activeTab, setActiveTab] = useState<'pdf-maker' | 'pdf-to-jpg' | 'jpg-to-png'>('pdf-maker')
@@ -14,6 +14,7 @@ export default function PDFTools() {
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [convertedImages, setConvertedImages] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
+  const { triggerPopunder } = usePopunderAd()
 
   const onDropPDFMaker = useCallback((acceptedFiles: File[]) => {
     setFiles(prev => [...prev, ...acceptedFiles])
@@ -146,6 +147,10 @@ export default function PDFTools() {
       }
       
       pdf.save('document.pdf')
+      
+      // Trigger popunder ad after 2 seconds
+      triggerPopunder()
+      
       toast.success('PDF created successfully!')
     } catch (error) {
       console.error('PDF creation error:', error)
@@ -222,12 +227,13 @@ export default function PDFTools() {
     link.download = `converted-${index + 1}.png`
     link.href = convertedImages[index]
     link.click()
+    
+    // Trigger popunder ad after 2 seconds
+    triggerPopunder()
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">

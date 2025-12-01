@@ -2,10 +2,10 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Upload, Download, X, Maximize2, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 export default function ImageResizer() {
   const [image, setImage] = useState<string | null>(null)
@@ -17,6 +17,7 @@ export default function ImageResizer() {
   const [loading, setLoading] = useState(false)
   const isInitialMount = useRef(true)
   const prevDimensions = useRef({ width: 0, height: 0 })
+  const { triggerPopunder } = usePopunderAd()
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -132,6 +133,9 @@ export default function ImageResizer() {
     link.download = `resized-${width}x${height}.png`
     link.href = resizedImage
     link.click()
+    
+    // Trigger popunder ad after 2 seconds
+    triggerPopunder()
   }
 
   const reset = () => {
@@ -169,8 +173,6 @@ export default function ImageResizer() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">

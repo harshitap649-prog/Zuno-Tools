@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Globe, Loader2, Copy, Check } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -55,8 +54,6 @@ export default function IPAddressInfo() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">

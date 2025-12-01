@@ -37,21 +37,13 @@ export default function MobileBottomNav() {
   }, [pathname])
 
   const handleFavoritesClick = () => {
-    if (favorites.length === 0) {
-      // Show message or navigate to a page explaining how to add favorites
-      alert('No favorite tools yet. Tap the heart icon on any tool to add it to favorites!')
-    } else {
-      // Navigate to favorites page or show favorites
-      router.push('/tools?favorites=true')
-    }
+    // Always navigate to tools page - empty state will handle the message
+    router.push('/tools?favorites=true')
   }
 
   const handleRecentClick = () => {
-    if (recentTools.length === 0) {
-      alert('No recently used tools yet. Start using tools to see them here!')
-    } else {
-      router.push('/tools?recent=true')
-    }
+    // Always navigate to tools page - empty state will handle the message
+    router.push('/tools?recent=true')
   }
 
   return (
@@ -60,49 +52,35 @@ export default function MobileBottomNav() {
         {/* Home */}
         <Link
           href="/"
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors touch-manipulation active:scale-95 ${
+          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors touch-manipulation active:scale-95 bg-transparent outline-none focus:outline-none ${
             pathname === '/'
-              ? 'text-primary-600'
-              : 'text-gray-600 hover:text-primary-600'
+              ? 'text-pink-500'
+              : 'text-gray-600 hover:text-pink-500'
           }`}
         >
-          <Home className={`h-6 w-6 mb-1 ${pathname === '/' ? 'fill-current' : ''}`} />
+          <Home className={`h-6 w-6 mb-1 ${pathname === '/' ? 'fill-current' : ''}`} strokeWidth={2.5} />
           <span className="text-[10px] font-medium">Home</span>
         </Link>
 
         {/* Favorites */}
         <button
           onClick={handleFavoritesClick}
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors touch-manipulation active:scale-95 relative ${
-            favorites.length > 0 ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600'
+          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors touch-manipulation active:scale-95 bg-transparent outline-none focus:outline-none ${
+            favorites.length > 0 ? 'text-pink-500' : 'text-gray-600 hover:text-pink-500'
           }`}
         >
-          <div className="relative">
-            <Heart className={`h-6 w-6 mb-1 ${favorites.length > 0 ? 'fill-current' : ''}`} />
-            {favorites.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                {favorites.length > 9 ? '9+' : favorites.length}
-              </span>
-            )}
-          </div>
+          <Heart className={`h-6 w-6 mb-1 ${favorites.length > 0 ? 'fill-pink-500 text-pink-500' : ''}`} strokeWidth={2.5} />
           <span className="text-[10px] font-medium">Favorites</span>
         </button>
 
         {/* Recently Used */}
         <button
           onClick={handleRecentClick}
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors touch-manipulation active:scale-95 relative ${
-            recentTools.length > 0 ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600'
+          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors touch-manipulation active:scale-95 bg-transparent outline-none focus:outline-none ${
+            recentTools.length > 0 ? 'text-pink-500' : 'text-gray-600 hover:text-pink-500'
           }`}
         >
-          <div className="relative">
-            <Clock className={`h-6 w-6 mb-1 ${recentTools.length > 0 ? 'fill-current' : ''}`} />
-            {recentTools.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                {recentTools.length > 9 ? '9+' : recentTools.length}
-              </span>
-            )}
-          </div>
+          <Clock className={`h-6 w-6 mb-1 ${recentTools.length > 0 ? 'fill-current' : ''}`} strokeWidth={2.5} />
           <span className="text-[10px] font-medium">Recent</span>
         </button>
       </div>

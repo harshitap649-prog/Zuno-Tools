@@ -2,10 +2,10 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Upload, Download, X, Image as ImageIcon, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 type FilterType = 'none' | 'grayscale' | 'sepia' | 'blur' | 'brightness' | 'contrast' | 'invert' | 'saturate'
 
@@ -14,6 +14,7 @@ export default function ImageFilters() {
   const [filteredImage, setFilteredImage] = useState<string | null>(null)
   const [filter, setFilter] = useState<FilterType>('none')
   const [filterIntensity, setFilterIntensity] = useState(100)
+  const { triggerPopunder } = usePopunderAd()
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -122,6 +123,9 @@ export default function ImageFilters() {
     link.download = `filtered-image.png`
     link.href = filteredImage
     link.click()
+    
+    // Trigger popunder ad after 2 seconds
+    triggerPopunder()
   }
 
   const reset = () => {
@@ -143,8 +147,6 @@ export default function ImageFilters() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">

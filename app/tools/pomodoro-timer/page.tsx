@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { Clock, Play, Pause, RotateCcw } from 'lucide-react'
+import { Clock, Play, Pause, RotateCcw, Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function PomodoroTimer() {
@@ -102,10 +101,24 @@ export default function PomodoroTimer() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      
       <main className="flex-grow py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-4 sm:mb-6">
+            <div className="flex flex-col items-center justify-center mb-4 sm:mb-6">
+              <div className="relative inline-flex items-center justify-center mb-3 sm:mb-4">
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                <div className="relative bg-gradient-to-r from-pink-500 to-rose-500 p-2 sm:p-3 rounded-xl shadow-lg">
+                  <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 text-white" strokeWidth={2.5} />
+                </div>
+              </div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
+                <span className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
+                  Zuno Tools
+                </span>
+              </h1>
+              <div className="mt-2 h-0.5 w-20 sm:w-24 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full mx-auto"></div>
+            </div>
+          </div>
           <div className="text-center mb-8">
             <div className={`inline-flex p-3 rounded-lg bg-gradient-to-r ${
               mode === 'work' ? 'from-red-500 to-pink-500' : 'from-green-500 to-emerald-500'
