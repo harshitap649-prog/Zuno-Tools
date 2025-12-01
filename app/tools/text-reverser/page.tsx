@@ -42,12 +42,12 @@ export default function TextReverser() {
               <RotateCcw className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Text Reverser</h1>
-            <p className="text-gray-600">Reverse text order instantly</p>
+            <p className="text-gray-900">Reverse text order instantly</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Enter Text
               </label>
               <textarea
@@ -71,7 +71,7 @@ export default function TextReverser() {
             {reversedText && (
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-900">
                     Reversed Text
                   </label>
                   <button
@@ -92,14 +92,14 @@ export default function TextReverser() {
                   </button>
                 </div>
                 <div className="border border-gray-300 rounded-lg p-4 bg-gray-50 min-h-[100px]">
-                  <p className="text-gray-700 whitespace-pre-wrap break-words">{reversedText}</p>
+                  <p className="text-gray-900 whitespace-pre-wrap break-words">{reversedText}</p>
                 </div>
               </div>
             )}
 
             <button
               onClick={reset}
-              className="w-full text-gray-600 hover:text-gray-900 py-2"
+              className="w-full text-gray-900 hover:text-gray-900 py-2"
             >
               Reset
             </button>

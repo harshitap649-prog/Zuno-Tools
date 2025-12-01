@@ -105,7 +105,7 @@ export default function ImageCompressor() {
               <Minimize2 className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Image Compressor</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Reduce image file size while maintaining quality</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Reduce image file size while maintaining quality</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8">
@@ -120,10 +120,10 @@ export default function ImageCompressor() {
               >
                 <input {...getInputProps()} />
                 <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-                <p className="text-base sm:text-lg font-medium text-gray-700 mb-2">
+                <p className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                   {isDragActive ? 'Drop the image here' : 'Drag & drop an image here'}
                 </p>
-                <p className="text-xs sm:text-sm text-gray-500">or click to select a file</p>
+                <p className="text-xs sm:text-sm text-gray-900">or click to select a file</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -131,7 +131,7 @@ export default function ImageCompressor() {
                   <h2 className="text-xl font-semibold text-gray-900">Compress Your Image</h2>
                   <button
                     onClick={reset}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                    className="flex items-center space-x-2 text-gray-900 hover:text-gray-900"
                   >
                     <X className="h-5 w-5" />
                     <span>Remove</span>
@@ -140,7 +140,7 @@ export default function ImageCompressor() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">
                       Original ({formatSize(originalSize)})
                     </h3>
                     <div className="border rounded-lg overflow-hidden">
@@ -149,7 +149,7 @@ export default function ImageCompressor() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">
                       Compressed {compressedSize > 0 && `(${formatSize(compressedSize)})`}
                     </h3>
                     <div className="border rounded-lg overflow-hidden bg-gray-100">
@@ -170,7 +170,7 @@ export default function ImageCompressor() {
 
                 <div className="bg-gray-50 rounded-lg p-4 sm:p-6 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-900 mb-2">
                       Quality: {Math.round(quality * 100)}%
                     </label>
                     <input
@@ -182,7 +182,7 @@ export default function ImageCompressor() {
                       onChange={(e) => setQuality(Number(e.target.value))}
                       className="w-full"
                     />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <div className="flex justify-between text-xs text-gray-900 mt-1">
                       <span>Smaller file</span>
                       <span>Better quality</span>
                     </div>

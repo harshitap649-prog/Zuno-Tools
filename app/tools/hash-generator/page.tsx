@@ -53,12 +53,12 @@ export default function HashGenerator() {
               <Lock className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Hash Generator</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Generate MD5, SHA-1, SHA-256, and SHA-512 hashes</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Generate MD5, SHA-1, SHA-256, and SHA-512 hashes</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Input Text</label>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Input Text</label>
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
@@ -76,7 +76,7 @@ export default function HashGenerator() {
                     <div className="flex justify-between items-center mb-3">
                       <div>
                         <h3 className="font-semibold text-gray-900">{hash.name}</h3>
-                        <p className="text-xs text-gray-500">{hash.description}</p>
+                        <p className="text-xs text-gray-900">{hash.description}</p>
                       </div>
                       {hashValue && (
                         <button
@@ -92,7 +92,7 @@ export default function HashGenerator() {
                       )}
                     </div>
                     <div className="bg-gray-50 rounded p-3 min-h-[80px]">
-                      <p className="text-xs font-mono text-gray-700 break-all">
+                      <p className="text-xs font-mono text-gray-900 break-all">
                         {hashValue || 'Hash will appear here...'}
                       </p>
                     </div>

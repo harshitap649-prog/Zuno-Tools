@@ -89,7 +89,7 @@ export default function TextExtractor() {
               <FileText className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Text Extractor</h1>
-            <p className="text-gray-600">Extract text from images using OCR</p>
+            <p className="text-gray-900">Extract text from images using OCR</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8">
@@ -104,10 +104,10 @@ export default function TextExtractor() {
               >
                 <input {...getInputProps()} />
                 <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">
+                <p className="text-lg font-medium text-gray-900 mb-2">
                   {isDragActive ? 'Drop the image here' : 'Drag & drop an image with text'}
                 </p>
-                <p className="text-sm text-gray-500">or click to select a file</p>
+                <p className="text-sm text-gray-900">or click to select a file</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -115,7 +115,7 @@ export default function TextExtractor() {
                   <h2 className="text-xl font-semibold text-gray-900">Extract Text</h2>
                   <button
                     onClick={reset}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                    className="flex items-center space-x-2 text-gray-900 hover:text-gray-900"
                   >
                     <X className="h-5 w-5" />
                     <span>Reset</span>
@@ -124,7 +124,7 @@ export default function TextExtractor() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Image</h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">Image</h3>
                     <div className="border rounded-lg overflow-hidden">
                       <img src={image} alt="Source" className="w-full h-auto max-h-[400px] object-contain" />
                     </div>
@@ -132,7 +132,7 @@ export default function TextExtractor() {
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-sm font-medium text-gray-700">Extracted Text</h3>
+                      <h3 className="text-sm font-medium text-gray-900">Extracted Text</h3>
                       {extractedText && (
                         <button
                           onClick={copyToClipboard}

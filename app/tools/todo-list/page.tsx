@@ -65,7 +65,7 @@ export default function TodoList() {
               <CheckSquare className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Todo List</h1>
-            <p className="text-gray-600">Manage your tasks efficiently</p>
+            <p className="text-gray-900">Manage your tasks efficiently</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
@@ -88,7 +88,7 @@ export default function TodoList() {
             </div>
 
             {totalCount > 0 && (
-              <div className="flex justify-between items-center text-sm text-gray-600 pb-4 border-b">
+              <div className="flex justify-between items-center text-sm text-gray-900 pb-4 border-b">
                 <span>
                   {completedCount} of {totalCount} tasks completed
                 </span>
@@ -106,7 +106,7 @@ export default function TodoList() {
             {todos.length === 0 ? (
               <div className="text-center py-12">
                 <CheckSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No tasks yet. Add one above!</p>
+                <p className="text-gray-900">No tasks yet. Add one above!</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -132,7 +132,7 @@ export default function TodoList() {
                     <span
                       className={`flex-1 ${
                         todo.completed
-                          ? 'text-gray-500 line-through'
+                          ? 'text-gray-900 line-through'
                           : 'text-gray-900'
                       }`}
                     >

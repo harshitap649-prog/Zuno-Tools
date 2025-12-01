@@ -60,7 +60,7 @@ export default function AISummarizer() {
               <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">AI Summarizer</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Summarize long texts and documents instantly</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Summarize long texts and documents instantly</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
@@ -74,7 +74,7 @@ export default function AISummarizer() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
               />
               <div className="mt-4 flex items-center justify-between">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-900">
                   {text.split(/\s+/).filter(w => w.length > 0).length} words
                 </p>
                 <button
@@ -125,13 +125,13 @@ export default function AISummarizer() {
                     <Loader2 className="h-8 w-8 text-primary-600 animate-spin" />
                   </div>
                 ) : summary ? (
-                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{summary}</p>
+                  <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">{summary}</p>
                 ) : (
                   <p className="text-gray-400 text-center">Your summary will appear here...</p>
                 )}
               </div>
               {summary && (
-                <div className="mt-4 text-sm text-gray-500">
+                <div className="mt-4 text-sm text-gray-900">
                   Summary: {summary.split(/\s+/).filter(w => w.length > 0).length} words
                 </div>
               )}

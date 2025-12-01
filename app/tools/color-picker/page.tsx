@@ -84,7 +84,7 @@ export default function ColorPicker() {
               <Palette className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Color Picker</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Pick colors and get values in multiple formats</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Pick colors and get values in multiple formats</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 space-y-6">
@@ -95,7 +95,7 @@ export default function ColorPicker() {
               ></div>
 
               <div className="w-full">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Select Color</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Select Color</label>
                 <div className="flex items-center space-x-4">
                   <input
                     type="color"
@@ -118,7 +118,7 @@ export default function ColorPicker() {
               {formats.map((format) => (
                 <div key={format.name} className="border border-gray-200 rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-semibold text-gray-700">{format.name}</span>
+                    <span className="text-sm font-semibold text-gray-900">{format.name}</span>
                     {format.value && (
                       <button
                         onClick={() => copyToClipboard(format.value, format.name)}
@@ -133,7 +133,7 @@ export default function ColorPicker() {
                     )}
                   </div>
                   <div className="bg-gray-50 rounded p-2 min-h-[50px]">
-                    <code className="text-xs font-mono text-gray-700 break-all">
+                    <code className="text-xs font-mono text-gray-900 break-all">
                       {format.value || 'N/A'}
                     </code>
                   </div>
@@ -143,33 +143,33 @@ export default function ColorPicker() {
 
             {rgb && (
               <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3">Color Values</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">Color Values</h3>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600">Red:</span>
+                    <span className="text-gray-900">Red:</span>
                     <span className="ml-2 font-semibold text-gray-900">{rgb.r}</span>
                   </div>
                   <div>
-                    <span className="text-gray-600">Green:</span>
+                    <span className="text-gray-900">Green:</span>
                     <span className="ml-2 font-semibold text-gray-900">{rgb.g}</span>
                   </div>
                   <div>
-                    <span className="text-gray-600">Blue:</span>
+                    <span className="text-gray-900">Blue:</span>
                     <span className="ml-2 font-semibold text-gray-900">{rgb.b}</span>
                   </div>
                 </div>
                 {hsl && (
                   <div className="grid grid-cols-3 gap-4 text-sm mt-3">
                     <div>
-                      <span className="text-gray-600">Hue:</span>
+                      <span className="text-gray-900">Hue:</span>
                       <span className="ml-2 font-semibold text-gray-900">{hsl.h}°</span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Saturation:</span>
+                      <span className="text-gray-900">Saturation:</span>
                       <span className="ml-2 font-semibold text-gray-900">{hsl.s}%</span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Lightness:</span>
+                      <span className="text-gray-900">Lightness:</span>
                       <span className="ml-2 font-semibold text-gray-900">{hsl.l}%</span>
                     </div>
                   </div>

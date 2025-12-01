@@ -63,13 +63,13 @@ export default function BarcodeGenerator() {
               <Hash className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Barcode Generator</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Generate barcodes in multiple formats</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Generate barcodes in multiple formats</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Barcode Data</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Barcode Data</label>
                 <input
                   type="text"
                   value={text}
@@ -80,7 +80,7 @@ export default function BarcodeGenerator() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Format</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Format</label>
                 <select
                   value={format}
                   onChange={(e) => setFormat(e.target.value)}
@@ -93,7 +93,7 @@ export default function BarcodeGenerator() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Width: {width}</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Width: {width}</label>
                 <input
                   type="range"
                   min="1"
@@ -105,7 +105,7 @@ export default function BarcodeGenerator() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Height: {height}px</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Height: {height}px</label>
                 <input
                   type="range"
                   min="50"
@@ -125,7 +125,7 @@ export default function BarcodeGenerator() {
                   onChange={(e) => setDisplayValue(e.target.checked)}
                   className="rounded"
                 />
-                <label htmlFor="displayValue" className="text-sm font-medium text-gray-700">
+                <label htmlFor="displayValue" className="text-sm font-medium text-gray-900">
                   Display value below barcode
                 </label>
               </div>

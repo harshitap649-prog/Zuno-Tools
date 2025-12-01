@@ -64,7 +64,7 @@ export default function IPAddressInfo() {
               <Globe className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">IP Address Info</h1>
-            <p className="text-gray-600">Get information about your IP address</p>
+            <p className="text-gray-900">Get information about your IP address</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8">
@@ -77,7 +77,7 @@ export default function IPAddressInfo() {
                 <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-6">
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Your IP Address</p>
+                      <p className="text-sm text-gray-900 mb-1">Your IP Address</p>
                       <p className="text-3xl font-bold text-gray-900">{ipInfo.ip}</p>
                     </div>
                     <button
@@ -91,37 +91,37 @@ export default function IPAddressInfo() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">City</p>
+                    <p className="text-sm text-gray-900 mb-1">City</p>
                     <p className="text-lg font-semibold text-gray-900">{ipInfo.city}</p>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">Region</p>
+                    <p className="text-sm text-gray-900 mb-1">Region</p>
                     <p className="text-lg font-semibold text-gray-900">{ipInfo.region}</p>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">Country</p>
+                    <p className="text-sm text-gray-900 mb-1">Country</p>
                     <p className="text-lg font-semibold text-gray-900">{ipInfo.country}</p>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">Country Code</p>
+                    <p className="text-sm text-gray-900 mb-1">Country Code</p>
                     <p className="text-lg font-semibold text-gray-900">{ipInfo.countryCode}</p>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">Timezone</p>
+                    <p className="text-sm text-gray-900 mb-1">Timezone</p>
                     <p className="text-lg font-semibold text-gray-900">{ipInfo.timezone}</p>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">ISP/Organization</p>
+                    <p className="text-sm text-gray-900 mb-1">ISP/Organization</p>
                     <p className="text-lg font-semibold text-gray-900">{ipInfo.isp}</p>
                   </div>
                   {ipInfo.latitude !== 'N/A' && (
                     <>
                       <div className="bg-gray-50 rounded-lg p-4">
-                        <p className="text-sm text-gray-600 mb-1">Latitude</p>
+                        <p className="text-sm text-gray-900 mb-1">Latitude</p>
                         <p className="text-lg font-semibold text-gray-900">{ipInfo.latitude}</p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-4">
-                        <p className="text-sm text-gray-600 mb-1">Longitude</p>
+                        <p className="text-sm text-gray-900 mb-1">Longitude</p>
                         <p className="text-lg font-semibold text-gray-900">{ipInfo.longitude}</p>
                       </div>
                     </>
@@ -138,7 +138,7 @@ export default function IPAddressInfo() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-600">Failed to load IP information</p>
+                <p className="text-gray-900">Failed to load IP information</p>
                 <button
                   onClick={fetchIPInfo}
                   className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"

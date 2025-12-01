@@ -134,7 +134,7 @@ export default function CodeFormatter() {
               <Code className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Code Formatter</h1>
-            <p className="text-gray-600">Format and minify code in multiple languages</p>
+            <p className="text-gray-900">Format and minify code in multiple languages</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
@@ -158,7 +158,7 @@ export default function CodeFormatter() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Original Code
                 </label>
                 <textarea
@@ -172,7 +172,7 @@ export default function CodeFormatter() {
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-900">
                     Formatted Code
                   </label>
                   {formattedCode && (
@@ -233,7 +233,7 @@ export default function CodeFormatter() {
 
             <button
               onClick={reset}
-              className="w-full text-gray-600 hover:text-gray-900 py-2"
+              className="w-full text-gray-900 hover:text-gray-900 py-2"
             >
               Reset
             </button>

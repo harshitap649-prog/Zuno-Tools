@@ -275,7 +275,7 @@ export default function BackgroundRemover() {
               <Scissors className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Background Remover</h1>
-            <p className="text-gray-600">Remove backgrounds from your images instantly with AI</p>
+            <p className="text-gray-900">Remove backgrounds from your images instantly with AI</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8">
@@ -290,10 +290,10 @@ export default function BackgroundRemover() {
               >
                 <input {...getInputProps()} />
                 <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-                <p className="text-base sm:text-lg font-medium text-gray-700 mb-2">
+                <p className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                   {isDragActive ? 'Drop the image here' : 'Drag & drop an image here'}
                 </p>
-                <p className="text-xs sm:text-sm text-gray-500">or click to select a file</p>
+                <p className="text-xs sm:text-sm text-gray-900">or click to select a file</p>
                 <p className="text-xs text-gray-400 mt-2">Supports: PNG, JPG, JPEG, WEBP</p>
               </div>
             ) : (
@@ -302,7 +302,7 @@ export default function BackgroundRemover() {
                   <h2 className="text-xl font-semibold text-gray-900">Your Image</h2>
                   <button
                     onClick={reset}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                    className="flex items-center space-x-2 text-gray-900 hover:text-gray-900"
                   >
                     <X className="h-5 w-5" />
                     <span>Remove</span>
@@ -315,9 +315,9 @@ export default function BackgroundRemover() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <Palette className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm font-medium text-gray-700">Background Color Selector</span>
+                        <span className="text-sm font-medium text-gray-900">Background Color Selector</span>
                       </div>
-                      <p className="text-xs text-gray-600">
+                      <p className="text-xs text-gray-900">
                         {colorPickerMode 
                           ? "Click on the background color in the image to help AI identify what to remove"
                           : "Select the background color to improve removal accuracy (optional)"}
@@ -328,7 +328,7 @@ export default function BackgroundRemover() {
                             className="w-6 h-6 rounded border-2 border-gray-300"
                             style={{ backgroundColor: `rgb(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b})` }}
                           />
-                          <span className="text-xs text-gray-600">
+                          <span className="text-xs text-gray-900">
                             Selected: RGB({selectedColor.r}, {selectedColor.g}, {selectedColor.b})
                           </span>
                           <button
@@ -362,7 +362,7 @@ export default function BackgroundRemover() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Original</h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">Original</h3>
                     <div className="border rounded-lg overflow-hidden relative">
                       <img 
                         ref={imageRef}
@@ -384,7 +384,7 @@ export default function BackgroundRemover() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Processed</h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">Processed</h3>
                     <div className="border rounded-lg overflow-hidden bg-gray-100">
                       {loading ? (
                         <div className="flex items-center justify-center h-48 sm:h-64">

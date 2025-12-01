@@ -68,7 +68,7 @@ export default function AINoteSummarizer() {
               <Type className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">AI Note Summarizer</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Summarize your notes and study materials</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Summarize your notes and study materials</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -85,7 +85,7 @@ export default function AINoteSummarizer() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
               />
               <div className="mt-4 flex items-center justify-between">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-900">
                   {notes.split(/\s+/).filter(w => w.length > 0).length} words
                 </p>
                 <button
@@ -137,7 +137,7 @@ export default function AINoteSummarizer() {
                       <Loader2 className="h-8 w-8 text-primary-600 animate-spin" />
                     </div>
                   ) : summary ? (
-                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{summary}</p>
+                    <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">{summary}</p>
                   ) : (
                     <p className="text-gray-400 text-center">Your summary will appear here...</p>
                   )}
@@ -158,7 +158,7 @@ export default function AINoteSummarizer() {
                           <span className="flex-shrink-0 w-6 h-6 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-semibold mt-0.5">
                             {index + 1}
                           </span>
-                          <span className="text-gray-700">{point}</span>
+                          <span className="text-gray-900">{point}</span>
                         </li>
                       ))}
                     </ul>

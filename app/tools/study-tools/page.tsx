@@ -113,7 +113,7 @@ export default function StudyTools() {
               <GraduationCap className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Study Tools</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Essential tools for students - flashcards, timers, and notes</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Essential tools for students - flashcards, timers, and notes</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -124,7 +124,7 @@ export default function StudyTools() {
                 className={`flex-1 min-w-[120px] px-3 sm:px-6 py-3 sm:py-4 font-semibold text-xs sm:text-sm transition-colors touch-manipulation ${
                   activeTab === 'flashcards'
                     ? 'text-primary-600 border-b-2 border-primary-600 bg-primary-50'
-                    : 'text-gray-600 hover:text-gray-900 active:bg-gray-50'
+                    : 'text-gray-900 hover:text-gray-900 active:bg-gray-50'
                 }`}
               >
                 <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 inline-block mr-1 sm:mr-2" />
@@ -135,7 +135,7 @@ export default function StudyTools() {
                 className={`flex-1 min-w-[120px] px-3 sm:px-6 py-3 sm:py-4 font-semibold text-xs sm:text-sm transition-colors touch-manipulation ${
                   activeTab === 'timer'
                     ? 'text-primary-600 border-b-2 border-primary-600 bg-primary-50'
-                    : 'text-gray-600 hover:text-gray-900 active:bg-gray-50'
+                    : 'text-gray-900 hover:text-gray-900 active:bg-gray-50'
                 }`}
               >
                 <Clock className="h-4 w-4 sm:h-5 sm:w-5 inline-block mr-1 sm:mr-2" />
@@ -146,7 +146,7 @@ export default function StudyTools() {
                 className={`flex-1 min-w-[120px] px-3 sm:px-6 py-3 sm:py-4 font-semibold text-xs sm:text-sm transition-colors touch-manipulation ${
                   activeTab === 'notes'
                     ? 'text-primary-600 border-b-2 border-primary-600 bg-primary-50'
-                    : 'text-gray-600 hover:text-gray-900 active:bg-gray-50'
+                    : 'text-gray-900 hover:text-gray-900 active:bg-gray-50'
                 }`}
               >
                 <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 inline-block mr-1 sm:mr-2" />
@@ -162,7 +162,7 @@ export default function StudyTools() {
                     <div className="space-y-4">
                       <h2 className="text-xl font-semibold text-gray-900">Add New Card</h2>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Front</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Front</label>
                         <textarea
                           value={newCard.front}
                           onChange={(e) => setNewCard({ ...newCard, front: e.target.value })}
@@ -172,7 +172,7 @@ export default function StudyTools() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Back</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Back</label>
                         <textarea
                           value={newCard.back}
                           onChange={(e) => setNewCard({ ...newCard, back: e.target.value })}
@@ -200,7 +200,7 @@ export default function StudyTools() {
                             <div key={card.id} className="border border-gray-200 rounded-lg p-4 flex justify-between items-start">
                               <div className="flex-1">
                                 <p className="text-sm font-medium text-gray-900">{card.front}</p>
-                                <p className="text-xs text-gray-500 mt-1">{card.back}</p>
+                                <p className="text-xs text-gray-900 mt-1">{card.back}</p>
                               </div>
                               <button
                                 onClick={() => deleteFlashcard(card.id)}
@@ -221,7 +221,7 @@ export default function StudyTools() {
                     <div className="border-t pt-6">
                       <div className="max-w-2xl mx-auto">
                         <div className="text-center mb-4">
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-gray-900">
                             Card {currentCard + 1} of {flashcards.length}
                           </span>
                         </div>
@@ -346,7 +346,7 @@ export default function StudyTools() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                   />
                   <div className="mt-4 flex justify-between items-center">
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-900">
                       {notes.split(/\s+/).filter(w => w.length > 0).length} words
                     </p>
                     <button

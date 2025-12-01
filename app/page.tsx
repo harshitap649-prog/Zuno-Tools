@@ -308,7 +308,7 @@ export default function Home() {
       
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-primary-50 via-white to-primary-50 py-12 sm:py-16 md:py-20 overflow-hidden">
+        <section className="relative bg-transparent py-12 sm:py-16 md:py-20 overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center">
@@ -318,7 +318,7 @@ export default function Home() {
                   Professional Tools
                 </span>
               </h1>
-              <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-6 sm:mb-8 px-4 animate-slide-up">
+              <p className="text-base sm:text-lg md:text-xl text-gray-900 max-w-3xl mx-auto mb-6 sm:mb-8 px-4 animate-slide-up">
                 Transform images, create PDFs, generate AI-powered content, and boost your productivity 
                 with our comprehensive suite of professional tools.
               </p>
@@ -356,19 +356,19 @@ export default function Home() {
         </section>
 
         {/* Tools Grid */}
-        <section className="py-12 sm:py-16 md:py-20 bg-white">
+        <section className="py-12 sm:py-16 md:py-20 bg-transparent">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-12">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
                 Powerful Tools at Your Fingertips
               </h2>
-              <p className="text-base sm:text-lg md:text-xl text-gray-600 px-4">
+              <p className="text-base sm:text-lg md:text-xl text-gray-900 px-4">
                 Everything you need to get things done, all in one place
               </p>
             </div>
 
             {filteredTools.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
                 {filteredTools.map((tool) => {
                 const Icon = tool.icon
                 if (!Icon) {
@@ -379,17 +379,17 @@ export default function Home() {
                   <Link
                     key={tool.id}
                     href={tool.href}
-                    className="group relative bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
+                    className="group relative bg-white rounded-lg sm:rounded-xl shadow-sm sm:shadow-md hover:shadow-lg sm:hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
                   >
-                    <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${tool.color}`}></div>
-                    <div className="p-4 sm:p-6">
-                      <div className={`inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r ${tool.color} mb-3 sm:mb-4 group-hover:scale-110 transition-transform`}>
-                        {Icon && <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />}
+                    <div className={`absolute top-0 left-0 right-0 h-0.5 sm:h-1 bg-gradient-to-r ${tool.color}`}></div>
+                    <div className="p-2 sm:p-4 lg:p-6">
+                      <div className={`inline-flex p-1.5 sm:p-2 lg:p-3 rounded-md sm:rounded-lg bg-gradient-to-r ${tool.color} mb-2 sm:mb-3 lg:mb-4 group-hover:scale-110 transition-transform`}>
+                        {Icon && <Icon className="h-3.5 w-3.5 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />}
                       </div>
-                      <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                      <h3 className="text-xs sm:text-base lg:text-lg font-semibold text-gray-900 mb-1 sm:mb-2 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
                         {tool.name}
                       </h3>
-                      <p className="text-gray-600 text-sm sm:text-base">
+                      <p className="text-gray-900 text-[10px] sm:text-xs lg:text-sm leading-tight line-clamp-2 sm:line-clamp-none">
                         {tool.description}
                       </p>
                     </div>
@@ -401,7 +401,7 @@ export default function Home() {
               <div className="text-center py-12">
                 <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No tools found</h3>
-                <p className="text-gray-600 mb-4">Try a different search term</p>
+                <p className="text-gray-900 mb-4">Try a different search term</p>
                 <Link
                   href="/tools"
                   className="text-primary-600 hover:text-primary-700 font-medium"
@@ -414,7 +414,7 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-gray-50 to-white">
+        <section className="py-12 sm:py-16 md:py-20 bg-transparent">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-12">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
@@ -427,7 +427,7 @@ export default function Home() {
                   <Sparkles className="h-8 w-8 text-primary-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">AI-Powered</h3>
-                <p className="text-gray-600">
+                <p className="text-gray-900">
                   Leverage cutting-edge AI technology for the best results
                 </p>
               </div>
@@ -436,7 +436,7 @@ export default function Home() {
                   <FileText className="h-8 w-8 text-primary-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Professional Quality</h3>
-                <p className="text-gray-600">
+                <p className="text-gray-900">
                   Enterprise-grade tools for professional use
                 </p>
               </div>
@@ -445,7 +445,7 @@ export default function Home() {
                   <Sparkles className="h-8 w-8 text-primary-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Easy to Use</h3>
-                <p className="text-gray-600">
+                <p className="text-gray-900">
                   Intuitive interface designed for everyone
                 </p>
               </div>

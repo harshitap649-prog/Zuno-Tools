@@ -10,7 +10,7 @@ import {
   Maximize2, Languages, ArrowRight, Minimize2,
   RefreshCw, Hash, Lock, Link as LinkIcon,
   Palette, Calculator, Clock, Key, Code, Search, X,
-  Crop, RotateCw, Globe
+  Crop, RotateCw, Globe, Filter
 } from 'lucide-react'
 
 const allTools = [
@@ -293,6 +293,7 @@ const categories = ['All', 'Image Tools', 'Document Tools', 'AI Tools', 'Creativ
 export default function ToolsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
+  const [mobileCategoryMenuOpen, setMobileCategoryMenuOpen] = useState(false)
 
   const filteredTools = useMemo(() => {
     let filtered = allTools
@@ -316,7 +317,7 @@ export default function ToolsPage() {
   }, [searchQuery, selectedCategory])
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-transparent">
       <Navbar />
       
       <main className="flex-grow py-6 sm:py-8 md:py-12">
@@ -325,7 +326,7 @@ export default function ToolsPage() {
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
               All Tools
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+            <p className="text-base sm:text-lg md:text-xl text-gray-900 max-w-2xl mx-auto px-4">
               Discover our complete collection of professional tools
             </p>
           </div>
@@ -344,7 +345,7 @@ export default function ToolsPage() {
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-900"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -352,8 +353,8 @@ export default function ToolsPage() {
             </div>
           </div>
 
-          {/* Category Filter */}
-          <div className="mb-6 sm:mb-8">
+          {/* Category Filter - Desktop */}
+          <div className="mb-6 sm:mb-8 hidden md:block">
             <div className="flex flex-wrap gap-2 justify-center">
               {categories.map((category) => (
                 <button
@@ -362,7 +363,7 @@ export default function ToolsPage() {
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     selectedCategory === category
                       ? 'bg-primary-600 text-white shadow-md'
-                      : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                      : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-300'
                   }`}
                 >
                   {category}
@@ -371,16 +372,56 @@ export default function ToolsPage() {
             </div>
           </div>
 
+          {/* Category Filter - Mobile */}
+          <div className="mb-4 md:hidden">
+            <button
+              onClick={() => setMobileCategoryMenuOpen(!mobileCategoryMenuOpen)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-lg font-medium transition-all ${
+                selectedCategory !== 'All'
+                  ? 'bg-primary-600 text-white shadow-md'
+                  : 'bg-white text-gray-900 border border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <Filter className="h-5 w-5" />
+                <span>Category: {selectedCategory}</span>
+              </div>
+              <X className={`h-5 w-5 transition-transform ${mobileCategoryMenuOpen ? 'rotate-90' : ''}`} />
+            </button>
+
+            {/* Mobile Category Menu */}
+            {mobileCategoryMenuOpen && (
+              <div className="mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-3 space-y-1 max-h-64 overflow-y-auto">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => {
+                      setSelectedCategory(category)
+                      setMobileCategoryMenuOpen(false)
+                    }}
+                    className={`w-full text-left px-4 py-2.5 rounded-md font-medium transition-all ${
+                      selectedCategory === category
+                        ? 'bg-primary-600 text-white'
+                        : 'text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Results Count */}
           {(searchQuery || selectedCategory !== 'All') && (
-            <div className="mb-4 text-center text-gray-600">
+            <div className="mb-4 text-center text-gray-900">
               Found {filteredTools.length} tool{filteredTools.length !== 1 ? 's' : ''}
             </div>
           )}
 
           {/* Tools Grid */}
           {filteredTools.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
               {filteredTools.map((tool) => {
               const Icon = tool.icon
               if (!Icon) {
@@ -391,25 +432,25 @@ export default function ToolsPage() {
                 <Link
                   key={tool.id}
                   href={`/tools/${tool.id}`}
-                  className="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
+                  className="group bg-white rounded-lg sm:rounded-xl shadow-sm sm:shadow-md hover:shadow-lg sm:hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
                 >
-                  <div className={`h-2 bg-gradient-to-r ${tool.color}`}></div>
-                  <div className="p-4 sm:p-6">
-                    <div className="flex items-start justify-between mb-3 sm:mb-4">
-                      <div className={`inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r ${tool.color} group-hover:scale-110 transition-transform`}>
-                        {Icon && <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />}
+                  <div className={`h-0.5 sm:h-2 bg-gradient-to-r ${tool.color}`}></div>
+                  <div className="p-2 sm:p-4 lg:p-6">
+                    <div className="flex items-start justify-between mb-1.5 sm:mb-3 lg:mb-4">
+                      <div className={`inline-flex p-1.5 sm:p-2 lg:p-3 rounded-md sm:rounded-lg bg-gradient-to-r ${tool.color} group-hover:scale-110 transition-transform`}>
+                        {Icon && <Icon className="h-3.5 w-3.5 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />}
                       </div>
-                      <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" />
+                      <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all hidden sm:block" />
                     </div>
-                    <div className="mb-2">
-                      <span className="text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-1 rounded">
+                    <div className="mb-1 sm:mb-2">
+                      <span className="text-[9px] sm:text-xs font-semibold text-primary-600 bg-primary-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
                         {tool.category}
                       </span>
                     </div>
-                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                    <h3 className="text-xs sm:text-base lg:text-lg font-semibold text-gray-900 mb-1 sm:mb-2 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
                       {tool.name}
                     </h3>
-                    <p className="text-gray-600 text-sm sm:text-base">
+                    <p className="text-gray-900 text-[10px] sm:text-xs lg:text-sm leading-tight line-clamp-2 sm:line-clamp-none">
                       {tool.description}
                     </p>
                   </div>
@@ -420,8 +461,8 @@ export default function ToolsPage() {
           ) : (
             <div className="text-center py-12">
               <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No tools found</h3>
-              <p className="text-gray-600 mb-4">Try adjusting your search or category filter</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No tools found</h3>
+                <p className="text-gray-900 mb-4">Try adjusting your search or category filter</p>
               <button
                 onClick={() => {
                   setSearchQuery('')

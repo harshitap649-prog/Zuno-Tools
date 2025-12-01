@@ -89,7 +89,7 @@ export default function MemeGenerator() {
               <ImageIcon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Meme Generator</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Create hilarious memes with custom text and images</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Create hilarious memes with custom text and images</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
@@ -106,10 +106,10 @@ export default function MemeGenerator() {
                 >
                   <input {...getInputProps()} />
                   <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-lg font-medium text-gray-700 mb-2">
+                  <p className="text-lg font-medium text-gray-900 mb-2">
                     {isDragActive ? 'Drop the image here' : 'Drag & drop an image here'}
                   </p>
-                  <p className="text-sm text-gray-500">or click to select a file</p>
+                  <p className="text-sm text-gray-900">or click to select a file</p>
                 </div>
               ) : (
                 <>
@@ -117,7 +117,7 @@ export default function MemeGenerator() {
                     <h2 className="text-xl font-semibold text-gray-900">Customize Your Meme</h2>
                     <button
                       onClick={reset}
-                      className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                      className="flex items-center space-x-2 text-gray-900 hover:text-gray-900"
                     >
                       <X className="h-5 w-5" />
                       <span>Reset</span>
@@ -126,7 +126,7 @@ export default function MemeGenerator() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-900 mb-2">
                         Top Text
                       </label>
                       <input
@@ -139,7 +139,7 @@ export default function MemeGenerator() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-900 mb-2">
                         Bottom Text
                       </label>
                       <input
@@ -152,7 +152,7 @@ export default function MemeGenerator() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-900 mb-2">
                         Font Size: {fontSize}px
                       </label>
                       <div className="flex items-center space-x-4">
@@ -181,7 +181,7 @@ export default function MemeGenerator() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-900 mb-2">
                         Font Style
                       </label>
                       <select
@@ -199,7 +199,7 @@ export default function MemeGenerator() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-900 mb-2">
                           Text Color
                         </label>
                         <input
@@ -210,7 +210,7 @@ export default function MemeGenerator() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-900 mb-2">
                           Stroke Color
                         </label>
                         <input

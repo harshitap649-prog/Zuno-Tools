@@ -152,7 +152,7 @@ export default function ImageFilters() {
               <ImageIcon className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Image Filters</h1>
-            <p className="text-gray-600">Apply filters to your images</p>
+            <p className="text-gray-900">Apply filters to your images</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8">
@@ -167,10 +167,10 @@ export default function ImageFilters() {
               >
                 <input {...getInputProps()} />
                 <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">
+                <p className="text-lg font-medium text-gray-900 mb-2">
                   {isDragActive ? 'Drop the image here' : 'Drag & drop an image here'}
                 </p>
-                <p className="text-sm text-gray-500">or click to select a file</p>
+                <p className="text-sm text-gray-900">or click to select a file</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -178,7 +178,7 @@ export default function ImageFilters() {
                   <h2 className="text-xl font-semibold text-gray-900">Apply Filters</h2>
                   <button
                     onClick={reset}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                    className="flex items-center space-x-2 text-gray-900 hover:text-gray-900"
                   >
                     <X className="h-5 w-5" />
                     <span>Reset</span>
@@ -187,14 +187,14 @@ export default function ImageFilters() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Original</h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">Original</h3>
                     <div className="border rounded-lg overflow-hidden">
                       <img src={image} alt="Original" className="w-full h-auto max-h-[400px] object-contain" />
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Filtered</h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">Filtered</h3>
                     <div className="border rounded-lg overflow-hidden bg-gray-100 min-h-[200px] flex items-center justify-center">
                       {filteredImage ? (
                         <img src={filteredImage} alt="Filtered" className="w-full h-auto max-h-[400px] object-contain" />
@@ -207,7 +207,7 @@ export default function ImageFilters() {
 
                 <div className="bg-gray-50 rounded-lg p-6 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-900 mb-2">
                       Filter Type
                     </label>
                     <select
@@ -228,7 +228,7 @@ export default function ImageFilters() {
 
                   {filter !== 'none' && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-900 mb-2">
                         Intensity: {filterIntensity}%
                       </label>
                       <input

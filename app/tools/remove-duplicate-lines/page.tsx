@@ -53,12 +53,12 @@ export default function RemoveDuplicateLines() {
               <Filter className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Remove Duplicate Lines</h1>
-            <p className="text-gray-600">Remove duplicate lines from your text</p>
+            <p className="text-gray-900">Remove duplicate lines from your text</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Enter Text (one line per item)
               </label>
               <textarea
@@ -68,7 +68,7 @@ export default function RemoveDuplicateLines() {
                 rows={10}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none font-mono text-sm"
               />
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-gray-900">
                 {text.split('\n').filter(l => l.trim()).length} lines
               </p>
             </div>
@@ -86,7 +86,7 @@ export default function RemoveDuplicateLines() {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-900">
                       Processed Text
                     </label>
                     {removedCount > 0 && (
@@ -113,11 +113,11 @@ export default function RemoveDuplicateLines() {
                   </button>
                 </div>
                 <div className="border border-gray-300 rounded-lg p-4 bg-gray-50 min-h-[200px]">
-                  <p className="text-gray-700 whitespace-pre-wrap break-words font-mono text-sm">
+                  <p className="text-gray-900 whitespace-pre-wrap break-words font-mono text-sm">
                     {processedText}
                   </p>
                 </div>
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-gray-900">
                   {processedText.split('\n').filter(l => l.trim()).length} unique lines
                 </p>
               </div>
@@ -125,7 +125,7 @@ export default function RemoveDuplicateLines() {
 
             <button
               onClick={reset}
-              className="w-full text-gray-600 hover:text-gray-900 py-2 flex items-center justify-center space-x-2"
+              className="w-full text-gray-900 hover:text-gray-900 py-2 flex items-center justify-center space-x-2"
             >
               <X className="h-5 w-5" />
               <span>Reset</span>

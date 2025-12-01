@@ -69,7 +69,7 @@ export default function Stopwatch() {
               <Play className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Stopwatch</h1>
-            <p className="text-gray-600">Simple and accurate stopwatch</p>
+            <p className="text-gray-900">Simple and accurate stopwatch</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8">
@@ -120,7 +120,7 @@ export default function Stopwatch() {
                 <div className="max-h-64 overflow-y-auto space-y-2">
                   {laps.map((lap, index) => (
                     <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="text-gray-700 font-medium">Lap {laps.length - index}</span>
+                      <span className="text-gray-900 font-medium">Lap {laps.length - index}</span>
                       <span className="text-gray-900 font-mono font-semibold">{formatTime(lap)}</span>
                     </div>
                   ))}

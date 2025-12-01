@@ -235,7 +235,7 @@ export default function PDFTools() {
               <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">PDF Tools</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Create PDFs, convert PDF to JPG, and JPG to PNG</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Create PDFs, convert PDF to JPG, and JPG to PNG</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -246,7 +246,7 @@ export default function PDFTools() {
                 className={`flex-1 min-w-[100px] px-3 sm:px-6 py-3 sm:py-4 font-semibold text-xs sm:text-sm transition-colors touch-manipulation ${
                   activeTab === 'pdf-maker'
                     ? 'text-primary-600 border-b-2 border-primary-600 bg-primary-50'
-                    : 'text-gray-600 hover:text-gray-900 active:bg-gray-50'
+                    : 'text-gray-900 hover:text-gray-900 active:bg-gray-50'
                 }`}
               >
                 PDF Maker
@@ -256,7 +256,7 @@ export default function PDFTools() {
                 className={`flex-1 min-w-[100px] px-3 sm:px-6 py-3 sm:py-4 font-semibold text-xs sm:text-sm transition-colors touch-manipulation ${
                   activeTab === 'pdf-to-jpg'
                     ? 'text-primary-600 border-b-2 border-primary-600 bg-primary-50'
-                    : 'text-gray-600 hover:text-gray-900 active:bg-gray-50'
+                    : 'text-gray-900 hover:text-gray-900 active:bg-gray-50'
                 }`}
               >
                 PDF to JPG
@@ -266,7 +266,7 @@ export default function PDFTools() {
                 className={`flex-1 min-w-[100px] px-3 sm:px-6 py-3 sm:py-4 font-semibold text-xs sm:text-sm transition-colors touch-manipulation ${
                   activeTab === 'jpg-to-png'
                     ? 'text-primary-600 border-b-2 border-primary-600 bg-primary-50'
-                    : 'text-gray-600 hover:text-gray-900 active:bg-gray-50'
+                    : 'text-gray-900 hover:text-gray-900 active:bg-gray-50'
                 }`}
               >
                 JPG to PNG
@@ -287,10 +287,10 @@ export default function PDFTools() {
                   >
                     <input {...getInputPropsPDFMaker()} />
                     <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-                    <p className="text-base sm:text-lg font-medium text-gray-700 mb-2">
+                    <p className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                       {isDragActivePDFMaker ? 'Drop images here' : 'Drag & drop images here'}
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-500">or click to select files</p>
+                    <p className="text-xs sm:text-sm text-gray-900">or click to select files</p>
                   </div>
 
                   {files.length > 0 && (
@@ -301,7 +301,7 @@ export default function PDFTools() {
                         </h3>
                         <button
                           onClick={() => setFiles([])}
-                          className="text-sm text-gray-600 hover:text-gray-900"
+                          className="text-sm text-gray-900 hover:text-gray-900"
                         >
                           Clear All
                         </button>
@@ -358,17 +358,17 @@ export default function PDFTools() {
                   >
                     <input {...getInputPropsPDFToJPG()} />
                     <FileText className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-                    <p className="text-base sm:text-lg font-medium text-gray-700 mb-2">
+                    <p className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                       {isDragActivePDFToJPG ? 'Drop PDF here' : 'Drag & drop PDF here'}
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-500">or click to select a file</p>
+                    <p className="text-xs sm:text-sm text-gray-900">or click to select a file</p>
                   </div>
 
                   {pdfFile && (
                     <div className="space-y-4">
                       <div className="bg-gray-50 rounded-lg p-4">
-                        <p className="text-sm font-medium text-gray-700">{pdfFile.name}</p>
-                        <p className="text-xs text-gray-500">{(pdfFile.size / 1024).toFixed(2)} KB</p>
+                        <p className="text-sm font-medium text-gray-900">{pdfFile.name}</p>
+                        <p className="text-xs text-gray-900">{(pdfFile.size / 1024).toFixed(2)} KB</p>
                       </div>
                       <button
                         onClick={convertPDFToJPG}
@@ -405,10 +405,10 @@ export default function PDFTools() {
                   >
                     <input {...getInputPropsJPGToPNG()} />
                     <ImageIcon className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-                    <p className="text-base sm:text-lg font-medium text-gray-700 mb-2">
+                    <p className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                       {isDragActiveJPGToPNG ? 'Drop JPG images here' : 'Drag & drop JPG images here'}
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-500">or click to select files</p>
+                    <p className="text-xs sm:text-sm text-gray-900">or click to select files</p>
                   </div>
 
                   {files.length > 0 && (

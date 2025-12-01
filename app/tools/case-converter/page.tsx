@@ -68,12 +68,12 @@ export default function CaseConverter() {
               <Type className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Case Converter</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Convert text to different cases instantly</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Convert text to different cases instantly</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Your Text</label>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Your Text</label>
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
@@ -91,7 +91,7 @@ export default function CaseConverter() {
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h3 className="font-semibold text-gray-900 text-sm">{caseType.name}</h3>
-                        <p className="text-xs text-gray-500 mt-1">{caseType.description}</p>
+                        <p className="text-xs text-gray-900 mt-1">{caseType.description}</p>
                       </div>
                       {converted && (
                         <button
@@ -107,7 +107,7 @@ export default function CaseConverter() {
                       )}
                     </div>
                     <div className="bg-gray-50 rounded p-2 min-h-[60px]">
-                      <p className="text-sm font-mono text-gray-700 break-words">
+                      <p className="text-sm font-mono text-gray-900 break-words">
                         {converted || 'Converted text...'}
                       </p>
                     </div>

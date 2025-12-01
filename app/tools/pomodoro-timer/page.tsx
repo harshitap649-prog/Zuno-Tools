@@ -113,7 +113,7 @@ export default function PomodoroTimer() {
               <Clock className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Pomodoro Timer</h1>
-            <p className="text-gray-600">Focus timer for productive work sessions</p>
+            <p className="text-gray-900">Focus timer for productive work sessions</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8">
@@ -169,7 +169,7 @@ export default function PomodoroTimer() {
                   className={`px-4 py-3 rounded-lg font-medium transition-colors ${
                     mode === 'work' && !isRunning
                       ? 'bg-red-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                   }`}
                 >
                   Work (25 min)
@@ -179,7 +179,7 @@ export default function PomodoroTimer() {
                   className={`px-4 py-3 rounded-lg font-medium transition-colors ${
                     mode === 'break' && minutes === 5 && !isRunning
                       ? 'bg-green-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                   }`}
                 >
                   Short Break (5 min)
@@ -189,7 +189,7 @@ export default function PomodoroTimer() {
                   className={`px-4 py-3 rounded-lg font-medium transition-colors ${
                     mode === 'break' && minutes === 15 && !isRunning
                       ? 'bg-green-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                   }`}
                 >
                   Long Break (15 min)
@@ -199,7 +199,7 @@ export default function PomodoroTimer() {
 
             {completedPomodoros > 0 && (
               <div className="mt-6 pt-6 border-t text-center">
-                <p className="text-sm text-gray-600 mb-2">Completed Pomodoros</p>
+                <p className="text-sm text-gray-900 mb-2">Completed Pomodoros</p>
                 <p className="text-4xl font-bold text-gray-900">{completedPomodoros}</p>
               </div>
             )}

@@ -63,13 +63,13 @@ export default function LoanCalculator() {
               <DollarSign className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Loan Calculator</h1>
-            <p className="text-gray-600">Calculate loan payments and interest</p>
+            <p className="text-gray-900">Calculate loan payments and interest</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Loan Amount ($)
                 </label>
                 <input
@@ -82,7 +82,7 @@ export default function LoanCalculator() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Annual Interest Rate (%)
                 </label>
                 <input
@@ -96,7 +96,7 @@ export default function LoanCalculator() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Loan Term (years)
                 </label>
                 <input
@@ -122,7 +122,7 @@ export default function LoanCalculator() {
               <div className="space-y-4">
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
                   <div className="text-center mb-4">
-                    <p className="text-sm text-gray-600 mb-2">Monthly Payment</p>
+                    <p className="text-sm text-gray-900 mb-2">Monthly Payment</p>
                     <p className="text-5xl font-bold text-gray-900">
                       ${result.monthlyPayment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
@@ -131,13 +131,13 @@ export default function LoanCalculator() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">Total Payment</p>
+                    <p className="text-sm text-gray-900 mb-1">Total Payment</p>
                     <p className="text-2xl font-bold text-gray-900">
                       ${result.totalPayment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">Total Interest</p>
+                    <p className="text-sm text-gray-900 mb-1">Total Interest</p>
                     <p className="text-2xl font-bold text-gray-900">
                       ${result.totalInterest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
@@ -148,7 +148,7 @@ export default function LoanCalculator() {
 
             <button
               onClick={reset}
-              className="w-full text-gray-600 hover:text-gray-900 py-2"
+              className="w-full text-gray-900 hover:text-gray-900 py-2"
             >
               Reset
             </button>

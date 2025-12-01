@@ -103,12 +103,12 @@ export default function LinkChecker() {
               <LinkIcon className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Link Checker</h1>
-            <p className="text-gray-600">Check if URLs are valid and accessible</p>
+            <p className="text-gray-900">Check if URLs are valid and accessible</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Enter URL
               </label>
               <div className="flex gap-2">
@@ -163,7 +163,7 @@ export default function LinkChecker() {
                   <div className="flex-1">
                     <p className="font-semibold text-gray-900 mb-1">{result.url}</p>
                     {result.statusCode && (
-                      <p className="text-sm text-gray-600 mb-1">
+                      <p className="text-sm text-gray-900 mb-1">
                         Status Code: {result.statusCode}
                       </p>
                     )}
@@ -187,7 +187,7 @@ export default function LinkChecker() {
 
             <button
               onClick={reset}
-              className="w-full text-gray-600 hover:text-gray-900 py-2"
+              className="w-full text-gray-900 hover:text-gray-900 py-2"
             >
               Reset
             </button>

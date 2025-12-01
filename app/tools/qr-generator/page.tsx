@@ -61,13 +61,13 @@ export default function QRGenerator() {
               <QrCodeIcon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">QR Code Generator</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Generate QR codes for URLs, text, and more</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Generate QR codes for URLs, text, and more</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
             <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 space-y-4 sm:space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Text or URL
                 </label>
                 <textarea
@@ -80,7 +80,7 @@ export default function QRGenerator() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Size: {size}px
                 </label>
                 <input
@@ -96,7 +96,7 @@ export default function QRGenerator() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Background Color
                   </label>
                   <input
@@ -107,7 +107,7 @@ export default function QRGenerator() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Foreground Color
                   </label>
                   <input
@@ -120,7 +120,7 @@ export default function QRGenerator() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Error Correction Level
                 </label>
                 <select

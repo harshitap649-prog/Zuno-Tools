@@ -60,12 +60,12 @@ export default function TimezoneConverter() {
               <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Time Zone Converter</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Convert time between different time zones</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Convert time between different time zones</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Date & Time</label>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Date & Time</label>
               <input
                 type="datetime-local"
                 value={date}
@@ -76,7 +76,7 @@ export default function TimezoneConverter() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">From Timezone</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">From Timezone</label>
                 <select
                   value={fromTimezone}
                   onChange={(e) => setFromTimezone(e.target.value)}
@@ -88,7 +88,7 @@ export default function TimezoneConverter() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">To Timezone</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">To Timezone</label>
                 <select
                   value={toTimezone}
                   onChange={(e) => setToTimezone(e.target.value)}
@@ -103,11 +103,11 @@ export default function TimezoneConverter() {
 
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border-2 border-blue-200">
               <div className="text-center">
-                <p className="text-sm text-gray-600 mb-2">Converted Time</p>
+                <p className="text-sm text-gray-900 mb-2">Converted Time</p>
                 <p className="text-2xl sm:text-3xl font-bold text-gray-900">
                   {convertTime()}
                 </p>
-                <p className="text-sm text-gray-500 mt-2">{toTimezone}</p>
+                <p className="text-sm text-gray-900 mt-2">{toTimezone}</p>
               </div>
             </div>
           </div>

@@ -86,13 +86,13 @@ export default function LoremIpsum() {
               <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Lorem Ipsum Generator</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Generate placeholder text for your designs</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Generate placeholder text for your designs</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Type</label>
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value as 'words' | 'sentences' | 'paragraphs')}
@@ -104,7 +104,7 @@ export default function LoremIpsum() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Count</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Count</label>
                 <input
                   type="number"
                   min="1"
@@ -146,7 +146,7 @@ export default function LoremIpsum() {
                   </button>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                  <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">
                     {generated}
                   </p>
                 </div>

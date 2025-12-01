@@ -69,7 +69,7 @@ export default function Base64Encoder() {
               <Hash className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Base64 Encoder/Decoder</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Encode and decode Base64 strings</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Encode and decode Base64 strings</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 space-y-6">
@@ -80,7 +80,7 @@ export default function Base64Encoder() {
                   className={`px-6 py-2 rounded-md font-semibold transition-all ${
                     mode === 'encode'
                       ? 'bg-primary-600 text-white'
-                      : 'text-gray-600 hover:text-gray-900'
+                      : 'text-gray-900 hover:text-gray-900'
                   }`}
                 >
                   Encode
@@ -90,7 +90,7 @@ export default function Base64Encoder() {
                   className={`px-6 py-2 rounded-md font-semibold transition-all ${
                     mode === 'decode'
                       ? 'bg-primary-600 text-white'
-                      : 'text-gray-600 hover:text-gray-900'
+                      : 'text-gray-900 hover:text-gray-900'
                   }`}
                 >
                   Decode
@@ -100,7 +100,7 @@ export default function Base64Encoder() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   {mode === 'encode' ? 'Text to Encode' : 'Base64 to Decode'}
                 </label>
                 <textarea
@@ -114,7 +114,7 @@ export default function Base64Encoder() {
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-900">
                     {mode === 'encode' ? 'Encoded Result' : 'Decoded Result'}
                   </label>
                   {output && (
@@ -156,7 +156,7 @@ export default function Base64Encoder() {
               </button>
               <button
                 onClick={swapMode}
-                className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base active:scale-95 touch-manipulation"
+                className="px-6 py-3 bg-gray-200 text-gray-900 rounded-lg font-semibold hover:bg-gray-300 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base active:scale-95 touch-manipulation"
               >
                 <ArrowLeftRight className="h-5 w-5" />
                 <span>Swap</span>

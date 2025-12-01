@@ -72,7 +72,7 @@ export default function BMICalculator() {
               <Activity className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">BMI Calculator</h1>
-            <p className="text-gray-600">Calculate your Body Mass Index</p>
+            <p className="text-gray-900">Calculate your Body Mass Index</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
@@ -85,7 +85,7 @@ export default function BMICalculator() {
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   unit === 'metric'
                     ? 'bg-primary-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                 }`}
               >
                 Metric (kg, cm)
@@ -98,7 +98,7 @@ export default function BMICalculator() {
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   unit === 'imperial'
                     ? 'bg-primary-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                 }`}
               >
                 Imperial (lbs, ft/in)
@@ -107,7 +107,7 @@ export default function BMICalculator() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   {unit === 'metric' ? 'Height (cm)' : 'Height (feet\'inches")'}
                 </label>
                 <input
@@ -120,7 +120,7 @@ export default function BMICalculator() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   {unit === 'metric' ? 'Weight (kg)' : 'Weight (lbs)'}
                 </label>
                 <input
@@ -179,7 +179,7 @@ export default function BMICalculator() {
 
             <button
               onClick={reset}
-              className="w-full text-gray-600 hover:text-gray-900 py-2"
+              className="w-full text-gray-900 hover:text-gray-900 py-2"
             >
               Reset
             </button>

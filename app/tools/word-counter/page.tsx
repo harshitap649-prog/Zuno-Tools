@@ -37,7 +37,7 @@ export default function WordCounter() {
               <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Word Counter</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Count words, characters, sentences, and more</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Count words, characters, sentences, and more</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -77,28 +77,28 @@ export default function WordCounter() {
               <div className="space-y-4">
                 <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
                   <div className="text-3xl font-bold text-purple-600 mb-1">{stats.words}</div>
-                  <div className="text-sm text-gray-600">Words</div>
+                  <div className="text-sm text-gray-900">Words</div>
                 </div>
                 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm text-gray-600">Characters</span>
+                    <span className="text-sm text-gray-900">Characters</span>
                     <span className="font-semibold text-gray-900">{stats.characters.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm text-gray-600">Characters (no spaces)</span>
+                    <span className="text-sm text-gray-900">Characters (no spaces)</span>
                     <span className="font-semibold text-gray-900">{stats.charactersNoSpaces.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm text-gray-600">Sentences</span>
+                    <span className="text-sm text-gray-900">Sentences</span>
                     <span className="font-semibold text-gray-900">{stats.sentences}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm text-gray-600">Paragraphs</span>
+                    <span className="text-sm text-gray-900">Paragraphs</span>
                     <span className="font-semibold text-gray-900">{stats.paragraphs}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm text-gray-600">Reading Time</span>
+                    <span className="text-sm text-gray-900">Reading Time</span>
                     <span className="font-semibold text-gray-900">{stats.readingTime} min</span>
                   </div>
                 </div>

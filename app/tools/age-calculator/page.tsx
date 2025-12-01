@@ -55,12 +55,12 @@ export default function AgeCalculator() {
               <Calendar className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Age Calculator</h1>
-            <p className="text-gray-600">Calculate your age from birthdate</p>
+            <p className="text-gray-900">Calculate your age from birthdate</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Birth Date
               </label>
               <input
@@ -84,30 +84,30 @@ export default function AgeCalculator() {
             {age && (
               <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6">
                 <div className="text-center mb-4">
-                  <p className="text-sm text-gray-600 mb-2">Your Age</p>
+                  <p className="text-sm text-gray-900 mb-2">Your Age</p>
                   <p className="text-5xl font-bold text-gray-900 mb-2">
                     {age.years}
                   </p>
-                  <p className="text-lg text-gray-600">
+                  <p className="text-lg text-gray-900">
                     {age.years} {age.years === 1 ? 'year' : 'years'}, {age.months} {age.months === 1 ? 'month' : 'months'}, {age.days} {age.days === 1 ? 'day' : 'days'}
                   </p>
                 </div>
                 <div className="grid grid-cols-3 gap-4 pt-4 border-t border-purple-200">
                   <div className="text-center">
                     <p className="text-2xl font-bold text-gray-900">{age.years}</p>
-                    <p className="text-sm text-gray-600">Years</p>
+                    <p className="text-sm text-gray-900">Years</p>
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-gray-900">{age.months}</p>
-                    <p className="text-sm text-gray-600">Months</p>
+                    <p className="text-sm text-gray-900">Months</p>
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-gray-900">{age.days}</p>
-                    <p className="text-sm text-gray-600">Days</p>
+                    <p className="text-sm text-gray-900">Days</p>
                   </div>
                 </div>
                 <div className="text-center mt-4 pt-4 border-t border-purple-200">
-                  <p className="text-sm text-gray-600">Total Days</p>
+                  <p className="text-sm text-gray-900">Total Days</p>
                   <p className="text-2xl font-bold text-gray-900">{age.totalDays.toLocaleString()}</p>
                 </div>
               </div>
@@ -115,7 +115,7 @@ export default function AgeCalculator() {
 
             <button
               onClick={reset}
-              className="w-full text-gray-600 hover:text-gray-900 py-2"
+              className="w-full text-gray-900 hover:text-gray-900 py-2"
             >
               Reset
             </button>

@@ -99,7 +99,7 @@ export default function QRCodeScanner() {
               <QrCode className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">QR Code Scanner</h1>
-            <p className="text-gray-600">Scan QR codes from images</p>
+            <p className="text-gray-900">Scan QR codes from images</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8">
@@ -114,10 +114,10 @@ export default function QRCodeScanner() {
               >
                 <input {...getInputProps()} />
                 <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">
+                <p className="text-lg font-medium text-gray-900 mb-2">
                   {isDragActive ? 'Drop the image here' : 'Drag & drop an image with QR code'}
                 </p>
-                <p className="text-sm text-gray-500">or click to select a file</p>
+                <p className="text-sm text-gray-900">or click to select a file</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -125,7 +125,7 @@ export default function QRCodeScanner() {
                   <h2 className="text-xl font-semibold text-gray-900">Scan QR Code</h2>
                   <button
                     onClick={reset}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                    className="flex items-center space-x-2 text-gray-900 hover:text-gray-900"
                   >
                     <X className="h-5 w-5" />
                     <span>Reset</span>
@@ -134,7 +134,7 @@ export default function QRCodeScanner() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Image</h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">Image</h3>
                     <div className="border rounded-lg overflow-hidden">
                       <img src={image} alt="QR Code" className="w-full h-auto max-h-[400px] object-contain" />
                     </div>
@@ -142,7 +142,7 @@ export default function QRCodeScanner() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Scanned Text</h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">Scanned Text</h3>
                     <div className="border rounded-lg p-4 bg-gray-50 min-h-[200px]">
                       {loading ? (
                         <div className="flex items-center justify-center h-full">

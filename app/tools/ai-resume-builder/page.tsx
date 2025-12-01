@@ -201,7 +201,7 @@ export default function AIResumeBuilder() {
               <FileCheck className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">AI Resume Builder</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Build professional resumes with AI assistance</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Build professional resumes with AI assistance</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
@@ -210,7 +210,7 @@ export default function AIResumeBuilder() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">Personal Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Full Name *</label>
                   <input
                     type="text"
                     value={personalInfo.name}
@@ -220,7 +220,7 @@ export default function AIResumeBuilder() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Email *</label>
                   <input
                     type="email"
                     value={personalInfo.email}
@@ -230,7 +230,7 @@ export default function AIResumeBuilder() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Phone</label>
                   <input
                     type="tel"
                     value={personalInfo.phone}
@@ -240,7 +240,7 @@ export default function AIResumeBuilder() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn</label>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">LinkedIn</label>
                   <input
                     type="url"
                     value={personalInfo.linkedin}
@@ -250,7 +250,7 @@ export default function AIResumeBuilder() {
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Address</label>
                   <input
                     type="text"
                     value={personalInfo.address}
@@ -260,7 +260,7 @@ export default function AIResumeBuilder() {
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Professional Summary</label>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Professional Summary</label>
                   <textarea
                     value={personalInfo.summary}
                     onChange={(e) => setPersonalInfo({ ...personalInfo, summary: e.target.value })}
@@ -298,7 +298,7 @@ export default function AIResumeBuilder() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Company</label>
                         <input
                           type="text"
                           value={exp.company}
@@ -307,7 +307,7 @@ export default function AIResumeBuilder() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Position</label>
                         <input
                           type="text"
                           value={exp.position}
@@ -316,7 +316,7 @@ export default function AIResumeBuilder() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Duration</label>
                         <input
                           type="text"
                           value={exp.duration}
@@ -327,7 +327,7 @@ export default function AIResumeBuilder() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                      <label className="block text-sm font-medium text-gray-900 mb-2">Description</label>
                       <textarea
                         value={exp.description}
                         onChange={(e) => updateExperience(exp.id, 'description', e.target.value)}
@@ -367,7 +367,7 @@ export default function AIResumeBuilder() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Institution</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Institution</label>
                         <input
                           type="text"
                           value={edu.institution}
@@ -376,7 +376,7 @@ export default function AIResumeBuilder() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Degree</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Degree</label>
                         <input
                           type="text"
                           value={edu.degree}
@@ -385,7 +385,7 @@ export default function AIResumeBuilder() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Year</label>
                         <input
                           type="text"
                           value={edu.year}

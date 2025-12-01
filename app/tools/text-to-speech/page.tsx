@@ -177,12 +177,12 @@ export default function TextToSpeech() {
               <Mic className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Text to Speech</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Convert text to natural-sounding speech</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Convert text to natural-sounding speech</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Enter Text
               </label>
               <textarea
@@ -192,14 +192,14 @@ export default function TextToSpeech() {
                 rows={8}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
               />
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-gray-900">
                 {text.length} characters
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Speed: {rate.toFixed(1)}x
                 </label>
                 <input
@@ -213,7 +213,7 @@ export default function TextToSpeech() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Pitch: {pitch.toFixed(1)}
                 </label>
                 <input
@@ -227,7 +227,7 @@ export default function TextToSpeech() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Volume: {Math.round(volume * 100)}%
                 </label>
                 <input
@@ -244,7 +244,7 @@ export default function TextToSpeech() {
 
             {voices.length > 0 && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Voice
                 </label>
                 <select

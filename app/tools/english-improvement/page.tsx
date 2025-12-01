@@ -197,7 +197,7 @@ export default function EnglishImprovement() {
               <Languages className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">AI English Improvement</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Improve your English writing with AI suggestions</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Improve your English writing with AI suggestions</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -211,7 +211,7 @@ export default function EnglishImprovement() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
               />
               <div className="mt-4 flex items-center justify-between">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-900">
                   {text.split(/\s+/).filter(w => w.length > 0).length} words
                 </p>
                 <button
@@ -263,7 +263,7 @@ export default function EnglishImprovement() {
                       <Loader2 className="h-8 w-8 text-primary-600 animate-spin" />
                     </div>
                   ) : improvedText ? (
-                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{improvedText}</p>
+                    <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">{improvedText}</p>
                   ) : (
                     <p className="text-gray-400 text-center">Your improved text will appear here...</p>
                   )}
@@ -277,11 +277,11 @@ export default function EnglishImprovement() {
                     {suggestions.map((suggestion, index) => (
                       <div key={index} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex items-start space-x-2 mb-2">
-                          <span className="text-sm font-semibold text-gray-700">"{suggestion.original}"</span>
+                          <span className="text-sm font-semibold text-gray-900">"{suggestion.original}"</span>
                           <span className="text-gray-400">→</span>
                           <span className="text-sm font-semibold text-primary-600">"{suggestion.improved}"</span>
                         </div>
-                        <p className="text-sm text-gray-600">{suggestion.reason}</p>
+                        <p className="text-sm text-gray-900">{suggestion.reason}</p>
                       </div>
                     ))}
                   </div>

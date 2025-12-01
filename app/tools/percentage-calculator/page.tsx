@@ -38,13 +38,13 @@ export default function PercentageCalculator() {
               <Calculator className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Percentage Calculator</h1>
-            <p className="text-gray-600">Calculate percentages easily</p>
+            <p className="text-gray-900">Calculate percentages easily</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Value
                 </label>
                 <input
@@ -57,7 +57,7 @@ export default function PercentageCalculator() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Percentage (%)
                 </label>
                 <input
@@ -81,11 +81,11 @@ export default function PercentageCalculator() {
             {result !== null && (
               <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6">
                 <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-2">Result</p>
+                  <p className="text-sm text-gray-900 mb-2">Result</p>
                   <p className="text-4xl font-bold text-gray-900">
                     {result.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                   </p>
-                  <p className="text-sm text-gray-600 mt-2">
+                  <p className="text-sm text-gray-900 mt-2">
                     {percentage}% of {value} = {result.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                   </p>
                 </div>
@@ -94,22 +94,22 @@ export default function PercentageCalculator() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t">
               <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-1">What is X% of Y?</p>
-                <p className="text-xs text-gray-500">Enter Y in Value, X in Percentage</p>
+                <p className="text-sm text-gray-900 mb-1">What is X% of Y?</p>
+                <p className="text-xs text-gray-900">Enter Y in Value, X in Percentage</p>
               </div>
               <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-1">X is what % of Y?</p>
-                <p className="text-xs text-gray-500">Enter X in Value, Y in Percentage</p>
+                <p className="text-sm text-gray-900 mb-1">X is what % of Y?</p>
+                <p className="text-xs text-gray-900">Enter X in Value, Y in Percentage</p>
               </div>
               <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-1">What % increase/decrease?</p>
-                <p className="text-xs text-gray-500">Calculate percentage change</p>
+                <p className="text-sm text-gray-900 mb-1">What % increase/decrease?</p>
+                <p className="text-xs text-gray-900">Calculate percentage change</p>
               </div>
             </div>
 
             <button
               onClick={reset}
-              className="w-full text-gray-600 hover:text-gray-900 py-2"
+              className="w-full text-gray-900 hover:text-gray-900 py-2"
             >
               Reset
             </button>

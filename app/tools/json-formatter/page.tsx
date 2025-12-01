@@ -73,7 +73,7 @@ export default function JSONFormatter() {
               <Code className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">JSON Formatter</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Format, validate, and minify JSON data</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Format, validate, and minify JSON data</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
@@ -82,7 +82,7 @@ export default function JSONFormatter() {
                 <h2 className="text-xl font-semibold text-gray-900">Input JSON</h2>
                 <button
                   onClick={validateJSON}
-                  className="text-xs sm:text-sm px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="text-xs sm:text-sm px-3 py-1 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors"
                 >
                   Validate
                 </button>

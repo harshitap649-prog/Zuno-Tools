@@ -89,7 +89,7 @@ export default function ImageConverter() {
               <RefreshCw className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Image Converter</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Convert images between PNG, JPG, and WEBP formats</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Convert images between PNG, JPG, and WEBP formats</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8">
@@ -104,10 +104,10 @@ export default function ImageConverter() {
               >
                 <input {...getInputProps()} />
                 <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-                <p className="text-base sm:text-lg font-medium text-gray-700 mb-2">
+                <p className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                   {isDragActive ? 'Drop the image here' : 'Drag & drop an image here'}
                 </p>
-                <p className="text-xs sm:text-sm text-gray-500">or click to select a file</p>
+                <p className="text-xs sm:text-sm text-gray-900">or click to select a file</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -115,7 +115,7 @@ export default function ImageConverter() {
                   <h2 className="text-xl font-semibold text-gray-900">Convert Your Image</h2>
                   <button
                     onClick={reset}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                    className="flex items-center space-x-2 text-gray-900 hover:text-gray-900"
                   >
                     <X className="h-5 w-5" />
                     <span>Remove</span>
@@ -124,14 +124,14 @@ export default function ImageConverter() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Original</h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">Original</h3>
                     <div className="border rounded-lg overflow-hidden">
                       <img src={image} alt="Original" className="w-full h-auto max-h-[300px] sm:max-h-[400px] object-contain" />
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Converted ({format.toUpperCase()})</h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">Converted ({format.toUpperCase()})</h3>
                     <div className="border rounded-lg overflow-hidden bg-gray-100">
                       {loading ? (
                         <div className="flex items-center justify-center h-48 sm:h-64">
@@ -150,7 +150,7 @@ export default function ImageConverter() {
 
                 <div className="bg-gray-50 rounded-lg p-4 sm:p-6 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-900 mb-2">
                       Convert to Format
                     </label>
                     <div className="grid grid-cols-3 gap-3">
@@ -161,7 +161,7 @@ export default function ImageConverter() {
                           className={`px-4 py-3 rounded-lg font-semibold transition-all touch-manipulation ${
                             format === fmt
                               ? 'bg-primary-600 text-white shadow-lg'
-                              : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-primary-400'
+                              : 'bg-white text-gray-900 border-2 border-gray-300 hover:border-primary-400'
                           }`}
                         >
                           {fmt.toUpperCase()}

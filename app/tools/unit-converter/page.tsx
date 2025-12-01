@@ -99,12 +99,12 @@ export default function UnitConverter() {
               <Calculator className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Unit Converter</h1>
-            <p className="text-sm sm:text-base text-gray-600 px-4">Convert between different units of measurement</p>
+            <p className="text-sm sm:text-base text-gray-900 px-4">Convert between different units of measurement</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Category</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {(['length', 'weight', 'temperature', 'volume'] as const).map((cat) => (
                   <button
@@ -117,7 +117,7 @@ export default function UnitConverter() {
                     className={`px-4 py-2 rounded-lg font-semibold transition-all capitalize ${
                       category === cat
                         ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                     }`}
                   >
                     {cat}
@@ -128,7 +128,7 @@ export default function UnitConverter() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">From</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">From</label>
                 <input
                   type="number"
                   value={fromValue}
@@ -138,7 +138,7 @@ export default function UnitConverter() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Unit</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Unit</label>
                 <select
                   value={fromUnit}
                   onChange={(e) => setFromUnit(e.target.value)}
@@ -153,13 +153,13 @@ export default function UnitConverter() {
                 onClick={swapUnits}
                 className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
               >
-                <ArrowLeftRight className="h-5 w-5 text-gray-700" />
+                <ArrowLeftRight className="h-5 w-5 text-gray-900" />
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">To</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">To</label>
                 <select
                   value={toUnit}
                   onChange={(e) => setToUnit(e.target.value)}
@@ -171,7 +171,7 @@ export default function UnitConverter() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Result</label>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Result</label>
                 <div className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 font-semibold text-lg">
                   {convert() || '0'}
                 </div>
