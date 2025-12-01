@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: ['localhost'],
-    unoptimized: true, // Disable image optimization for static export compatibility
+    unoptimized: true,
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -15,36 +15,30 @@ const nextConfig = {
       }
     }
 
-    // Exclude .mjs files from Terser minification to prevent import.meta errors
-    config.optimization = {
-      ...config.optimization,
-      minimizer: config.optimization.minimizer.map((plugin) => {
-        if (plugin.constructor.name === 'TerserPlugin') {
-          return {
-            ...plugin,
-            options: {
-              ...plugin.options,
-              exclude: /\.mjs$/,
-            },
-          }
-        }
-        return plugin
-      }),
-    }
+    // Handle .mjs files as external modules (don't bundle them)
+    config.module.rules.push({
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: 'javascript/auto',
+      resolve: {
+        fullySpecified: false,
+      },
+    })
 
-    // Don't bundle .mjs files - let them be served as static modules
-    config.module = {
-      ...config.module,
-      rules: [
-        ...config.module.rules,
-        {
-          test: /\.mjs$/,
-          type: 'asset/resource',
-          generator: {
-            filename: 'static/chunks/[name].[hash][ext]',
-          },
-        },
-      ],
+    // Exclude .mjs from optimization/minification
+    if (config.optimization) {
+      config.optimization.minimize = true
+      if (config.optimization.minimizer) {
+        config.optimization.minimizer.forEach((minimizer) => {
+          if (minimizer.constructor.name === 'SwcMinifyPlugin') {
+            // SWC minifier - exclude .mjs files
+            minimizer.options = {
+              ...minimizer.options,
+              exclude: /\.mjs$/,
+            }
+          }
+        })
+      }
     }
 
     return config
