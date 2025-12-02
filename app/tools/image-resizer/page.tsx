@@ -169,107 +169,118 @@ export default function ImageResizer() {
   }, [width, height, image, originalDimensions.width, resizeImage])
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <main className="flex-grow py-6 sm:py-8 md:py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-blue-50/30 to-cyan-50/20">
+      <main className="flex-grow py-4 sm:py-6 md:py-8">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
           <div className="text-center mb-6 sm:mb-8">
-            <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 mb-3 sm:mb-4">
-              <Maximize2 className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+            <div className="inline-flex p-2 sm:p-3 rounded-xl bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600 mb-4 shadow-lg shadow-blue-500/20">
+              <Maximize2 className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Image Resizer</h1>
-            <p className="text-sm sm:text-base text-gray-900 px-4">Resize images to any dimension while maintaining quality</p>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+              Image Resizer
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-600 px-2 max-w-2xl mx-auto">
+              Resize images to any dimension while maintaining quality
+            </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8">
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl border border-white/20 p-3 sm:p-4 md:p-6">
             {!image ? (
               <div
                 {...getRootProps()}
-                className={`border-2 border-dashed rounded-lg p-6 sm:p-8 md:p-12 text-center cursor-pointer transition-colors touch-manipulation ${
+                className={`border-2 border-dashed rounded-xl p-6 sm:p-8 md:p-10 text-center cursor-pointer transition-all touch-manipulation ${
                   isDragActive
-                    ? 'border-primary-500 bg-primary-50'
-                    : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50 active:bg-primary-50'
+                    ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-cyan-50 shadow-lg'
+                    : 'border-gray-300 hover:border-blue-400 hover:bg-gradient-to-br hover:from-gray-50 hover:to-blue-50/30 active:bg-blue-50'
                 }`}
               >
                 <input {...getInputProps()} />
-                <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-                <p className="text-base sm:text-lg font-medium text-gray-900 mb-2">
+                <div className="inline-flex p-3 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 mb-3">
+                  <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+                </div>
+                <p className="text-sm sm:text-base font-semibold text-gray-900 mb-1">
                   {isDragActive ? 'Drop the image here' : 'Drag & drop an image here'}
                 </p>
-                <p className="text-xs sm:text-sm text-gray-900">or click to select a file</p>
+                <p className="text-xs text-gray-600">or click to select a file</p>
               </div>
             ) : (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-semibold text-gray-900">Resize Your Image</h2>
+              <div className="space-y-4 sm:space-y-6">
+                <div className="flex justify-between items-center pb-2 sm:pb-3 border-b-2 border-gray-100">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">Resize Your Image</h2>
                   <button
                     onClick={reset}
-                    className="flex items-center space-x-2 text-gray-900 hover:text-gray-900"
+                    className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-xs sm:text-sm"
                   >
-                    <X className="h-5 w-5" />
+                    <X className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span>Remove</span>
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
                   <div>
-                    <h3 className="text-xs sm:text-sm font-medium text-gray-900 mb-2">
-                      Original ({originalDimensions.width} × {originalDimensions.height})
+                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900 mb-2 flex items-center space-x-2">
+                      <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                      <span>Original ({originalDimensions.width} × {originalDimensions.height})</span>
                     </h3>
-                    <div className="border rounded-lg overflow-hidden">
-                      <img src={image} alt="Original" className="w-full h-auto max-h-[300px] sm:max-h-[400px] object-contain" />
+                    <div className="border-2 border-gray-200 rounded-xl overflow-hidden shadow-md bg-white">
+                      <img src={image} alt="Original" className="w-full h-auto max-h-[250px] sm:max-h-[300px] md:max-h-[400px] object-contain" />
                     </div>
                   </div>
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-xs sm:text-sm font-medium text-gray-900">
-                        Resized {resizedImage ? `(${width} × ${height})` : ''}
+                      <h3 className="text-xs sm:text-sm font-semibold text-gray-900 flex items-center space-x-2">
+                        <span className="w-2 h-2 rounded-full bg-cyan-500"></span>
+                        <span>Resized {resizedImage ? `(${width} × ${height})` : ''}</span>
                       </h3>
                       {resizedImage && (
                         <button
                           onClick={() => setResizedImage(null)}
-                          className="text-xs text-gray-900 hover:text-gray-900"
+                          className="p-1 text-gray-400 hover:text-red-600 rounded transition-colors"
                         >
                           <X className="h-4 w-4" />
                         </button>
                       )}
                     </div>
-                    <div className="border rounded-lg overflow-hidden bg-gray-100">
+                    <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-blue-50/30 shadow-md">
                       {loading ? (
-                        <div className="flex items-center justify-center h-48 sm:h-64">
-                          <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 text-primary-600 animate-spin" />
+                        <div className="flex items-center justify-center h-40 sm:h-48 md:h-64">
+                          <div className="text-center">
+                            <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 animate-spin mx-auto mb-2" />
+                            <p className="text-xs text-gray-600">Processing...</p>
+                          </div>
                         </div>
                       ) : resizedImage ? (
-                        <img src={resizedImage} alt="Resized" className="w-full h-auto max-h-[300px] sm:max-h-[400px] object-contain" />
+                        <img src={resizedImage} alt="Resized" className="w-full h-auto max-h-[250px] sm:max-h-[300px] md:max-h-[400px] object-contain" />
                       ) : (
-                        <div className="flex items-center justify-center h-48 sm:h-64 text-gray-900 text-sm sm:text-base px-4 text-center">
-                          <p>Adjust dimensions and click "Resize Image"</p>
+                        <div className="flex items-center justify-center h-40 sm:h-48 md:h-64 text-gray-500 text-xs sm:text-sm px-4 text-center">
+                          <p>Adjust dimensions below to resize</p>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-4 sm:p-6 space-y-4">
-                  <div className="flex items-center space-x-2 mb-4">
+                <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4 border border-gray-200">
+                  <div className="flex items-center space-x-2 mb-3 sm:mb-4">
                     <input
                       type="checkbox"
                       id="maintainRatio"
                       checked={maintainAspectRatio}
                       onChange={(e) => setMaintainAspectRatio(e.target.checked)}
-                      className="rounded"
+                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <label htmlFor="maintainRatio" className="text-sm font-medium text-gray-900">
+                    <label htmlFor="maintainRatio" className="text-xs sm:text-sm font-semibold text-gray-900 cursor-pointer">
                       Maintain aspect ratio
                     </label>
                   </div>
 
                   {/* Preset Sizes */}
-                  <div className="mb-4">
-                    <label className="block text-xs sm:text-sm font-medium text-gray-900 mb-2">
+                  <div className="mb-3 sm:mb-4">
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-900 mb-2">
                       Quick Presets
                     </label>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {[
                         { label: 'Instagram Post', w: 1080, h: 1080 },
                         { label: 'Instagram Story', w: 1080, h: 1920 },
@@ -295,7 +306,7 @@ export default function ImageResizer() {
                               setHeight(preset.h)
                             }
                           }}
-                          className="px-3 py-1.5 text-xs text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-primary-400 transition-colors"
+                          className="px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs font-medium text-gray-900 bg-white border-2 border-gray-200 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:border-blue-400 hover:shadow-md transition-all active:scale-95"
                         >
                           {preset.label}
                         </button>
@@ -303,9 +314,9 @@ export default function ImageResizer() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     <div>
-                      <label className="block text-xs sm:text-sm font-medium text-gray-900 mb-2">
+                      <label className="block text-xs sm:text-sm font-semibold text-gray-900 mb-1 sm:mb-2">
                         Width (px)
                       </label>
                       <input
@@ -324,14 +335,14 @@ export default function ImageResizer() {
                             }
                           }
                         }}
-                        className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-2 sm:px-3 py-2 sm:py-2.5 text-sm text-gray-900 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all"
                         min="1"
                         max="10000"
                         placeholder="Width"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs sm:text-sm font-medium text-gray-900 mb-2">
+                      <label className="block text-xs sm:text-sm font-semibold text-gray-900 mb-1 sm:mb-2">
                         Height (px)
                       </label>
                       <input
@@ -350,7 +361,7 @@ export default function ImageResizer() {
                             }
                           }
                         }}
-                        className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-2 sm:px-3 py-2 sm:py-2.5 text-sm text-gray-900 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all"
                         min="1"
                         max="10000"
                         placeholder="Height"
@@ -358,7 +369,7 @@ export default function ImageResizer() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
                     <button
                       onClick={() => {
                         resizeImage().then(() => {
@@ -366,7 +377,7 @@ export default function ImageResizer() {
                         })
                       }}
                       disabled={loading}
-                      className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm sm:text-base active:scale-95 touch-manipulation"
+                      className="flex-1 bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:shadow-xl hover:shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-xs sm:text-sm active:scale-95 touch-manipulation"
                     >
                       {loading ? (
                         <>
@@ -384,7 +395,7 @@ export default function ImageResizer() {
                     {resizedImage && (
                       <button
                         onClick={downloadImage}
-                        className="flex items-center justify-center space-x-2 bg-primary-600 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-sm sm:text-base active:scale-95 touch-manipulation"
+                        className="flex items-center justify-center space-x-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:shadow-xl hover:shadow-green-500/30 transition-all text-xs sm:text-sm active:scale-95 touch-manipulation"
                       >
                         <Download className="h-4 w-4 sm:h-5 sm:w-5" />
                         <span>Download</span>

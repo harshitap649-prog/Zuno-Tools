@@ -13,8 +13,8 @@ export default function Navbar() {
     { href: '/tools', label: 'All Tools' },
   ]
 
-  // Hide navbar on resume builder page
-  if (pathname === '/tools/ai-resume-builder') {
+  // Hide navbar on specific pages
+  if (pathname === '/tools/ai-resume-builder' || pathname === '/tools/image-resizer') {
     return null
   }
 
