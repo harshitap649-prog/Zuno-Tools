@@ -192,7 +192,7 @@ export default function TextToSpeech() {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Type or paste the text you want to convert to speech..."
                 rows={8}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-gray-900"
               />
               <p className="mt-2 text-sm text-gray-900">
                 {text.length} characters
