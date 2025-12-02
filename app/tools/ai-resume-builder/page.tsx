@@ -44,14 +44,129 @@ interface Course {
   year: string
 }
 
-type Template = 'modern' | 'classic' | 'creative' | 'minimal'
+type Template = 'modern' | 'classic' | 'creative' | 'minimal' | 'executive' | 'academic' | 'tech' | 'designer'
 
-const templates: { id: Template; name: string; preview: string }[] = [
-  { id: 'modern', name: 'Modern', preview: 'Clean lines with colored accents' },
-  { id: 'classic', name: 'Classic', preview: 'Traditional professional layout' },
-  { id: 'creative', name: 'Creative', preview: 'Bold design for creative fields' },
-  { id: 'minimal', name: 'Minimal', preview: 'Simple and elegant' },
+const templates: { id: Template; name: string; preview: string; color: string }[] = [
+  { id: 'modern', name: 'Modern', preview: 'Clean lines with colored accents', color: '#2563eb' },
+  { id: 'classic', name: 'Classic', preview: 'Traditional professional layout', color: '#1f2937' },
+  { id: 'creative', name: 'Creative', preview: 'Bold design for creative fields', color: '#ec4899' },
+  { id: 'minimal', name: 'Minimal', preview: 'Simple and elegant', color: '#6b7280' },
+  { id: 'executive', name: 'Executive', preview: 'Professional corporate style', color: '#1e40af' },
+  { id: 'academic', name: 'Academic', preview: 'Scholarly and formal layout', color: '#7c3aed' },
+  { id: 'tech', name: 'Tech', preview: 'Modern tech industry focused', color: '#059669' },
+  { id: 'designer', name: 'Designer', preview: 'Creative portfolio style', color: '#f59e0b' },
 ]
+
+// Template Preview Components
+const TemplatePreview = ({ templateId, color }: { templateId: Template; color: string }) => {
+  const rgb = color.match(/\w\w/g)?.map(x => parseInt(x, 16)) || [37, 99, 235]
+  
+  if (templateId === 'modern') {
+    return (
+      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative">
+        <div className="h-8" style={{ backgroundColor: color }}></div>
+        <div className="p-2 space-y-1">
+          <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+          <div className="h-1.5 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-1.5 bg-gray-200 rounded w-2/3"></div>
+        </div>
+        <div className="absolute top-1 right-2 w-6 h-6 rounded-full bg-gray-300"></div>
+      </div>
+    )
+  }
+  
+  if (templateId === 'classic') {
+    return (
+      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
+        <div className="p-2 space-y-1">
+          <div className="h-2.5 bg-gray-800 rounded w-2/3"></div>
+          <div className="h-1 bg-gray-400 rounded w-full"></div>
+          <div className="h-1.5 bg-gray-300 rounded w-3/4"></div>
+          <div className="h-1.5 bg-gray-300 rounded w-5/6"></div>
+        </div>
+      </div>
+    )
+  }
+  
+  if (templateId === 'creative') {
+    return (
+      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative">
+        <div className="absolute left-0 top-0 bottom-0 w-2" style={{ backgroundColor: color }}></div>
+        <div className="p-2 pl-4 space-y-1">
+          <div className="h-3 rounded" style={{ backgroundColor: color, width: '60%' }}></div>
+          <div className="h-1.5 bg-gray-300 rounded w-full"></div>
+          <div className="h-1.5 bg-gray-200 rounded w-4/5"></div>
+        </div>
+      </div>
+    )
+  }
+  
+  if (templateId === 'minimal') {
+    return (
+      <div className="w-full h-32 bg-white border border-gray-300 rounded-lg overflow-hidden">
+        <div className="p-3 space-y-2">
+          <div className="h-2 bg-gray-400 rounded w-1/2"></div>
+          <div className="h-1 bg-gray-200 rounded w-full"></div>
+          <div className="h-1 bg-gray-200 rounded w-3/4"></div>
+        </div>
+      </div>
+    )
+  }
+  
+  if (templateId === 'executive') {
+    return (
+      <div className="w-full h-32 bg-white border-2 border-gray-300 rounded-lg overflow-hidden">
+        <div className="h-6 bg-gray-800"></div>
+        <div className="p-2 space-y-1">
+          <div className="h-2 bg-gray-700 rounded w-2/3"></div>
+          <div className="h-1.5 bg-gray-300 rounded w-full"></div>
+          <div className="h-1.5 bg-gray-300 rounded w-4/5"></div>
+        </div>
+      </div>
+    )
+  }
+  
+  if (templateId === 'academic') {
+    return (
+      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
+        <div className="p-2 space-y-1.5">
+          <div className="h-2 bg-gray-600 rounded w-1/3"></div>
+          <div className="h-1 bg-gray-300 rounded w-full"></div>
+          <div className="h-1.5 bg-gray-200 rounded w-full"></div>
+          <div className="h-1 bg-gray-300 rounded w-2/3"></div>
+        </div>
+      </div>
+    )
+  }
+  
+  if (templateId === 'tech') {
+    return (
+      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative">
+        <div className="absolute top-0 left-0 right-0 h-4" style={{ background: `linear-gradient(90deg, ${color}, ${color}dd)` }}></div>
+        <div className="p-2 pt-4 space-y-1">
+          <div className="h-2 rounded" style={{ backgroundColor: color, width: '50%' }}></div>
+          <div className="h-1.5 bg-gray-300 rounded w-full"></div>
+          <div className="h-1.5 bg-gray-200 rounded w-3/4"></div>
+        </div>
+      </div>
+    )
+  }
+  
+  if (templateId === 'designer') {
+    return (
+      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-16 h-16 rounded-bl-full" style={{ backgroundColor: color, opacity: 0.2 }}></div>
+        <div className="p-2 space-y-1">
+          <div className="h-2.5 rounded" style={{ backgroundColor: color, width: '55%' }}></div>
+          <div className="h-1.5 bg-gray-300 rounded w-full"></div>
+          <div className="h-1.5 bg-gray-200 rounded w-4/5"></div>
+        </div>
+      </div>
+    )
+  }
+  
+  return null
+}
 
 const colorPresets = [
   { name: 'Blue', value: '#2563eb' },
@@ -215,14 +330,33 @@ export default function AIResumeBuilder() {
       const rgb = hexToRgb(primaryColor)
       
       // Template-based rendering
-      if (selectedTemplate === 'modern') {
-        await generateModernTemplate(pdf, rgb)
-      } else if (selectedTemplate === 'classic') {
-        await generateClassicTemplate(pdf, rgb)
-      } else if (selectedTemplate === 'creative') {
-        await generateCreativeTemplate(pdf, rgb)
-      } else {
-        await generateMinimalTemplate(pdf, rgb)
+      switch (selectedTemplate) {
+        case 'modern':
+          await generateModernTemplate(pdf, rgb)
+          break
+        case 'classic':
+          await generateClassicTemplate(pdf, rgb)
+          break
+        case 'creative':
+          await generateCreativeTemplate(pdf, rgb)
+          break
+        case 'minimal':
+          await generateMinimalTemplate(pdf, rgb)
+          break
+        case 'executive':
+          await generateExecutiveTemplate(pdf, rgb)
+          break
+        case 'academic':
+          await generateAcademicTemplate(pdf, rgb)
+          break
+        case 'tech':
+          await generateTechTemplate(pdf, rgb)
+          break
+        case 'designer':
+          await generateDesignerTemplate(pdf, rgb)
+          break
+        default:
+          await generateModernTemplate(pdf, rgb)
       }
 
       pdf.save(`${personalInfo.name}-Resume.pdf`)
@@ -461,6 +595,22 @@ export default function AIResumeBuilder() {
     await generateModernTemplate(pdf, rgb)
   }
 
+  const generateExecutiveTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
+    await generateModernTemplate(pdf, rgb)
+  }
+
+  const generateAcademicTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
+    await generateModernTemplate(pdf, rgb)
+  }
+
+  const generateTechTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
+    await generateModernTemplate(pdf, rgb)
+  }
+
+  const generateDesignerTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
+    await generateModernTemplate(pdf, rgb)
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
       <main className="flex-grow py-8 sm:py-12 md:py-16">
@@ -480,30 +630,33 @@ export default function AIResumeBuilder() {
 
           {/* Template & Color Selection */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8 mb-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="space-y-8">
               {/* Template Selection */}
-              <div>
+              <div className="lg:col-span-2">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600">
                     <Layout className="h-5 w-5 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900">Choose Template</h3>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {templates.map((template) => (
                     <button
                       key={template.id}
                       onClick={() => setSelectedTemplate(template.id)}
-                      className={`p-5 rounded-xl border-2 transition-all transform hover:scale-105 ${
+                      className={`p-4 rounded-xl border-2 transition-all transform hover:scale-105 ${
                         selectedTemplate === template.id
-                          ? 'border-blue-600 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg shadow-blue-500/20'
+                          ? 'border-blue-600 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2'
                           : 'border-gray-200 hover:border-gray-300 bg-white'
                       }`}
                     >
-                      <div className="font-bold text-gray-900 mb-2 text-left">{template.name}</div>
-                      <div className="text-xs text-gray-600 text-left leading-relaxed">{template.preview}</div>
+                      <div className="mb-3">
+                        <TemplatePreview templateId={template.id} color={template.color} />
+                      </div>
+                      <div className="font-bold text-gray-900 mb-1 text-center text-sm">{template.name}</div>
+                      <div className="text-xs text-gray-600 text-center leading-relaxed">{template.preview}</div>
                       {selectedTemplate === template.id && (
-                        <div className="mt-3 h-1 w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"></div>
+                        <div className="mt-2 h-1 w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"></div>
                       )}
                     </button>
                   ))}
@@ -511,7 +664,7 @@ export default function AIResumeBuilder() {
               </div>
 
               {/* Color Selection */}
-              <div>
+              <div className="lg:max-w-2xl">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="p-2 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600">
                     <Palette className="h-5 w-5 text-white" />
