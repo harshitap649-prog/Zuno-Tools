@@ -57,32 +57,51 @@ const templates: { id: Template; name: string; preview: string; color: string }[
   { id: 'designer', name: 'Designer', preview: 'Creative portfolio style', color: '#f59e0b' },
 ]
 
-// Template Preview Components
+// Template Preview Components - Enhanced with realistic resume layouts
 const TemplatePreview = ({ templateId, color }: { templateId: Template; color: string }) => {
   const rgb = color.match(/\w\w/g)?.map(x => parseInt(x, 16)) || [37, 99, 235]
   
   if (templateId === 'modern') {
     return (
-      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative">
-        <div className="h-8" style={{ backgroundColor: color }}></div>
-        <div className="p-2 space-y-1">
-          <div className="h-2 bg-gray-300 rounded w-3/4"></div>
-          <div className="h-1.5 bg-gray-200 rounded w-1/2"></div>
-          <div className="h-1.5 bg-gray-200 rounded w-2/3"></div>
+      <div className="w-full h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
+        {/* Header */}
+        <div className="h-10" style={{ backgroundColor: color }}></div>
+        {/* Two Column Layout */}
+        <div className="flex h-38">
+          {/* Left Sidebar */}
+          <div className="w-1/3 p-2" style={{ backgroundColor: `${color}15` }}>
+            <div className="w-12 h-12 rounded-full bg-gray-300 mx-auto mb-2"></div>
+            <div className="h-1.5 bg-gray-400 rounded w-full mb-1"></div>
+            <div className="h-1 bg-gray-300 rounded w-4/5 mx-auto mb-2"></div>
+            <div className="h-1 bg-gray-300 rounded w-3/4 mx-auto"></div>
+          </div>
+          {/* Main Content */}
+          <div className="flex-1 p-2 space-y-1.5">
+            <div className="h-2 bg-gray-400 rounded w-2/3"></div>
+            <div className="h-1 bg-gray-300 rounded w-full"></div>
+            <div className="h-1.5 bg-gray-300 rounded w-5/6"></div>
+            <div className="h-1 bg-gray-200 rounded w-4/5"></div>
+          </div>
         </div>
-        <div className="absolute top-1 right-2 w-6 h-6 rounded-full bg-gray-300"></div>
       </div>
     )
   }
   
   if (templateId === 'classic') {
     return (
-      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
-        <div className="p-2 space-y-1">
-          <div className="h-2.5 bg-gray-800 rounded w-2/3"></div>
-          <div className="h-1 bg-gray-400 rounded w-full"></div>
-          <div className="h-1.5 bg-gray-300 rounded w-3/4"></div>
+      <div className="w-full h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden shadow-sm">
+        {/* Header */}
+        <div className="p-2 border-b-2 border-gray-300">
+          <div className="h-2.5 bg-gray-800 rounded w-1/2"></div>
+          <div className="h-1 bg-gray-400 rounded w-3/4 mt-1"></div>
+        </div>
+        {/* Content */}
+        <div className="p-2 space-y-2">
+          <div className="h-2 bg-gray-600 rounded w-1/3"></div>
+          <div className="h-1 bg-gray-300 rounded w-full"></div>
           <div className="h-1.5 bg-gray-300 rounded w-5/6"></div>
+          <div className="h-2 bg-gray-600 rounded w-1/4"></div>
+          <div className="h-1 bg-gray-300 rounded w-full"></div>
         </div>
       </div>
     )
@@ -90,12 +109,25 @@ const TemplatePreview = ({ templateId, color }: { templateId: Template; color: s
   
   if (templateId === 'creative') {
     return (
-      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative">
-        <div className="absolute left-0 top-0 bottom-0 w-2" style={{ backgroundColor: color }}></div>
-        <div className="p-2 pl-4 space-y-1">
-          <div className="h-3 rounded" style={{ backgroundColor: color, width: '60%' }}></div>
-          <div className="h-1.5 bg-gray-300 rounded w-full"></div>
-          <div className="h-1.5 bg-gray-200 rounded w-4/5"></div>
+      <div className="w-full h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
+        {/* Colored Sidebar */}
+        <div className="absolute left-0 top-0 bottom-0 w-3" style={{ backgroundColor: color }}></div>
+        {/* Header with accent */}
+        <div className="h-8 pl-5 flex items-center">
+          <div className="h-3 rounded" style={{ backgroundColor: color, width: '45%' }}></div>
+        </div>
+        {/* Two Column Layout */}
+        <div className="flex h-40 pl-5">
+          <div className="w-1/3 p-2 space-y-1.5">
+            <div className="w-10 h-10 rounded-full bg-gray-300"></div>
+            <div className="h-1 bg-gray-300 rounded w-full"></div>
+            <div className="h-1 bg-gray-200 rounded w-4/5"></div>
+          </div>
+          <div className="flex-1 p-2 space-y-1.5">
+            <div className="h-2 bg-gray-400 rounded w-2/3"></div>
+            <div className="h-1 bg-gray-300 rounded w-full"></div>
+            <div className="h-1.5 bg-gray-300 rounded w-5/6"></div>
+          </div>
         </div>
       </div>
     )
@@ -103,11 +135,14 @@ const TemplatePreview = ({ templateId, color }: { templateId: Template; color: s
   
   if (templateId === 'minimal') {
     return (
-      <div className="w-full h-32 bg-white border border-gray-300 rounded-lg overflow-hidden">
-        <div className="p-3 space-y-2">
-          <div className="h-2 bg-gray-400 rounded w-1/2"></div>
-          <div className="h-1 bg-gray-200 rounded w-full"></div>
-          <div className="h-1 bg-gray-200 rounded w-3/4"></div>
+      <div className="w-full h-48 bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+        <div className="p-3 space-y-3">
+          <div className="h-2.5 bg-gray-500 rounded w-1/2"></div>
+          <div className="h-0.5 bg-gray-200 rounded w-full"></div>
+          <div className="h-1.5 bg-gray-300 rounded w-full"></div>
+          <div className="h-1 bg-gray-200 rounded w-4/5"></div>
+          <div className="h-0.5 bg-gray-200 rounded w-full"></div>
+          <div className="h-1.5 bg-gray-300 rounded w-3/4"></div>
         </div>
       </div>
     )
@@ -115,12 +150,24 @@ const TemplatePreview = ({ templateId, color }: { templateId: Template; color: s
   
   if (templateId === 'executive') {
     return (
-      <div className="w-full h-32 bg-white border-2 border-gray-300 rounded-lg overflow-hidden">
-        <div className="h-6 bg-gray-800"></div>
-        <div className="p-2 space-y-1">
-          <div className="h-2 bg-gray-700 rounded w-2/3"></div>
-          <div className="h-1.5 bg-gray-300 rounded w-full"></div>
-          <div className="h-1.5 bg-gray-300 rounded w-4/5"></div>
+      <div className="w-full h-48 bg-white border-2 border-gray-300 rounded-lg overflow-hidden shadow-sm">
+        {/* Dark Header */}
+        <div className="h-10 bg-gray-900 flex items-center px-3">
+          <div className="h-2.5 bg-white rounded w-1/3"></div>
+        </div>
+        {/* Two Column Layout */}
+        <div className="flex h-38">
+          <div className="w-1/3 p-2 bg-gray-100 space-y-1.5">
+            <div className="w-10 h-10 rounded-full bg-gray-400"></div>
+            <div className="h-1 bg-gray-400 rounded w-full"></div>
+            <div className="h-1 bg-gray-300 rounded w-4/5"></div>
+          </div>
+          <div className="flex-1 p-2 space-y-1.5">
+            <div className="h-2 bg-gray-700 rounded w-1/2"></div>
+            <div className="h-1 bg-gray-300 rounded w-full"></div>
+            <div className="h-1.5 bg-gray-300 rounded w-5/6"></div>
+            <div className="h-1 bg-gray-200 rounded w-4/5"></div>
+          </div>
         </div>
       </div>
     )
@@ -128,12 +175,24 @@ const TemplatePreview = ({ templateId, color }: { templateId: Template; color: s
   
   if (templateId === 'academic') {
     return (
-      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
-        <div className="p-2 space-y-1.5">
-          <div className="h-2 bg-gray-600 rounded w-1/3"></div>
+      <div className="w-full h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden shadow-sm">
+        {/* Header */}
+        <div className="p-2 border-b border-gray-300">
+          <div className="h-2 bg-gray-700 rounded w-1/3"></div>
+          <div className="h-1 bg-gray-400 rounded w-1/2 mt-1"></div>
+        </div>
+        {/* Structured Content */}
+        <div className="p-2 space-y-2">
+          <div className="flex items-center space-x-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+            <div className="h-1.5 bg-gray-400 rounded flex-1"></div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+            <div className="h-1.5 bg-gray-400 rounded flex-1"></div>
+          </div>
+          <div className="h-1.5 bg-gray-600 rounded w-1/4"></div>
           <div className="h-1 bg-gray-300 rounded w-full"></div>
-          <div className="h-1.5 bg-gray-200 rounded w-full"></div>
-          <div className="h-1 bg-gray-300 rounded w-2/3"></div>
         </div>
       </div>
     )
@@ -141,12 +200,26 @@ const TemplatePreview = ({ templateId, color }: { templateId: Template; color: s
   
   if (templateId === 'tech') {
     return (
-      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative">
-        <div className="absolute top-0 left-0 right-0 h-4" style={{ background: `linear-gradient(90deg, ${color}, ${color}dd)` }}></div>
-        <div className="p-2 pt-4 space-y-1">
-          <div className="h-2 rounded" style={{ backgroundColor: color, width: '50%' }}></div>
-          <div className="h-1.5 bg-gray-300 rounded w-full"></div>
-          <div className="h-1.5 bg-gray-200 rounded w-3/4"></div>
+      <div className="w-full h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
+        {/* Gradient Header */}
+        <div className="h-8" style={{ background: `linear-gradient(90deg, ${color}, ${color}dd)` }}>
+          <div className="h-full flex items-center px-3">
+            <div className="h-2 bg-white rounded w-1/3 opacity-90"></div>
+          </div>
+        </div>
+        {/* Modern Layout */}
+        <div className="flex h-40">
+          <div className="w-1/3 p-2 space-y-1.5" style={{ backgroundColor: `${color}08` }}>
+            <div className="w-10 h-10 rounded-lg bg-gray-300"></div>
+            <div className="h-1 bg-gray-400 rounded w-full"></div>
+            <div className="h-1 bg-gray-300 rounded w-4/5"></div>
+          </div>
+          <div className="flex-1 p-2 space-y-1.5">
+            <div className="h-2 rounded" style={{ backgroundColor: color, width: '40%', opacity: 0.7 }}></div>
+            <div className="h-1 bg-gray-300 rounded w-full"></div>
+            <div className="h-1.5 bg-gray-300 rounded w-5/6"></div>
+            <div className="h-1 bg-gray-200 rounded w-4/5"></div>
+          </div>
         </div>
       </div>
     )
@@ -154,12 +227,25 @@ const TemplatePreview = ({ templateId, color }: { templateId: Template; color: s
   
   if (templateId === 'designer') {
     return (
-      <div className="w-full h-32 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-16 h-16 rounded-bl-full" style={{ backgroundColor: color, opacity: 0.2 }}></div>
-        <div className="p-2 space-y-1">
-          <div className="h-2.5 rounded" style={{ backgroundColor: color, width: '55%' }}></div>
-          <div className="h-1.5 bg-gray-300 rounded w-full"></div>
-          <div className="h-1.5 bg-gray-200 rounded w-4/5"></div>
+      <div className="w-full h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
+        {/* Decorative Corner */}
+        <div className="absolute top-0 right-0 w-20 h-20 rounded-bl-full" style={{ backgroundColor: color, opacity: 0.15 }}></div>
+        {/* Header */}
+        <div className="h-10 pl-3 flex items-center">
+          <div className="h-3 rounded" style={{ backgroundColor: color, width: '50%' }}></div>
+        </div>
+        {/* Asymmetric Layout */}
+        <div className="flex h-38 pl-3">
+          <div className="w-2/5 p-2 space-y-1.5">
+            <div className="w-12 h-12 rounded-full bg-gray-300"></div>
+            <div className="h-1 bg-gray-300 rounded w-full"></div>
+            <div className="h-1 bg-gray-200 rounded w-4/5"></div>
+          </div>
+          <div className="flex-1 p-2 space-y-1.5">
+            <div className="h-2.5 rounded" style={{ backgroundColor: color, width: '45%', opacity: 0.8 }}></div>
+            <div className="h-1 bg-gray-300 rounded w-full"></div>
+            <div className="h-1.5 bg-gray-300 rounded w-5/6"></div>
+          </div>
         </div>
       </div>
     )
@@ -639,22 +725,22 @@ export default function AIResumeBuilder() {
                   </div>
                   <h3 className="text-xl font-bold text-gray-900">Choose Template</h3>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                   {templates.map((template) => (
                     <button
                       key={template.id}
                       onClick={() => setSelectedTemplate(template.id)}
-                      className={`p-4 rounded-xl border-2 transition-all transform hover:scale-105 ${
+                      className={`p-3 rounded-xl border-2 transition-all transform hover:scale-[1.02] hover:shadow-lg ${
                         selectedTemplate === template.id
-                          ? 'border-blue-600 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2'
-                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                          ? 'border-blue-600 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-xl shadow-blue-500/30 ring-2 ring-blue-500 ring-offset-2'
+                          : 'border-gray-200 hover:border-gray-400 bg-white hover:bg-gray-50'
                       }`}
                     >
-                      <div className="mb-3">
+                      <div className="mb-3 transform hover:scale-[1.02] transition-transform">
                         <TemplatePreview templateId={template.id} color={template.color} />
                       </div>
                       <div className="font-bold text-gray-900 mb-1 text-center text-sm">{template.name}</div>
-                      <div className="text-xs text-gray-600 text-center leading-relaxed">{template.preview}</div>
+                      <div className="text-xs text-gray-600 text-center leading-relaxed px-1">{template.preview}</div>
                       {selectedTemplate === template.id && (
                         <div className="mt-2 h-1 w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"></div>
                       )}
