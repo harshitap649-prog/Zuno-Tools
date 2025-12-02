@@ -412,13 +412,6 @@ export default function Home() {
                   )}
                 </div>
               </div>
-
-              <Link
-                href="/tools"
-                className="inline-block bg-gradient-to-r from-primary-600 to-primary-400 text-white px-8 sm:px-10 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 touch-manipulation"
-              >
-                Explore All Tools
-              </Link>
             </div>
           </div>
         </section>
