@@ -13,6 +13,11 @@ export default function Navbar() {
     { href: '/tools', label: 'All Tools' },
   ]
 
+  // Hide navbar on resume builder page
+  if (pathname === '/tools/ai-resume-builder') {
+    return null
+  }
+
   return (
     <nav className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
