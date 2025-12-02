@@ -367,13 +367,13 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center">
               <div className="flex flex-col items-center justify-center mb-4 sm:mb-6 animate-fade-in">
-                <div className="relative inline-flex items-center justify-center mb-4 sm:mb-6">
+                <div className="relative inline-flex items-center justify-center mb-3 sm:mb-4">
                   <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-2xl opacity-30 animate-pulse"></div>
-                  <div className="relative bg-gradient-to-r from-pink-500 to-rose-500 p-3 sm:p-4 rounded-2xl shadow-xl">
-                    <Sparkles className="h-8 w-8 sm:h-10 sm:w-10 text-white" strokeWidth={2.5} />
+                  <div className="relative bg-gradient-to-r from-pink-500 to-rose-500 p-2 sm:p-3 rounded-xl shadow-xl">
+                    <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-white" strokeWidth={2.5} />
                   </div>
                 </div>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
                   <span className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
                     Zuno Tools
                   </span>
