@@ -68,7 +68,7 @@ export default function AISummarizer() {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Paste or type the text you want to summarize here..."
                 rows={20}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-gray-900"
               />
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-gray-900">
