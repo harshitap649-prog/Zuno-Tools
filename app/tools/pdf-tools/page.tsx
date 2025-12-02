@@ -168,10 +168,56 @@ export default function PDFTools() {
 
     setLoading(true)
     try {
-      // Note: This is a simplified version. In production, use pdf.js or a backend service
-      toast.error('PDF to JPG conversion requires a backend service. Please use a dedicated PDF library.')
+      toast.loading('Converting PDF to images...', { id: 'pdf-convert' })
+      
+      // Dynamic import of pdfjs-dist
+      const pdfjsLib = await import('pdfjs-dist')
+      
+      // Set worker source
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+      
+      // Read PDF file
+      const arrayBuffer = await pdfFile.arrayBuffer()
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+      
+      const images: string[] = []
+      const numPages = pdf.numPages
+      
+      // Convert each page to image
+      for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+        toast.loading(`Converting page ${pageNum} of ${numPages}...`, { id: 'pdf-convert' })
+        
+        const page = await pdf.getPage(pageNum)
+        const viewport = page.getViewport({ scale: 2.0 })
+        
+        // Create canvas
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('2d')
+        if (!context) {
+          throw new Error('Could not get canvas context')
+        }
+        
+        canvas.height = viewport.height
+        canvas.width = viewport.width
+        
+        // Render PDF page to canvas
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport
+        }
+        
+        await page.render(renderContext).promise
+        
+        // Convert canvas to image
+        const imageDataUrl = canvas.toDataURL('image/jpeg', 0.95)
+        images.push(imageDataUrl)
+      }
+      
+      setConvertedImages(images)
+      toast.success(`Successfully converted ${numPages} page(s) to JPG!`, { id: 'pdf-convert' })
     } catch (error) {
-      toast.error('Failed to convert PDF to JPG')
+      console.error('PDF to JPG conversion error:', error)
+      toast.error('Failed to convert PDF to JPG. Please try again.', { id: 'pdf-convert' })
     } finally {
       setLoading(false)
     }
@@ -185,36 +231,50 @@ export default function PDFTools() {
 
     setLoading(true)
     try {
+      toast.loading('Converting images...', { id: 'jpg-convert' })
       const images: string[] = []
       
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        toast.loading(`Converting image ${i + 1} of ${files.length}...`, { id: 'jpg-convert' })
+        
         const reader = new FileReader()
-        await new Promise((resolve) => {
+        await new Promise<void>((resolve, reject) => {
+          reader.onerror = () => reject(new Error('Failed to read file'))
           reader.onload = () => {
             const img = new Image()
-            img.src = reader.result as string
-            
+            img.onerror = () => reject(new Error('Failed to load image'))
             img.onload = () => {
-              const canvas = document.createElement('canvas')
-              const ctx = canvas.getContext('2d')
-              if (!ctx) return
-              
-              canvas.width = img.width
-              canvas.height = img.height
-              ctx.drawImage(img, 0, 0)
-              
-              images.push(canvas.toDataURL('image/png'))
-              resolve(null)
+              try {
+                const canvas = document.createElement('canvas')
+                const ctx = canvas.getContext('2d')
+                if (!ctx) {
+                  reject(new Error('Could not get canvas context'))
+                  return
+                }
+                
+                canvas.width = img.width
+                canvas.height = img.height
+                ctx.drawImage(img, 0, 0)
+                
+                const pngDataUrl = canvas.toDataURL('image/png', 1.0)
+                images.push(pngDataUrl)
+                resolve()
+              } catch (error) {
+                reject(error)
+              }
             }
+            img.src = reader.result as string
           }
           reader.readAsDataURL(file)
         })
       }
       
       setConvertedImages(images)
-      toast.success('Images converted successfully!')
+      toast.success(`Successfully converted ${images.length} image(s) to PNG!`, { id: 'jpg-convert' })
     } catch (error) {
-      toast.error('Failed to convert images')
+      console.error('JPG to PNG conversion error:', error)
+      toast.error('Failed to convert images. Please ensure the files are valid JPG images.', { id: 'jpg-convert' })
     } finally {
       setLoading(false)
     }

@@ -48,7 +48,7 @@ export default function TwoFactorAuthenticator() {
     if (!secret) return
 
     // Simple TOTP implementation (for demo purposes)
-    const time = Math.floor(Date.now() / 1000 / 30)
+    let time = Math.floor(Date.now() / 1000 / 30)
     const hmac = async () => {
       const encoder = new TextEncoder()
       const key = await crypto.subtle.importKey(
@@ -59,9 +59,10 @@ export default function TwoFactorAuthenticator() {
         ['sign']
       )
       const data = new Uint8Array(8)
+      let timeValue = time
       for (let i = 7; i >= 0; i--) {
-        data[i] = time & 0xff
-        time >>= 8
+        data[i] = timeValue & 0xff
+        timeValue >>= 8
       }
       const signature = await crypto.subtle.sign('HMAC', key, data)
       const bytes = new Uint8Array(signature)
