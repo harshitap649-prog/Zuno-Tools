@@ -216,78 +216,118 @@ export default function ImageResizer() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900 mb-2 flex items-center space-x-2">
-                      <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                      <span>Original ({originalDimensions.width} × {originalDimensions.height})</span>
-                    </h3>
-                    <div className="border-2 border-gray-200 rounded-xl overflow-hidden shadow-md bg-white">
-                      <img src={image} alt="Original" className="w-full h-auto max-h-[250px] sm:max-h-[300px] md:max-h-[400px] object-contain" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
+                        <Image className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+                      </div>
+                      <h3 className="text-sm sm:text-base font-bold text-gray-900">
+                        Original Image
+                      </h3>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                        {originalDimensions.width} × {originalDimensions.height}
+                      </span>
+                    </div>
+                    <div className="relative border-2 border-gray-200 rounded-2xl overflow-hidden shadow-lg bg-white group hover:shadow-xl transition-shadow">
+                      <div className="absolute top-2 right-2 z-10 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-xs font-medium text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                        Original
+                      </div>
+                      <img src={image} alt="Original" className="w-full h-auto max-h-[280px] sm:max-h-[350px] md:max-h-[450px] object-contain p-2" />
                     </div>
                   </div>
 
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-xs sm:text-sm font-semibold text-gray-900 flex items-center space-x-2">
-                        <span className="w-2 h-2 rounded-full bg-cyan-500"></span>
-                        <span>Resized {resizedImage ? `(${width} × ${height})` : ''}</span>
-                      </h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center space-x-2">
+                        <div className="p-1.5 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600">
+                          <Maximize2 className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+                        </div>
+                        <h3 className="text-sm sm:text-base font-bold text-gray-900">
+                          Resized Image
+                        </h3>
+                        {resizedImage && (
+                          <span className="text-xs text-gray-500 bg-cyan-100 px-2 py-0.5 rounded-full">
+                            {width} × {height}
+                          </span>
+                        )}
+                      </div>
                       {resizedImage && (
                         <button
                           onClick={() => setResizedImage(null)}
-                          className="p-1 text-gray-400 hover:text-red-600 rounded transition-colors"
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                         >
                           <X className="h-4 w-4" />
                         </button>
                       )}
                     </div>
-                    <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-blue-50/30 shadow-md">
+                    <div className="relative border-2 border-gray-200 rounded-2xl overflow-hidden bg-gradient-to-br from-gray-50 via-blue-50/40 to-cyan-50/30 shadow-lg group hover:shadow-xl transition-shadow">
                       {loading ? (
                         <div className="flex items-center justify-center h-40 sm:h-48 md:h-64">
                           <div className="text-center">
-                            <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 animate-spin mx-auto mb-2" />
-                            <p className="text-xs text-gray-600">Processing...</p>
+                            <div className="relative">
+                              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-xl opacity-20"></div>
+                              <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 text-blue-600 animate-spin mx-auto mb-3 relative z-10" />
+                            </div>
+                            <p className="text-sm font-medium text-gray-700">Processing image...</p>
+                            <p className="text-xs text-gray-500 mt-1">Please wait</p>
                           </div>
                         </div>
                       ) : resizedImage ? (
-                        <img src={resizedImage} alt="Resized" className="w-full h-auto max-h-[250px] sm:max-h-[300px] md:max-h-[400px] object-contain" />
+                        <>
+                          <div className="absolute top-2 right-2 z-10 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-xs font-medium text-cyan-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Resized
+                          </div>
+                          <img src={resizedImage} alt="Resized" className="w-full h-auto max-h-[280px] sm:max-h-[350px] md:max-h-[450px] object-contain p-2" />
+                        </>
                       ) : (
-                        <div className="flex items-center justify-center h-40 sm:h-48 md:h-64 text-gray-500 text-xs sm:text-sm px-4 text-center">
-                          <p>Adjust dimensions below to resize</p>
+                        <div className="flex flex-col items-center justify-center h-40 sm:h-48 md:h-64 text-gray-400 px-4">
+                          <div className="p-3 rounded-full bg-gray-100 mb-3">
+                            <Maximize2 className="h-6 w-6 text-gray-400" />
+                          </div>
+                          <p className="text-sm font-medium text-gray-600 mb-1">Ready to resize</p>
+                          <p className="text-xs text-gray-500 text-center">Adjust dimensions below</p>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4 border border-gray-200">
-                  <div className="flex items-center space-x-2 mb-3 sm:mb-4">
-                    <input
-                      type="checkbox"
-                      id="maintainRatio"
-                      checked={maintainAspectRatio}
-                      onChange={(e) => setMaintainAspectRatio(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <label htmlFor="maintainRatio" className="text-xs sm:text-sm font-semibold text-gray-900 cursor-pointer">
-                      Maintain aspect ratio
-                    </label>
+                <div className="bg-gradient-to-br from-white via-blue-50/20 to-cyan-50/20 rounded-2xl p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5 border-2 border-gray-200/50 shadow-lg">
+                  <div className="flex items-center justify-between p-3 bg-white/60 rounded-xl border border-gray-200">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="maintainRatio"
+                        checked={maintainAspectRatio}
+                        onChange={(e) => setMaintainAspectRatio(e.target.checked)}
+                        className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                      />
+                      <label htmlFor="maintainRatio" className="text-sm sm:text-base font-bold text-gray-900 cursor-pointer">
+                        Maintain aspect ratio
+                      </label>
+                    </div>
+                    {maintainAspectRatio && (
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
+                        Locked
+                      </span>
+                    )}
                   </div>
 
                   {/* Preset Sizes */}
                   <div className="mb-3 sm:mb-4">
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-900 mb-2">
-                      Quick Presets
+                    <label className="block text-sm sm:text-base font-bold text-gray-900 mb-3 flex items-center space-x-2">
+                      <span className="w-1 h-4 bg-gradient-to-b from-blue-500 to-cyan-500 rounded-full"></span>
+                      <span>Quick Presets</span>
                     </label>
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
                       {[
-                        { label: 'Instagram Post', w: 1080, h: 1080 },
-                        { label: 'Instagram Story', w: 1080, h: 1920 },
-                        { label: 'Facebook Cover', w: 1200, h: 630 },
-                        { label: 'Twitter Header', w: 1500, h: 500 },
-                        { label: 'YouTube Thumbnail', w: 1280, h: 720 },
-                        { label: 'Square', w: 1000, h: 1000 },
+                        { label: 'Instagram Post', w: 1080, h: 1080, icon: '📷' },
+                        { label: 'Instagram Story', w: 1080, h: 1920, icon: '📱' },
+                        { label: 'Facebook Cover', w: 1200, h: 630, icon: '👥' },
+                        { label: 'Twitter Header', w: 1500, h: 500, icon: '🐦' },
+                        { label: 'YouTube Thumbnail', w: 1280, h: 720, icon: '▶️' },
+                        { label: 'Square', w: 1000, h: 1000, icon: '⬜' },
                       ].map((preset) => (
                         <button
                           key={preset.label}
@@ -306,70 +346,77 @@ export default function ImageResizer() {
                               setHeight(preset.h)
                             }
                           }}
-                          className="px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs font-medium text-gray-900 bg-white border-2 border-gray-200 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:border-blue-400 hover:shadow-md transition-all active:scale-95"
+                          className="px-3 py-3 text-xs font-semibold text-gray-900 bg-white border-2 border-gray-200 rounded-xl hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 hover:border-blue-400 hover:shadow-lg transition-all active:scale-95 flex flex-col items-center space-y-1 group"
                         >
-                          {preset.label}
+                          <span className="text-lg">{preset.icon}</span>
+                          <span className="text-[10px] leading-tight text-center">{preset.label}</span>
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                    <div>
-                      <label className="block text-xs sm:text-sm font-semibold text-gray-900 mb-1 sm:mb-2">
-                        Width (px)
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-bold text-gray-900 flex items-center space-x-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                        <span>Width (px)</span>
                       </label>
-                      <input
-                        type="number"
-                        value={width || ''}
-                        onChange={(e) => {
-                          const value = e.target.value === '' ? 0 : Number(e.target.value)
-                          handleWidthChange(value)
-                        }}
-                        onBlur={(e) => {
-                          if (!e.target.value || Number(e.target.value) <= 0) {
-                            setWidth(originalDimensions.width || 800)
-                            if (maintainAspectRatio && originalDimensions.width > 0) {
-                              const ratio = originalDimensions.height / originalDimensions.width
-                              setHeight(Math.round((originalDimensions.width || 800) * ratio))
+                      <div className="relative">
+                        <input
+                          type="number"
+                          value={width || ''}
+                          onChange={(e) => {
+                            const value = e.target.value === '' ? 0 : Number(e.target.value)
+                            handleWidthChange(value)
+                          }}
+                          onBlur={(e) => {
+                            if (!e.target.value || Number(e.target.value) <= 0) {
+                              setWidth(originalDimensions.width || 800)
+                              if (maintainAspectRatio && originalDimensions.width > 0) {
+                                const ratio = originalDimensions.height / originalDimensions.width
+                                setHeight(Math.round((originalDimensions.width || 800) * ratio))
+                              }
                             }
-                          }
-                        }}
-                        className="w-full px-2 sm:px-3 py-2 sm:py-2.5 text-sm text-gray-900 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all"
-                        min="1"
-                        max="10000"
-                        placeholder="Width"
-                      />
+                          }}
+                          className="w-full px-4 py-3 text-sm font-semibold text-gray-900 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all shadow-sm hover:shadow-md"
+                          min="1"
+                          max="10000"
+                          placeholder="Width"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-xs sm:text-sm font-semibold text-gray-900 mb-1 sm:mb-2">
-                        Height (px)
+                    <div className="space-y-2">
+                      <label className="block text-sm font-bold text-gray-900 flex items-center space-x-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+                        <span>Height (px)</span>
                       </label>
-                      <input
-                        type="number"
-                        value={height || ''}
-                        onChange={(e) => {
-                          const value = e.target.value === '' ? 0 : Number(e.target.value)
-                          handleHeightChange(value)
-                        }}
-                        onBlur={(e) => {
-                          if (!e.target.value || Number(e.target.value) <= 0) {
-                            setHeight(originalDimensions.height || 600)
-                            if (maintainAspectRatio && originalDimensions.height > 0) {
-                              const ratio = originalDimensions.width / originalDimensions.height
-                              setWidth(Math.round((originalDimensions.height || 600) * ratio))
+                      <div className="relative">
+                        <input
+                          type="number"
+                          value={height || ''}
+                          onChange={(e) => {
+                            const value = e.target.value === '' ? 0 : Number(e.target.value)
+                            handleHeightChange(value)
+                          }}
+                          onBlur={(e) => {
+                            if (!e.target.value || Number(e.target.value) <= 0) {
+                              setHeight(originalDimensions.height || 600)
+                              if (maintainAspectRatio && originalDimensions.height > 0) {
+                                const ratio = originalDimensions.width / originalDimensions.height
+                                setWidth(Math.round((originalDimensions.height || 600) * ratio))
+                              }
                             }
-                          }
-                        }}
-                        className="w-full px-2 sm:px-3 py-2 sm:py-2.5 text-sm text-gray-900 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all"
-                        min="1"
-                        max="10000"
-                        placeholder="Height"
-                      />
+                          }}
+                          className="w-full px-4 py-3 text-sm font-semibold text-gray-900 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 bg-white transition-all shadow-sm hover:shadow-md"
+                          min="1"
+                          max="10000"
+                          placeholder="Height"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
+                  <div className="flex flex-col sm:flex-row gap-3 pt-3 border-t-2 border-gray-200">
                     <button
                       onClick={() => {
                         resizeImage().then(() => {
@@ -377,16 +424,16 @@ export default function ImageResizer() {
                         })
                       }}
                       disabled={loading}
-                      className="flex-1 bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:shadow-xl hover:shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-xs sm:text-sm active:scale-95 touch-manipulation"
+                      className="flex-1 bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 text-white px-6 py-3.5 rounded-xl font-bold hover:shadow-2xl hover:shadow-blue-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm active:scale-95 touch-manipulation transform hover:scale-[1.02]"
                     >
                       {loading ? (
                         <>
-                          <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                          <Loader2 className="h-5 w-5 animate-spin" />
                           <span>Processing...</span>
                         </>
                       ) : (
                         <>
-                          <Maximize2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                          <Maximize2 className="h-5 w-5" />
                           <span>Resize Image</span>
                         </>
                       )}
@@ -395,9 +442,9 @@ export default function ImageResizer() {
                     {resizedImage && (
                       <button
                         onClick={downloadImage}
-                        className="flex items-center justify-center space-x-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:shadow-xl hover:shadow-green-500/30 transition-all text-xs sm:text-sm active:scale-95 touch-manipulation"
+                        className="flex items-center justify-center space-x-2 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white px-6 py-3.5 rounded-xl font-bold hover:shadow-2xl hover:shadow-green-500/40 transition-all text-sm active:scale-95 touch-manipulation transform hover:scale-[1.02]"
                       >
-                        <Download className="h-4 w-4 sm:h-5 sm:w-5" />
+                        <Download className="h-5 w-5" />
                         <span>Download</span>
                       </button>
                     )}
