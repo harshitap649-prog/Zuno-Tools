@@ -63,7 +63,7 @@ const TemplatePreview = ({ templateId, color }: { templateId: Template; color: s
   
   if (templateId === 'modern') {
     return (
-      <div className="w-full h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
+      <div className="w-full h-32 sm:h-40 md:h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
         {/* Header */}
         <div className="h-10" style={{ backgroundColor: color }}></div>
         {/* Two Column Layout */}
@@ -109,7 +109,7 @@ const TemplatePreview = ({ templateId, color }: { templateId: Template; color: s
   
   if (templateId === 'creative') {
     return (
-      <div className="w-full h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
+      <div className="w-full h-32 sm:h-40 md:h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
         {/* Colored Sidebar */}
         <div className="absolute left-0 top-0 bottom-0 w-3" style={{ backgroundColor: color }}></div>
         {/* Header with accent */}
@@ -200,7 +200,7 @@ const TemplatePreview = ({ templateId, color }: { templateId: Template; color: s
   
   if (templateId === 'tech') {
     return (
-      <div className="w-full h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
+      <div className="w-full h-32 sm:h-40 md:h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
         {/* Gradient Header */}
         <div className="h-8" style={{ background: `linear-gradient(90deg, ${color}, ${color}dd)` }}>
           <div className="h-full flex items-center px-3">
@@ -227,7 +227,7 @@ const TemplatePreview = ({ templateId, color }: { templateId: Template; color: s
   
   if (templateId === 'designer') {
     return (
-      <div className="w-full h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
+      <div className="w-full h-32 sm:h-40 md:h-48 bg-white border-2 border-gray-200 rounded-lg overflow-hidden relative shadow-sm">
         {/* Decorative Corner */}
         <div className="absolute top-0 right-0 w-20 h-20 rounded-bl-full" style={{ backgroundColor: color, opacity: 0.15 }}></div>
         {/* Header */}
