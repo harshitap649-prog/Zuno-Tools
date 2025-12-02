@@ -1095,7 +1095,7 @@ export default function AIResumeBuilder() {
                 </div>
                 <button
                   onClick={addSkill}
-                  className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-xl hover:from-orange-600 hover:to-red-700 transition-all shadow-md hover:shadow-lg font-medium"
+                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all shadow-md hover:shadow-lg font-medium text-xs sm:text-sm"
                 >
                   <Plus className="h-5 w-5" />
                   <span>Add Skill</span>
@@ -1135,7 +1135,7 @@ export default function AIResumeBuilder() {
                 </div>
                 <button
                   onClick={addLanguage}
-                  className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all shadow-md hover:shadow-lg font-medium"
+                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg hover:from-purple-600 hover:to-pink-700 transition-all shadow-md hover:shadow-lg font-medium text-xs sm:text-sm"
                 >
                   <Plus className="h-5 w-5" />
                   <span>Add Language</span>
@@ -1195,7 +1195,7 @@ export default function AIResumeBuilder() {
                 </div>
                 <button
                   onClick={addCourse}
-                  className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-xl hover:from-teal-600 hover:to-cyan-700 transition-all shadow-md hover:shadow-lg font-medium"
+                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-lg hover:from-teal-600 hover:to-cyan-700 transition-all shadow-md hover:shadow-lg font-medium text-xs sm:text-sm"
                 >
                   <Plus className="h-5 w-5" />
                   <span>Add Course</span>
@@ -1259,7 +1259,7 @@ export default function AIResumeBuilder() {
                 </div>
                 <button
                   onClick={addReference}
-                  className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-blue-600 text-white rounded-xl hover:from-indigo-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg font-medium"
+                  className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-indigo-500 to-blue-600 text-white rounded-lg hover:from-indigo-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg font-medium text-xs sm:text-sm"
                 >
                   <Plus className="h-5 w-5" />
                   <span>Add Reference</span>
