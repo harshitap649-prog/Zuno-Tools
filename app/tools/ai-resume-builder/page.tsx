@@ -262,7 +262,7 @@ export default function AIResumeBuilder() {
                     value={personalInfo.summary}
                     onChange={(e) => setPersonalInfo({ ...personalInfo, summary: e.target.value })}
                     rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
                     placeholder="Brief summary of your professional background..."
                   />
                 </div>
@@ -416,7 +416,7 @@ export default function AIResumeBuilder() {
                       type="text"
                       value={skill}
                       onChange={(e) => updateSkill(index, e.target.value)}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
                       placeholder="Enter a skill"
                     />
                     {skills.length > 1 && (
