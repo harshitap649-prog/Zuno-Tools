@@ -46,18 +46,16 @@ export default function ImageResizer() {
     multiple: false
   })
 
-  const resizeImage = async () => {
+  const resizeImage = useCallback(async () => {
     if (!image) return
 
     // Validate dimensions
     if (width <= 0 || height <= 0 || !Number.isFinite(width) || !Number.isFinite(height)) {
-      toast.error('Please enter valid dimensions (greater than 0)')
-      return
+      return // Don't show error for auto-resize, just return silently
     }
 
     if (width > 10000 || height > 10000) {
-      toast.error('Dimensions cannot exceed 10000px')
-      return
+      return // Don't show error for auto-resize
     }
 
     setLoading(true)
@@ -90,7 +88,6 @@ export default function ImageResizer() {
             // Convert to data URL with good quality
             const dataUrl = canvas.toDataURL('image/png', 0.95)
             setResizedImage(dataUrl)
-            toast.success('Image resized successfully!')
             resolve()
           } catch (error) {
             reject(error)
@@ -100,11 +97,10 @@ export default function ImageResizer() {
       })
     } catch (error) {
       console.error('Resize error:', error)
-      toast.error('Failed to resize image. Please try again.')
     } finally {
       setLoading(false)
     }
-  }
+  }, [image, width, height])
 
   const handleWidthChange = (newWidth: number) => {
     const validWidth = Math.max(1, Math.min(10000, Math.round(newWidth)))
@@ -162,14 +158,15 @@ export default function ImageResizer() {
 
       if (dimensionsChanged) {
         prevDimensions.current = { width, height }
+        // Reduced debounce for more responsive updates
         const timeoutId = setTimeout(() => {
           resizeImage()
-        }, 500) // Debounce for 500ms
+        }, 300) // Debounce for 300ms
 
         return () => clearTimeout(timeoutId)
       }
     }
-  }, [width, height])
+  }, [width, height, image, originalDimensions.width, resizeImage])
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -363,7 +360,11 @@ export default function ImageResizer() {
 
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <button
-                      onClick={resizeImage}
+                      onClick={() => {
+                        resizeImage().then(() => {
+                          toast.success('Image resized successfully!')
+                        })
+                      }}
                       disabled={loading}
                       className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm sm:text-base active:scale-95 touch-manipulation"
                     >
