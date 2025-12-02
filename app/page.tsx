@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import MobileBottomNav from '@/components/MobileBottomNav'
@@ -327,8 +328,14 @@ function BannerAd({ id }: { id: string }) {
 }
 
 export default function Home() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [favorites, setFavorites] = useState<string[]>([])
+
+  // Redirect to /tools page
+  useEffect(() => {
+    router.replace('/tools')
+  }, [router])
 
   useEffect(() => {
     const savedFavorites = localStorage.getItem('zuno-favorites')
