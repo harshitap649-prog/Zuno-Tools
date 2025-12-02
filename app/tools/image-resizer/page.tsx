@@ -331,20 +331,32 @@ export default function ImageResizer() {
                       ].map((preset) => (
                         <button
                           key={preset.label}
-                          onClick={() => {
+                          onClick={async () => {
+                            let newWidth = preset.w
+                            let newHeight = preset.h
+                            
                             if (maintainAspectRatio && originalDimensions.width > 0) {
                               const ratio = originalDimensions.width / originalDimensions.height
                               if (preset.w / preset.h > ratio) {
-                                setHeight(preset.h)
-                                setWidth(Math.round(preset.h * ratio))
+                                newHeight = preset.h
+                                newWidth = Math.round(preset.h * ratio)
                               } else {
-                                setWidth(preset.w)
-                                setHeight(Math.round(preset.w / ratio))
+                                newWidth = preset.w
+                                newHeight = Math.round(preset.w / ratio)
                               }
-                            } else {
-                              setWidth(preset.w)
-                              setHeight(preset.h)
                             }
+                            
+                            // Update dimensions
+                            setWidth(newWidth)
+                            setHeight(newHeight)
+                            
+                            // Update prevDimensions to ensure resize triggers
+                            prevDimensions.current = { width: newWidth, height: newHeight }
+                            
+                            // Trigger resize immediately
+                            setTimeout(() => {
+                              resizeImage()
+                            }, 100)
                           }}
                           className="px-3 py-3 text-xs font-semibold text-gray-900 bg-white border-2 border-gray-200 rounded-xl hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 hover:border-blue-400 hover:shadow-lg transition-all active:scale-95 flex flex-col items-center space-y-1 group"
                         >
