@@ -220,7 +220,7 @@ export default function ImageResizer() {
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2 mb-3">
                       <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
-                        <Image className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+                        <Upload className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                       </div>
                       <h3 className="text-sm sm:text-base font-bold text-gray-900">
                         Original Image
