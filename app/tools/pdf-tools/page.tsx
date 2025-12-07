@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { useDropzone } from 'react-dropzone'
 import Footer from '@/components/Footer'
-import { Upload, Download, X, FileText, Loader2, Merge, Scissors, Compress, Info, RotateCw, FileImage } from 'lucide-react'
+import { Upload, Download, X, FileText, Loader2, Merge, Scissors, Minimize2, Info, RotateCw, FileImage } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { usePopunderAd } from '@/hooks/usePopunderAd'
 
@@ -723,7 +723,7 @@ export default function PDFTools() {
                     : 'text-gray-700 hover:text-purple-600 active:bg-gray-50'
                 }`}
               >
-                <Compress className="h-4 w-4 inline mr-1" />
+                <Minimize2 className="h-4 w-4 inline mr-1" />
                 <span className="hidden sm:inline">Compress</span>
                 <span className="sm:hidden">Compress</span>
               </button>
@@ -1031,7 +1031,7 @@ export default function PDFTools() {
                     }`}
                   >
                     <input {...getInputPropsPDF()} />
-                    <Compress className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+                    <Minimize2 className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
                     <p className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                       {isDragActivePDF ? 'Drop PDF here' : 'Drag & drop PDF here'}
                     </p>
@@ -1062,7 +1062,7 @@ export default function PDFTools() {
                           </>
                         ) : (
                           <>
-                            <Compress className="h-5 w-5" />
+                            <Minimize2 className="h-5 w-5" />
                             <span>Compress PDF</span>
                           </>
                         )}
