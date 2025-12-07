@@ -4,6 +4,8 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import MobileBottomNav from '@/components/MobileBottomNav'
+import SidebarAd from '@/components/SidebarAd'
+import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
   Image, FileText, Sparkles, Mic, QrCode, 
   GraduationCap, FileCheck, Type, Scissors, 
@@ -12,7 +14,7 @@ import {
   Palette, Calculator, Clock, Key, Code, Search, X,
   Crop, RotateCw, Globe, Filter, Heart, Calendar,
   HardDrive, Shield, DollarSign, CheckSquare, Target,
-  Instagram, Eye, EyeOff, Mail, Grid, Merge, Wand2,
+  Instagram, Eye, EyeOff, Mail, Grid, Wand2,
   PenTool, Video
 } from 'lucide-react'
 
@@ -34,14 +36,6 @@ const allTools = [
     category: 'Image Tools',
   },
   {
-    id: 'pdf-tools',
-    name: 'PDF Tools',
-    description: 'Create PDFs, convert PDF to JPG, JPG to PNG',
-    icon: FileText,
-    color: 'from-red-500 to-orange-500',
-    category: 'Document Tools',
-  },
-  {
     id: 'meme-generator',
     name: 'Meme Generator',
     description: 'Create hilarious memes with custom text and images',
@@ -55,14 +49,6 @@ const allTools = [
     description: 'Build professional resumes with AI assistance',
     icon: FileCheck,
     color: 'from-green-500 to-emerald-500',
-    category: 'AI Tools',
-  },
-  {
-    id: 'ai-summarizer',
-    name: 'AI Summarizer',
-    description: 'Summarize long texts and documents instantly',
-    icon: Sparkles,
-    color: 'from-indigo-500 to-purple-500',
     category: 'AI Tools',
   },
   {
@@ -80,22 +66,6 @@ const allTools = [
     icon: QrCode,
     color: 'from-gray-700 to-gray-900',
     category: 'Utility Tools',
-  },
-  {
-    id: 'ai-note-summarizer',
-    name: 'AI Note Summarizer',
-    description: 'Summarize your notes and study materials',
-    icon: Type,
-    color: 'from-teal-500 to-cyan-500',
-    category: 'Study Tools',
-  },
-  {
-    id: 'english-improvement',
-    name: 'AI English Improvement',
-    description: 'Improve your English writing with AI suggestions',
-    icon: Languages,
-    color: 'from-blue-600 to-indigo-600',
-    category: 'AI Tools',
   },
   {
     id: 'study-tools',
@@ -138,44 +108,12 @@ const allTools = [
     category: 'Security Tools',
   },
   {
-    id: 'json-formatter',
-    name: 'JSON Formatter',
-    description: 'Format, validate, and minify JSON data',
-    icon: Code,
-    color: 'from-indigo-500 to-purple-500',
-    category: 'Developer Tools',
-  },
-  {
-    id: 'base64-encoder',
-    name: 'Base64 Encoder',
-    description: 'Encode and decode Base64 strings',
-    icon: Hash,
-    color: 'from-teal-500 to-cyan-500',
-    category: 'Developer Tools',
-  },
-  {
     id: 'case-converter',
     name: 'Case Converter',
     description: 'Convert text to different cases instantly',
     icon: Type,
     color: 'from-blue-500 to-indigo-500',
     category: 'Text Tools',
-  },
-  {
-    id: 'hash-generator',
-    name: 'Hash Generator',
-    description: 'Generate MD5, SHA-1, SHA-256, and SHA-512 hashes',
-    icon: Lock,
-    color: 'from-red-500 to-pink-500',
-    category: 'Security Tools',
-  },
-  {
-    id: 'uuid-generator',
-    name: 'UUID Generator',
-    description: 'Generate unique identifiers (UUID v4)',
-    icon: Hash,
-    color: 'from-violet-500 to-purple-500',
-    category: 'Developer Tools',
   },
   {
     id: 'url-encoder',
@@ -194,27 +132,11 @@ const allTools = [
     category: 'Design Tools',
   },
   {
-    id: 'lorem-ipsum',
-    name: 'Lorem Ipsum Generator',
-    description: 'Generate placeholder text for your designs',
-    icon: FileText,
-    color: 'from-amber-500 to-orange-500',
-    category: 'Design Tools',
-  },
-  {
     id: 'barcode-generator',
     name: 'Barcode Generator',
     description: 'Generate barcodes in multiple formats',
     icon: Hash,
     color: 'from-gray-700 to-gray-900',
-    category: 'Utility Tools',
-  },
-  {
-    id: 'unit-converter',
-    name: 'Unit Converter',
-    description: 'Convert between different units of measurement',
-    icon: Calculator,
-    color: 'from-green-500 to-emerald-500',
     category: 'Utility Tools',
   },
   {
@@ -250,27 +172,11 @@ const allTools = [
     category: 'Image Tools',
   },
   {
-    id: 'code-formatter',
-    name: 'Code Formatter',
-    description: 'Format and minify code in multiple languages',
-    icon: Code,
-    color: 'from-indigo-500 to-purple-500',
-    category: 'Developer Tools',
-  },
-  {
     id: 'ip-address-info',
     name: 'IP Address Info',
     description: 'Get information about your IP address',
     icon: Globe,
     color: 'from-blue-500 to-cyan-500',
-    category: 'Utility Tools',
-  },
-  {
-    id: 'qr-code-scanner',
-    name: 'QR Code Scanner',
-    description: 'Scan QR codes from images',
-    icon: QrCode,
-    color: 'from-gray-700 to-gray-900',
     category: 'Utility Tools',
   },
   {
@@ -295,14 +201,6 @@ const allTools = [
     description: 'Calculate your exact age from your birthdate',
     icon: Calendar,
     color: 'from-blue-500 to-cyan-500',
-    category: 'Utility Tools',
-  },
-  {
-    id: 'date-calculator',
-    name: 'Date Calculator',
-    description: 'Calculate the difference between two dates',
-    icon: Calendar,
-    color: 'from-green-500 to-emerald-500',
     category: 'Utility Tools',
   },
   {
@@ -336,22 +234,6 @@ const allTools = [
     icon: HardDrive,
     color: 'from-indigo-500 to-purple-500',
     category: 'Utility Tools',
-  },
-  {
-    id: 'password-strength-checker',
-    name: 'Password Strength Checker',
-    description: 'Check the strength of your password',
-    icon: Lock,
-    color: 'from-red-500 to-pink-500',
-    category: 'Security Tools',
-  },
-  {
-    id: 'two-factor-authenticator',
-    name: 'Two-Factor Authenticator',
-    description: 'Generate 2FA codes for your accounts',
-    icon: Shield,
-    color: 'from-blue-500 to-indigo-500',
-    category: 'Security Tools',
   },
   {
     id: 'currency-converter',
@@ -403,19 +285,11 @@ const allTools = [
   },
   {
     id: 'instagram-bio-generator',
-    name: 'Instagram Bio Generator',
-    description: 'Generate creative Instagram bios',
+    name: 'Instagram 650+ Bio/Captions',
+    description: 'Browse and copy from 650+ pre-made Instagram bios and captions',
     icon: Instagram,
     color: 'from-pink-500 to-rose-500',
     category: 'Creative Tools',
-  },
-  {
-    id: 'logo-maker',
-    name: 'Logo Maker',
-    description: 'Create simple logos with text and shapes',
-    icon: Image,
-    color: 'from-purple-500 to-pink-500',
-    category: 'Design Tools',
   },
   {
     id: 'email-template-builder',
@@ -427,8 +301,8 @@ const allTools = [
   },
   {
     id: 'instagram-story-maker',
-    name: 'Instagram Story Maker',
-    description: 'Create Instagram stories with text and images',
+    name: 'Instagram Story Ideas',
+    description: 'Get creative Instagram story ideas and inspiration',
     icon: Image,
     color: 'from-pink-500 to-rose-500',
     category: 'Creative Tools',
@@ -442,28 +316,12 @@ const allTools = [
     category: 'Image Tools',
   },
   {
-    id: 'pdf-merger',
-    name: 'PDF Merger',
-    description: 'Combine multiple PDF files into one',
-    icon: Merge,
-    color: 'from-red-500 to-orange-500',
-    category: 'Document Tools',
-  },
-  {
     id: 'ai-image-generator',
     name: 'AI Image Generator',
     description: 'Generate images from text prompts using AI',
     icon: Wand2,
     color: 'from-indigo-500 to-purple-500',
     category: 'AI Tools',
-  },
-  {
-    id: 'document-signer',
-    name: 'Document Signer',
-    description: 'Add digital signatures to PDF documents',
-    icon: PenTool,
-    color: 'from-green-500 to-emerald-500',
-    category: 'Document Tools',
   },
   {
     id: 'ai-code-generator',
@@ -482,22 +340,6 @@ const allTools = [
     category: 'AI Tools',
   },
   {
-    id: 'ai-text-expander',
-    name: 'AI Text Expander',
-    description: 'Expand short text into longer, detailed content',
-    icon: Type,
-    color: 'from-purple-500 to-pink-500',
-    category: 'AI Tools',
-  },
-  {
-    id: 'ai-keyword-extractor',
-    name: 'AI Keyword Extractor',
-    description: 'Extract important keywords from text using AI',
-    icon: Search,
-    color: 'from-teal-500 to-cyan-500',
-    category: 'AI Tools',
-  },
-  {
     id: 'screen-recorder',
     name: 'Screen Recorder',
     description: 'Record your screen and audio',
@@ -508,70 +350,6 @@ const allTools = [
 ]
 
 const categories = ['All', 'Image Tools', 'Document Tools', 'AI Tools', 'Creative Tools', 'Utility Tools', 'Study Tools', 'Text Tools', 'Developer Tools', 'Security Tools', 'Design Tools', 'Productivity Tools', 'Business Tools']
-
-function SidebarAd({ position, adKey }: { position: 'left' | 'right', adKey: string }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const scriptLoadedRef = useRef(false)
-
-  useEffect(() => {
-    if (!containerRef.current || scriptLoadedRef.current) return
-
-    const containerId = `sidebar-ad-${position}`
-    containerRef.current.id = containerId
-
-    // Create a wrapper function that sets atOptions and loads the script
-    const loadAd = () => {
-      // Set atOptions right before loading the script
-      ;(window as any).atOptions = {
-        'key': adKey,
-        'format': 'iframe',
-        'height': 600,
-        'width': 160,
-        'params': {}
-      }
-
-      // Create and append the invoke script
-      const script = document.createElement('script')
-      script.type = 'text/javascript'
-      script.src = `//www.highperformanceformat.com/${adKey}/invoke.js`
-      script.async = true
-      script.id = `ad-script-${position}`
-      script.onload = () => {
-        scriptLoadedRef.current = true
-      }
-      script.onerror = () => {
-        console.error(`Failed to load ad script for ${position} position`)
-      }
-      
-      if (containerRef.current) {
-        containerRef.current.appendChild(script)
-      }
-    }
-
-    // Stagger the loading to avoid conflicts
-    const delay = position === 'left' ? 0 : 500
-    const timeoutId = setTimeout(loadAd, delay)
-
-    return () => {
-      clearTimeout(timeoutId)
-      if (containerRef.current) {
-        containerRef.current.innerHTML = ''
-        scriptLoadedRef.current = false
-      }
-      // Remove script element if it exists
-      const existingScript = document.getElementById(`ad-script-${position}`)
-      if (existingScript) {
-        existingScript.remove()
-      }
-    }
-  }, [position, adKey])
-
-  return (
-    <div className={`hidden lg:block fixed ${position === 'left' ? 'left-4' : 'right-4'} top-1/2 transform -translate-y-1/2 z-40`}>
-      <div ref={containerRef} id={`sidebar-ad-${position}`} className="w-[160px] h-[600px] flex items-center justify-center bg-gray-50 rounded-lg shadow-lg"></div>
-    </div>
-  )
-}
 
 export default function ToolsPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -641,7 +419,7 @@ export default function ToolsPage() {
   }, [searchQuery, selectedCategory, favorites, showFavorites, showRecent])
 
   return (
-    <div className="min-h-screen flex flex-col bg-transparent pb-16 md:pb-0">
+    <div className="min-h-screen flex flex-col bg-white pb-16 md:pb-0">
       {/* Sidebar Ads for Desktop */}
       <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
@@ -649,20 +427,7 @@ export default function ToolsPage() {
       <main className="flex-grow py-5 sm:py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-12">
-            <div className="flex flex-col items-center justify-center mb-4 sm:mb-6">
-              <div className="relative inline-flex items-center justify-center mb-4 sm:mb-6">
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-2xl opacity-30 animate-pulse"></div>
-                <div className="relative bg-gradient-to-r from-pink-500 to-rose-500 p-3 sm:p-4 rounded-2xl shadow-xl">
-                  <Sparkles className="h-8 w-8 sm:h-10 sm:w-10 text-white" strokeWidth={2.5} />
-                </div>
-              </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
-                <span className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
-                  Zuno Tools
-                </span>
-              </h1>
-            </div>
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 mt-6 sm:mt-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               Powerful Tools at Your Fingertips
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-700 max-w-2xl mx-auto px-4 font-medium mb-4 sm:mb-6">
@@ -679,7 +444,7 @@ export default function ToolsPage() {
                 placeholder="Search tools by name, description, or category..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-12 py-3.5 sm:py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-base text-gray-900 placeholder:text-gray-400 bg-white shadow-sm"
+                className="w-full pl-12 pr-12 py-3.5 sm:py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-300/20 focus:border-pink-300 text-base text-gray-900 placeholder:text-gray-400 bg-white shadow-sm"
               />
               {searchQuery && (
                 <button
@@ -701,8 +466,8 @@ export default function ToolsPage() {
                   onClick={() => setSelectedCategory(category)}
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     selectedCategory === category
-                      ? 'bg-primary-600 text-white shadow-md'
-                      : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-300'
+                      ? 'bg-gradient-to-r from-pink-500 to-pink-400 text-white shadow-md hover:shadow-lg'
+                      : 'bg-white text-gray-900 hover:bg-pink-50 border border-gray-300 hover:border-pink-200'
                   }`}
                 >
                   {category}
@@ -717,7 +482,7 @@ export default function ToolsPage() {
               onClick={() => setMobileCategoryMenuOpen(!mobileCategoryMenuOpen)}
               className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-semibold transition-all touch-manipulation active:scale-95 ${
                 selectedCategory !== 'All'
-                  ? 'bg-primary-600 text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-pink-500 to-pink-400 text-white shadow-lg'
                   : 'bg-white text-gray-900 border-2 border-gray-200 shadow-sm'
               }`}
             >
@@ -740,8 +505,8 @@ export default function ToolsPage() {
                     }}
                     className={`w-full text-left px-4 py-3 rounded-xl font-medium transition-all touch-manipulation active:scale-95 ${
                       selectedCategory === category
-                        ? 'bg-primary-600 text-white shadow-md'
-                        : 'text-gray-900 hover:bg-gray-50'
+                        ? 'bg-gradient-to-r from-pink-500 to-pink-400 text-white shadow-md'
+                        : 'text-gray-900 hover:bg-pink-50'
                     }`}
                   >
                     {category}
@@ -760,7 +525,7 @@ export default function ToolsPage() {
                     setShowFavorites(false)
                     window.history.replaceState({}, '', '/tools')
                   }}
-                  className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium flex items-center gap-2"
+                  className="px-3 py-1.5 bg-gradient-to-r from-pink-500 to-pink-400 text-white rounded-lg text-sm font-medium flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
                 >
                   <Heart className="h-4 w-4 fill-current" />
                   Favorites ({favorites.length})
@@ -773,7 +538,7 @@ export default function ToolsPage() {
                     setShowRecent(false)
                     window.history.replaceState({}, '', '/tools')
                   }}
-                  className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium flex items-center gap-2"
+                  className="px-3 py-1.5 bg-gradient-to-r from-pink-500 to-pink-400 text-white rounded-lg text-sm font-medium flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
                 >
                   <Clock className="h-4 w-4" />
                   Recent
@@ -804,32 +569,45 @@ export default function ToolsPage() {
                 <div key={tool.id} className="relative group">
                   <Link
                     href={`/tools/${tool.id}`}
-                    className="block bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-0 flex flex-col active:scale-95 touch-manipulation"
+                    className="block bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200/80 flex flex-col active:scale-95 touch-manipulation hover:-translate-y-0.5 hover:border-gray-300"
                   >
-                    <div className={`h-1.5 bg-gradient-to-r ${tool.color}`}></div>
-                    <div className="p-4 sm:p-5 lg:p-6 flex flex-col items-center text-center flex-grow">
-                      <div className={`inline-flex p-3 sm:p-3.5 lg:p-4 rounded-2xl bg-gradient-to-r ${tool.color} mb-3 sm:mb-4 group-active:scale-95 transition-transform shadow-lg`}>
-                        {Icon && <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" strokeWidth={2.5} />}
+                    <div className={`h-1.5 bg-gradient-to-r ${tool.color} opacity-95`}></div>
+                    <div className="p-4 sm:p-5 lg:p-6 flex flex-col items-center text-center flex-grow relative">
+                      {/* Icon with enhanced styling */}
+                      <div className="relative mb-3 sm:mb-4">
+                        <div className={`inline-flex p-3 sm:p-3.5 lg:p-4 rounded-2xl bg-gradient-to-r ${tool.color} group-hover:scale-105 transition-transform duration-300 shadow-xl group-hover:shadow-2xl`}>
+                          {Icon && <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" strokeWidth={2.5} />}
+                        </div>
+                        {/* Subtle glow behind icon */}
+                        <div className={`absolute inset-0 bg-gradient-to-r ${tool.color} rounded-2xl blur-lg opacity-15 group-hover:opacity-25 transition-opacity duration-300 -z-10 scale-110`}></div>
                       </div>
+                      
+                      {/* Category badge */}
                       <div className="mb-2">
-                        <span className="text-[10px] sm:text-xs font-semibold text-primary-600 bg-primary-50 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg">
+                        <span className="text-[10px] sm:text-xs font-semibold text-gray-700 bg-gray-100 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg border border-gray-200/60">
                           {tool.category}
                         </span>
                       </div>
-                      <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
+                      
+                      {/* Tool name */}
+                      <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 group-hover:text-gray-800 transition-colors leading-tight line-clamp-2">
                         {tool.name}
                       </h3>
+                      
+                      {/* Description */}
                       <p className="text-gray-600 text-xs sm:text-sm lg:text-xs leading-relaxed line-clamp-3 flex-grow">
                         {tool.description}
                       </p>
                     </div>
                   </Link>
+                  
+                  {/* Favorite button */}
                   <button
                     onClick={(e) => toggleFavorite(tool.id, e)}
-                    className="hidden md:flex absolute top-2 right-2 p-1 sm:p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all touch-manipulation active:scale-90 z-10 items-center justify-center"
+                    className="hidden md:flex absolute top-2 right-2 p-1 sm:p-2 bg-white/95 backdrop-blur-md rounded-full shadow-lg hover:shadow-xl transition-all touch-manipulation active:scale-90 z-10 items-center justify-center border border-gray-200/60 hover:border-gray-300 hover:bg-gray-50/80"
                     aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                   >
-                    <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+                    <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 transition-all duration-200 ${isFavorite ? 'fill-red-500 text-red-500 scale-110' : 'text-gray-400 hover:text-gray-500'}`} />
                   </button>
                 </div>
               )
@@ -878,8 +656,8 @@ export default function ToolsPage() {
                     <div className="flex flex-col items-center text-center">
                       <div className="mb-6 sm:mb-8">
                         <div className="relative">
-                          <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
-                          <div className="relative bg-gradient-to-r from-pink-500 to-rose-600 p-4 sm:p-5 rounded-full">
+                          <div className="absolute inset-0 bg-gradient-to-r from-pink-300 to-pink-400 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                          <div className="relative bg-gradient-to-r from-pink-400 to-pink-500 p-4 sm:p-5 rounded-full">
                             <Heart className="h-8 w-8 sm:h-10 sm:w-10 text-white fill-white" strokeWidth={2} />
                           </div>
                         </div>
@@ -898,7 +676,7 @@ export default function ToolsPage() {
                           setSearchQuery('')
                           window.history.replaceState({}, '', '/tools')
                         }}
-                        className="w-full sm:w-auto bg-gradient-to-r from-pink-600 to-rose-600 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2 active:scale-95 touch-manipulation"
+                        className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-pink-400 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2 active:scale-95 touch-manipulation"
                       >
                         <Sparkles className="h-5 w-5" />
                         <span>Explore Tools</span>
@@ -917,7 +695,7 @@ export default function ToolsPage() {
                       setSearchQuery('')
                       setSelectedCategory('All')
                     }}
-                    className="text-primary-600 hover:text-primary-700 font-medium"
+                    className="text-pink-500 hover:text-pink-500 font-medium"
                   >
                     Clear filters
                   </button>
@@ -928,6 +706,7 @@ export default function ToolsPage() {
         </div>
       </main>
 
+      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <Footer />
       <MobileBottomNav />
     </div>

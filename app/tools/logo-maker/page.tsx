@@ -101,7 +101,7 @@ export default function LogoMaker() {
             <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 mb-3 sm:mb-4">
               <Image className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Logo Maker</h1>
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">Logo Maker</h1>
             <p className="text-sm sm:text-base text-gray-900 px-4">Create simple logos with text and shapes</p>
           </div>
 

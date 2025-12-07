@@ -59,7 +59,7 @@ export default function LoanCalculator() {
             <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 mb-4">
               <DollarSign className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Loan Calculator</h1>
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">Loan Calculator</h1>
             <p className="text-gray-900">Calculate loan payments and interest</p>
           </div>
 

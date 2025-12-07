@@ -2,6 +2,8 @@
 
 import { useState, useRef } from 'react'
 import Footer from '@/components/Footer'
+import SidebarAd from '@/components/SidebarAd'
+import MobileBottomAd from '@/components/MobileBottomAd'
 import { FileCheck, Download, Plus, X, Loader2, Upload, Palette, Layout, Eye, User, Briefcase, GraduationCap, Code, Globe, Award, Users, BookOpen } from 'lucide-react'
 import toast from 'react-hot-toast'
 import jsPDF from 'jspdf'
@@ -699,19 +701,19 @@ export default function AIResumeBuilder() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
+      {/* Sidebar Ads for Desktop */}
+      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      
       <main className="flex-grow py-4 sm:py-6 md:py-8">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           {/* Hero Section */}
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="inline-flex p-2 sm:p-3 rounded-xl bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 mb-4 shadow-lg shadow-green-500/20">
-              <FileCheck className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+          <div className="text-center mb-8">
+            <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 mb-4">
+              <FileCheck className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
-              AI Resume Builder
-            </h1>
-            <p className="text-xs sm:text-sm text-gray-600 max-w-2xl mx-auto px-2">
-              Create stunning, professional resumes with customizable templates and beautiful designs
-            </p>
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">AI Resume Builder</h1>
+            <p className="text-gray-900">Create stunning, professional resumes with customizable templates and beautiful designs</p>
           </div>
 
           {/* Template & Color Selection */}
@@ -752,7 +754,7 @@ export default function AIResumeBuilder() {
               {/* Color Selection */}
               <div className="lg:max-w-2xl">
                 <div className="flex items-center space-x-2 mb-3 sm:mb-4">
-                  <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600">
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-pink-500 to-pink-400 shadow-md">
                     <Palette className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
                   <h3 className="text-base sm:text-lg font-bold text-gray-900">Choose Color</h3>
@@ -1353,6 +1355,7 @@ export default function AIResumeBuilder() {
         </div>
       </main>
 
+      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <Footer />
     </div>
   )

@@ -2,11 +2,15 @@
 
 import { useState } from 'react'
 import Footer from '@/components/Footer'
-import { FileText, Sparkles, Upload, Download, X, Merge } from 'lucide-react'
+import SidebarAd from '@/components/SidebarAd'
+import MobileBottomAd from '@/components/MobileBottomAd'
+import { FileText, Upload, X, Merge, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { PDFDocument } from 'pdf-lib'
 
 export default function PDFMerger() {
   const [files, setFiles] = useState<File[]>([])
+  const [loading, setLoading] = useState(false)
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFiles = Array.from(e.target.files || [])
@@ -29,36 +33,68 @@ export default function PDFMerger() {
       return
     }
 
-    toast.info('PDF merging requires a backend service. This is a demo interface.')
-    // In production, you would send files to a backend API that uses pdf-lib or similar
-    // For now, this is a UI demonstration
+    setLoading(true)
+    try {
+      // Verify PDFDocument is available
+      if (!PDFDocument || typeof PDFDocument.create !== 'function') {
+        throw new Error('PDFDocument is not available. Please ensure pdf-lib is installed and restart the dev server.')
+      }
+
+      // Create a new PDF document
+      const mergedPdf = await PDFDocument.create()
+
+      // Process each PDF file
+      for (const file of files) {
+        try {
+          const arrayBuffer = await file.arrayBuffer()
+          const pdf = await PDFDocument.load(arrayBuffer)
+          
+          // Copy all pages from this PDF to the merged PDF
+          const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices())
+          pages.forEach((page) => mergedPdf.addPage(page))
+        } catch (error: any) {
+          console.error(`Error processing ${file.name}:`, error)
+          const errorMsg = error?.message || 'Unknown error'
+          toast.error(`Failed to process ${file.name}: ${errorMsg}. It may be corrupted.`)
+        }
+      }
+
+      // Generate the merged PDF as a blob
+      const pdfBytes = await mergedPdf.save()
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+      
+      // Create download link
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'merged-pdf.pdf'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+
+      toast.success('PDFs merged successfully!')
+      setFiles([])
+    } catch (error: any) {
+      console.error('Error merging PDFs:', error)
+      const errorMessage = error?.message || error?.toString() || 'Unknown error'
+      toast.error(`Failed to merge PDFs: ${errorMessage}. Please check the console for details.`)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-4 sm:mb-6">
-            <div className="flex flex-col items-center justify-center mb-4 sm:mb-6">
-              <div className="relative inline-flex items-center justify-center mb-3 sm:mb-4">
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-xl opacity-30 animate-pulse"></div>
-                <div className="relative bg-gradient-to-r from-pink-500 to-rose-500 p-2 sm:p-3 rounded-xl shadow-lg">
-                  <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 text-white" strokeWidth={2.5} />
-                </div>
-              </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-                <span className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
-                  Zuno Tools
-                </span>
-              </h1>
-              <div className="mt-2 h-0.5 w-20 sm:w-24 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full mx-auto"></div>
-            </div>
-          </div>
           <div className="text-center mb-6 sm:mb-8">
             <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-red-500 to-orange-500 mb-3 sm:mb-4">
               <Merge className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">PDF Merger</h1>
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">PDF Merger</h1>
             <p className="text-sm sm:text-base text-gray-900 px-4">Combine multiple PDF files into one</p>
           </div>
 
@@ -113,24 +149,29 @@ export default function PDFMerger() {
 
                 <button
                   onClick={mergePDFs}
-                  disabled={files.length < 2}
+                  disabled={files.length < 2 || loading}
                   className="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Merge className="h-5 w-5" />
-                  <span>Merge PDFs</span>
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span>Merging PDFs...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Merge className="h-5 w-5" />
+                      <span>Merge PDFs</span>
+                    </>
+                  )}
                 </button>
               </>
             )}
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-800">
-                <strong>Note:</strong> PDF merging requires server-side processing. This interface demonstrates the UI. For production use, integrate with a PDF library like pdf-lib or a backend service.
-              </p>
-            </div>
           </div>
         </div>
       </main>
 
+      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <Footer />
     </div>
   )

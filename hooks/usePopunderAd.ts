@@ -3,6 +3,12 @@ let scriptLoading = false
 
 const loadPopunderScript = (): Promise<void> => {
   return new Promise((resolve, reject) => {
+    // Check if we're in browser environment
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      reject(new Error('Not in browser environment'))
+      return
+    }
+
     // If script is already loaded, resolve immediately
     if (scriptLoaded) {
       resolve()
@@ -43,36 +49,46 @@ const loadPopunderScript = (): Promise<void> => {
 }
 
 // Load script early when module loads (if in browser)
-if (typeof window !== 'undefined') {
-  // Load script on first page interaction or after a short delay
-  const loadEarly = () => {
-    loadPopunderScript().catch(() => {
-      // Silently fail if script can't load
-    })
-  }
-  
-  // Try to load on first user interaction
-  const events = ['mousedown', 'touchstart', 'keydown']
-  const loadOnInteraction = () => {
-    events.forEach(event => {
-      document.addEventListener(event, loadEarly, { once: true, passive: true })
-    })
-  }
-  
-  // Also try to load after page load
-  if (document.readyState === 'complete') {
-    setTimeout(loadEarly, 1000)
-  } else {
-    window.addEventListener('load', () => {
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  try {
+    // Load script on first page interaction or after a short delay
+    const loadEarly = () => {
+      loadPopunderScript().catch(() => {
+        // Silently fail if script can't load
+      })
+    }
+    
+    // Try to load on first user interaction
+    const events = ['mousedown', 'touchstart', 'keydown']
+    const loadOnInteraction = () => {
+      events.forEach(event => {
+        document.addEventListener(event, loadEarly, { once: true, passive: true })
+      })
+    }
+    
+    // Also try to load after page load
+    if (document.readyState === 'complete') {
       setTimeout(loadEarly, 1000)
-    })
+    } else {
+      window.addEventListener('load', () => {
+        setTimeout(loadEarly, 1000)
+      })
+    }
+    
+    loadOnInteraction()
+  } catch (error) {
+    // Silently fail if initialization fails
+    console.warn('Popunder ad initialization failed:', error)
   }
-  
-  loadOnInteraction()
 }
 
 export const usePopunderAd = () => {
   const triggerPopunder = async () => {
+    // Check if we're in browser environment
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return
+    }
+
     try {
       // Ensure script is loaded
       await loadPopunderScript()
@@ -124,7 +140,8 @@ export const usePopunderAd = () => {
         }
       }, 2000)
     } catch (error) {
-      console.error('Failed to trigger popunder ad:', error)
+      // Silently fail - don't break the app if popunder fails
+      console.warn('Failed to trigger popunder ad:', error)
     }
   }
 

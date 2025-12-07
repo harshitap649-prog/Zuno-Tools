@@ -61,7 +61,7 @@ export default function TodoList() {
             <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 mb-4">
               <CheckSquare className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Todo List</h1>
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">Todo List</h1>
             <p className="text-gray-900">Manage your tasks efficiently</p>
           </div>
 

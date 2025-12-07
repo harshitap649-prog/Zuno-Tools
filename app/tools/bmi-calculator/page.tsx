@@ -68,7 +68,7 @@ export default function BMICalculator() {
             <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 mb-4">
               <Activity className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">BMI Calculator</h1>
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">BMI Calculator</h1>
             <p className="text-gray-900">Calculate your Body Mass Index</p>
           </div>
 

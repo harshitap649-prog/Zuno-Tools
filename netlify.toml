@@ -1,10 +1,11 @@
 [build]
   command = "npm install && npm run build"
-  publish = ".next"
+  # Publish directory is automatically handled by @netlify/plugin-nextjs
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_FLAGS = "--legacy-peer-deps"
+  NODE_OPTIONS = "--max-old-space-size=4096"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

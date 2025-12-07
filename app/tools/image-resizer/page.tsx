@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Footer from '@/components/Footer'
+import SidebarAd from '@/components/SidebarAd'
+import MobileBottomAd from '@/components/MobileBottomAd'
 import { Upload, Download, X, Maximize2, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { usePopunderAd } from '@/hooks/usePopunderAd'
@@ -170,18 +172,18 @@ export default function ImageResizer() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-blue-50/30 to-cyan-50/20">
+      {/* Sidebar Ads for Desktop */}
+      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      
       <main className="flex-grow py-4 sm:py-6 md:py-8">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="inline-flex p-2 sm:p-3 rounded-xl bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600 mb-4 shadow-lg shadow-blue-500/20">
-              <Maximize2 className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+          <div className="text-center mb-8">
+            <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 mb-4">
+              <Maximize2 className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
-              Image Resizer
-            </h1>
-            <p className="text-xs sm:text-sm text-gray-600 px-2 max-w-2xl mx-auto">
-              Resize images to any dimension while maintaining quality
-            </p>
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">Image Resizer</h1>
+            <p className="text-gray-900">Resize images to any dimension while maintaining quality</p>
           </div>
 
           <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl border border-white/20 p-3 sm:p-4 md:p-6">
@@ -468,6 +470,7 @@ export default function ImageResizer() {
         </div>
       </main>
 
+      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <Footer />
     </div>
   )

@@ -23,7 +23,7 @@ html {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: transparent;
+  background: #ffffff;
   min-height: 100vh;
   position: relative;
 }
@@ -38,6 +38,16 @@ body {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
+  
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Custom scrollbar */
@@ -46,16 +56,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f5b8d1;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #f0a8c8;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #e89bb8;
 }
 
 /* Mobile optimizations */
@@ -76,4 +86,45 @@ body {
     min-height: 44px;
     min-width: 44px;
   }
+}
+
+/* Gradient text animation */
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+/* Text selection styles - make selected text black and visible */
+::selection {
+  background-color: #f5b8d1; /* Pink highlight */
+  color: #000000; /* Black text */
+}
+
+::-moz-selection {
+  background-color: #f5b8d1; /* Pink highlight */
+  color: #000000; /* Black text */
+}
+
+/* Ensure all input, select, and textarea have black text when selected */
+input::selection,
+select::selection,
+textarea::selection {
+  background-color: #f5b8d1;
+  color: #000000;
+}
+
+input::-moz-selection,
+select::-moz-selection,
+textarea::-moz-selection {
+  background-color: #f5b8d1;
+  color: #000000;
 }

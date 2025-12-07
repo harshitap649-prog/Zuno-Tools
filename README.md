@@ -42,18 +42,21 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ## Deployment
 
-### Deploy to Vercel (Recommended)
+### 🚀 Deploy to Netlify (Recommended for this project)
+
+**Complete step-by-step guide:** See [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md)
+
+Quick steps:
+1. Push your code to GitHub
+2. Import your repository on [Netlify](https://netlify.com)
+3. Netlify will automatically detect Next.js and deploy using `netlify.toml`
+4. Your site will be live in minutes!
+
+### Deploy to Vercel
 
 1. Push your code to GitHub
 2. Import your repository on [Vercel](https://vercel.com)
 3. Vercel will automatically detect Next.js and deploy
-
-### Deploy to Netlify
-
-1. Push your code to GitHub
-2. Import your repository on [Netlify](https://netlify.com)
-3. Build command: `npm run build`
-4. Publish directory: `.next`
 
 ### Deploy to GitHub Pages
 

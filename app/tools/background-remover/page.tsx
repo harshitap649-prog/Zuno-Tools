@@ -2,10 +2,25 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
+import dynamic from 'next/dynamic'
 import Footer from '@/components/Footer'
-import { Upload, Download, X, Loader2, Scissors, Palette } from 'lucide-react'
+import { Upload, Download, X, Loader2, Scissors, Palette, Share2, Copy, History, Settings, Trash2, Maximize2, Image as ImageIcon, FileText, BarChart3, RotateCw, ZoomIn, ZoomOut, Check, RefreshCw, Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { usePopunderAd } from '@/hooks/usePopunderAd'
+
+// Dynamically import ad components to avoid SSR issues
+const SidebarAd = dynamic(() => import('@/components/SidebarAd'), { ssr: false })
+const MobileBottomAd = dynamic(() => import('@/components/MobileBottomAd'), { ssr: false })
+
+interface ProcessedImage {
+  id: string
+  original: string
+  processed: string
+  originalSize: number
+  processedSize: number
+  timestamp: number
+  dimensions: { width: number; height: number }
+}
 
 export default function BackgroundRemover() {
   const [image, setImage] = useState<string | null>(null)
@@ -14,20 +29,54 @@ export default function BackgroundRemover() {
   const [modelLoading, setModelLoading] = useState(false)
   const [selectedColor, setSelectedColor] = useState<{ r: number; g: number; b: number } | null>(null)
   const [colorPickerMode, setColorPickerMode] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
+  const [history, setHistory] = useState<ProcessedImage[]>([])
+  const [showSettings, setShowSettings] = useState(false)
+  const [backgroundColor, setBackgroundColor] = useState<string>('transparent')
+  const [outputFormat, setOutputFormat] = useState<'png' | 'jpg' | 'webp'>('png')
+  const [comparisonMode, setComparisonMode] = useState<'side-by-side' | 'split' | 'overlay'>('side-by-side')
+  const [zoom, setZoom] = useState(1)
+  const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null)
+  const [processedDimensions, setProcessedDimensions] = useState<{ width: number; height: number } | null>(null)
+  const [originalSize, setOriginalSize] = useState(0)
+  const [processedSize, setProcessedSize] = useState(0)
+  const [copied, setCopied] = useState(false)
+  const [showStats, setShowStats] = useState(true)
   const imageRef = useRef<HTMLImageElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const modelLoadedRef = useRef(false)
   const { triggerPopunder } = usePopunderAd()
 
+  // Load history on mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('background-remover-history')
+    if (savedHistory) {
+      try {
+        setHistory(JSON.parse(savedHistory))
+      } catch (e) {
+        console.error('Failed to load history:', e)
+      }
+    }
+  }, [])
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
     if (file) {
+      setOriginalSize(file.size)
       const reader = new FileReader()
       reader.onload = () => {
+        const img = new Image()
+        img.src = reader.result as string
+        img.onload = () => {
+          setOriginalDimensions({ width: img.width, height: img.height })
         setImage(reader.result as string)
         setProcessedImage(null)
         setSelectedColor(null)
         setColorPickerMode(false)
+          setZoom(1)
+          setProcessedSize(0)
+          setProcessedDimensions(null)
+        }
       }
       reader.readAsDataURL(file)
     }
@@ -114,6 +163,12 @@ export default function BackgroundRemover() {
       return
     }
 
+    // Validate image format
+    if (!image.startsWith('data:image/') && !image.startsWith('http://') && !image.startsWith('https://')) {
+      toast.error('Invalid image format. Please upload a valid image file.')
+      return
+    }
+
     setLoading(true)
     let timeoutId: NodeJS.Timeout | null = null
     let processingTimeout: NodeJS.Timeout | null = null
@@ -146,15 +201,38 @@ export default function BackgroundRemover() {
       // Convert data URL to blob
       let blob: Blob
       try {
+        // Check if image is a data URL
+        if (image.startsWith('data:')) {
+          // Convert data URL directly to blob
+          const base64Data = image.split(',')[1]
+          if (!base64Data) {
+            throw new Error('Invalid image data URL')
+          }
+          const byteCharacters = atob(base64Data)
+          const byteNumbers = new Array(byteCharacters.length)
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i)
+          }
+          const byteArray = new Uint8Array(byteNumbers)
+          // Determine MIME type from data URL
+          const mimeMatch = image.match(/data:([^;]+);/)
+          const mimeType = mimeMatch ? mimeMatch[1] : 'image/png'
+          blob = new Blob([byteArray], { type: mimeType })
+        } else {
+          // Try to fetch if it's a URL
         const response = await fetch(image)
         if (!response.ok) {
           throw new Error('Failed to fetch image')
         }
         blob = await response.blob()
+        }
       } catch (fetchError) {
         console.error('Fetch error:', fetchError)
-        // Fallback: convert data URL directly to blob
+        // Final fallback: convert data URL directly to blob
+        if (image.includes(',')) {
         const base64Data = image.split(',')[1]
+          if (base64Data) {
+            try {
         const byteCharacters = atob(base64Data)
         const byteNumbers = new Array(byteCharacters.length)
         for (let i = 0; i < byteCharacters.length; i++) {
@@ -162,6 +240,19 @@ export default function BackgroundRemover() {
         }
         const byteArray = new Uint8Array(byteNumbers)
         blob = new Blob([byteArray], { type: 'image/png' })
+            } catch (e) {
+              throw new Error('Failed to process image data. Please try uploading the image again.')
+            }
+          } else {
+            throw new Error('Invalid image format. Please try uploading the image again.')
+          }
+        } else {
+          throw new Error('Failed to load image. Please try uploading the image again.')
+        }
+      }
+      
+      if (!blob || blob.size === 0) {
+        throw new Error('Invalid image file. Please try uploading a different image.')
       }
       
       // Limit image size for performance
@@ -201,9 +292,14 @@ export default function BackgroundRemover() {
       const options: any = {
         outputFormat: 'image/png',
         progress: (key: string, current: number, total: number) => {
+          try {
           const percentage = Math.round((current / total) * 100)
           if (percentage % 10 === 0 || percentage === 100) {
             toast.loading(`Processing: ${percentage}%`, { id: 'processing' })
+            }
+          } catch (progressError) {
+            // Ignore progress errors
+            console.warn('Progress update error:', progressError)
           }
         }
       }
@@ -258,13 +354,37 @@ export default function BackgroundRemover() {
       }
       
       // Call the background removal function
-      const blobResult = await removeBg(finalBlob, options)
+      let blobResult: Blob
+      try {
+        const result = await removeBg(finalBlob, options)
+        
+        if (!result) {
+          throw new Error('Background removal returned no result')
+        }
+        
+        // Ensure result is a Blob
+        if (result instanceof Blob) {
+          blobResult = result
+        } else if (result && typeof result === 'object' && 'blob' in result) {
+          blobResult = (result as any).blob
+        } else {
+          throw new Error('Invalid result format from background removal')
+        }
+      } catch (bgError: any) {
+        if (processingTimeout) clearTimeout(processingTimeout)
+        console.error('Background removal library error:', bgError)
+        
+        // Check if it's a specific error we can handle
+        if (bgError && typeof bgError === 'object' && bgError.message) {
+          throw new Error(String(bgError.message))
+        } else if (typeof bgError === 'string') {
+          throw new Error(bgError)
+        } else {
+          throw new Error('Background removal failed. Please try again with a different image.')
+        }
+      }
       
       if (processingTimeout) clearTimeout(processingTimeout)
-      
-      if (!blobResult) {
-        throw new Error('Background removal returned no result')
-      }
       
       // Convert blob to data URL
       const reader = new FileReader()
@@ -281,14 +401,70 @@ export default function BackgroundRemover() {
       })
       
       setProcessedImage(dataUrl)
+      
+      // Calculate processed image size and dimensions
+      const img = new Image()
+      img.src = dataUrl
+      await new Promise((resolve) => {
+        img.onload = () => {
+          setProcessedDimensions({ width: img.width, height: img.height })
+          // Estimate size from data URL
+          const base64Length = dataUrl.length - dataUrl.indexOf(',') - 1
+          const sizeBytes = Math.ceil(base64Length * 0.75)
+          setProcessedSize(sizeBytes)
+          
+          // Save to history
+          const historyItem: ProcessedImage = {
+            id: Date.now().toString(),
+            original: image!,
+            processed: dataUrl,
+            originalSize,
+            processedSize: sizeBytes,
+            timestamp: Date.now(),
+            dimensions: { width: img.width, height: img.height }
+          }
+          
+          const updatedHistory = [historyItem, ...history].slice(0, 20)
+          setHistory(updatedHistory)
+          localStorage.setItem('background-remover-history', JSON.stringify(updatedHistory))
+          
+          resolve(null)
+        }
+      })
+      
       toast.success('Background removed successfully!', { id: 'processing' })
+      
+      // Trigger popunder after processing
+      setTimeout(() => {
+        triggerPopunder()
+      }, 2000)
     } catch (error) {
       console.error('Background removal error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       
-      if (errorMessage.includes('timeout')) {
+      // Safely extract error message
+      let errorMessage = 'Unknown error'
+      try {
+        if (error instanceof Error) {
+          errorMessage = error.message || String(error)
+        } else if (typeof error === 'string') {
+          errorMessage = error
+        } else if (error && typeof error === 'object' && 'message' in error) {
+          errorMessage = String((error as any).message || error)
+        } else {
+          errorMessage = String(error)
+        }
+      } catch (e) {
+        errorMessage = 'An unexpected error occurred'
+      }
+      
+      // Ensure errorMessage is a string and safe to use
+      if (typeof errorMessage !== 'string') {
+        errorMessage = 'An unexpected error occurred'
+      }
+      
+      if (errorMessage.includes('timeout') || errorMessage.toLowerCase().includes('timeout')) {
         toast.error('Processing took too long. Try a smaller image or refresh the page.', { id: 'processing' })
-      } else if (errorMessage.includes('Failed to load')) {
+      } else if (errorMessage.includes('Failed to load') || errorMessage.includes('load')) {
         toast.error('Failed to load AI model. Please refresh the page and try again.', { id: 'processing' })
       } else {
         toast.error(`Failed to remove background: ${errorMessage}. Please try again.`, { id: 'processing' })
@@ -300,16 +476,125 @@ export default function BackgroundRemover() {
     }
   }
 
-  const downloadImage = () => {
+  const downloadImage = (processedImg?: string, filename?: string) => {
+    const imgToDownload = processedImg || processedImage
+    if (!imgToDownload) return
+    
+    // Convert to desired format if needed
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.src = imgToDownload
+    
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        toast.error('Failed to prepare download')
+        return
+      }
+      
+      canvas.width = img.width
+      canvas.height = img.height
+      
+      // Fill background if not transparent
+      if (backgroundColor !== 'transparent') {
+        ctx.fillStyle = backgroundColor
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+      }
+      
+      ctx.drawImage(img, 0, 0)
+      
+      // Convert to desired format
+      let mimeType = 'image/png'
+      let ext = 'png'
+      if (outputFormat === 'jpg') {
+        mimeType = 'image/jpeg'
+        ext = 'jpg'
+      } else if (outputFormat === 'webp') {
+        mimeType = 'image/webp'
+        ext = 'webp'
+      }
+      
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          toast.error('Failed to create image file')
+          return
+        }
+        
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.download = filename || `background-removed.${ext}`
+        link.href = url
+        link.click()
+        URL.revokeObjectURL(url)
+        toast.success('Image downloaded!')
+      }, mimeType, outputFormat === 'jpg' ? 0.95 : undefined)
+    }
+  }
+
+  const shareImage = async () => {
     if (!processedImage) return
     
-    const link = document.createElement('a')
-    link.download = 'background-removed.png'
-    link.href = processedImage
-    link.click()
+    try {
+      const response = await fetch(processedImage)
+      const blob = await response.blob()
+      const file = new File([blob], `background-removed.${outputFormat}`, { type: blob.type })
+      
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Background Removed Image',
+          text: 'Check out this image with background removed!'
+        })
+        toast.success('Image shared!')
+      } else {
+        copyImageToClipboard()
+      }
+    } catch (error: any) {
+      if (error.name !== 'AbortError') {
+        copyImageToClipboard()
+      }
+    }
+  }
+
+  const copyImageToClipboard = async () => {
+    if (!processedImage) return
     
-    // Trigger popunder ad after 2 seconds
-    triggerPopunder()
+    try {
+      const response = await fetch(processedImage)
+      const blob = await response.blob()
+      await navigator.clipboard.write([
+        new ClipboardItem({ [blob.type]: blob })
+      ])
+      setCopied(true)
+      toast.success('Image copied to clipboard!')
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      toast.error('Failed to copy image')
+    }
+  }
+
+  const loadHistoryItem = (item: ProcessedImage) => {
+    setImage(item.original)
+    setProcessedImage(item.processed)
+    setOriginalSize(item.originalSize)
+    setProcessedSize(item.processedSize)
+    setProcessedDimensions(item.dimensions)
+    setShowHistory(false)
+    toast.success('History item loaded!')
+  }
+
+  const deleteHistoryItem = (id: string) => {
+    const updated = history.filter(item => item.id !== id)
+    setHistory(updated)
+    localStorage.setItem('background-remover-history', JSON.stringify(updated))
+    toast.success('History item deleted!')
+  }
+
+  const clearHistory = () => {
+    setHistory([])
+    localStorage.removeItem('background-remover-history')
+    toast.success('History cleared!')
   }
 
   const reset = () => {
@@ -317,28 +602,245 @@ export default function BackgroundRemover() {
     setProcessedImage(null)
     setSelectedColor(null)
     setColorPickerMode(false)
+    setZoom(1)
+    setOriginalSize(0)
+    setProcessedSize(0)
+    setOriginalDimensions(null)
+    setProcessedDimensions(null)
+  }
+
+  const formatSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + ' B'
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB'
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+  }
+
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp)
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <main className="flex-grow py-12">
+    <div className="min-h-screen flex flex-col bg-white">
+      {/* Sidebar Ads for Desktop */}
+      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      
+      <main className="flex-grow py-6 sm:py-8 md:py-12 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 mb-4">
-              <Scissors className="h-8 w-8 text-white" />
+          <div className="text-center mb-4 sm:mb-6">
+            <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-pink-500 to-pink-400 mb-3 sm:mb-4 shadow-lg">
+              <Scissors className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Background Remover</h1>
-            <p className="text-gray-900">Remove backgrounds from your images instantly with AI</p>
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">Background Remover</h1>
+            <p className="text-sm sm:text-base text-gray-900">Remove backgrounds from your images instantly with AI</p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8">
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6 justify-center">
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg font-medium transition-all text-sm sm:text-base flex items-center gap-2 touch-manipulation active:scale-95"
+            >
+              <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span>Settings</span>
+            </button>
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg font-medium transition-all text-sm sm:text-base flex items-center gap-2 touch-manipulation active:scale-95"
+            >
+              <History className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span>History ({history.length})</span>
+            </button>
+            {image && (
+              <button
+                onClick={reset}
+                className="px-3 sm:px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg font-medium transition-all text-sm sm:text-base flex items-center gap-2 touch-manipulation active:scale-95"
+              >
+                <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span>Clear All</span>
+              </button>
+            )}
+          </div>
+
+          {/* Settings Panel */}
+          {showSettings && (
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  Settings
+                </h3>
+                <button
+                  onClick={() => setShowSettings(false)}
+                  className="text-gray-500 hover:text-gray-700 touch-manipulation active:scale-95"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Output Format</label>
+                  <div className="flex flex-wrap gap-2">
+                    {(['png', 'jpg', 'webp'] as const).map((fmt) => (
+                      <button
+                        key={fmt}
+                        onClick={() => setOutputFormat(fmt)}
+                        className={`px-3 py-1.5 rounded-lg font-medium transition-all text-xs sm:text-sm touch-manipulation active:scale-95 ${
+                          outputFormat === fmt
+                            ? 'bg-gradient-to-r from-pink-500 to-pink-400 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-900 hover:bg-pink-50 hover:border-pink-100'
+                        }`}
+                      >
+                        {fmt.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Background Color (for non-transparent formats)</label>
+                  <div className="flex flex-wrap gap-2 items-center">
+                    <input
+                      type="color"
+                      value={backgroundColor === 'transparent' ? '#ffffff' : backgroundColor}
+                      onChange={(e) => setBackgroundColor(e.target.value)}
+                      className="w-12 h-12 rounded border-2 border-gray-300 cursor-pointer"
+                      disabled={outputFormat === 'png'}
+                    />
+                    <button
+                      onClick={() => setBackgroundColor('transparent')}
+                      className={`px-3 py-1.5 rounded-lg font-medium transition-all text-xs sm:text-sm touch-manipulation active:scale-95 ${
+                        backgroundColor === 'transparent'
+                          ? 'bg-gradient-to-r from-pink-500 to-pink-400 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-900 hover:bg-pink-50 hover:border-pink-100'
+                      }`}
+                      disabled={outputFormat !== 'png'}
+                    >
+                      Transparent
+                    </button>
+                    <input
+                      type="text"
+                      value={backgroundColor}
+                      onChange={(e) => setBackgroundColor(e.target.value)}
+                      placeholder="#ffffff"
+                      className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-900 w-24"
+                      disabled={outputFormat === 'png'}
+                    />
+                  </div>
+                  {outputFormat === 'png' && (
+                    <p className="text-xs text-gray-500 mt-1">PNG format always uses transparent background</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Comparison Mode</label>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setComparisonMode('side-by-side')}
+                      className={`px-3 py-1.5 rounded-lg font-medium transition-all text-xs sm:text-sm touch-manipulation active:scale-95 ${
+                        comparisonMode === 'side-by-side'
+                          ? 'bg-gradient-to-r from-pink-500 to-pink-400 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-900 hover:bg-pink-50 hover:border-pink-100'
+                      }`}
+                    >
+                      Side by Side
+                    </button>
+                    <button
+                      onClick={() => setComparisonMode('split')}
+                      className={`px-3 py-1.5 rounded-lg font-medium transition-all text-xs sm:text-sm touch-manipulation active:scale-95 ${
+                        comparisonMode === 'split'
+                          ? 'bg-gradient-to-r from-pink-500 to-pink-400 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-900 hover:bg-pink-50 hover:border-pink-100'
+                      }`}
+                    >
+                      Split View
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* History Panel */}
+          {showHistory && (
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 max-h-96 overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <History className="h-5 w-5" />
+                  History ({history.length})
+                </h3>
+                <div className="flex gap-2">
+                  {history.length > 0 && (
+                    <button
+                      onClick={clearHistory}
+                      className="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs sm:text-sm font-medium transition-all touch-manipulation active:scale-95"
+                    >
+                      Clear All
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setShowHistory(false)}
+                    className="text-gray-500 hover:text-gray-700 touch-manipulation active:scale-95"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+              {history.length === 0 ? (
+                <p className="text-gray-400 text-center py-8">No history yet</p>
+              ) : (
+                <div className="space-y-3">
+                  {history.map((item) => (
+                    <div key={item.id} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-start gap-3">
+                        <img src={item.processed} alt="Processed" className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded bg-gray-100" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs sm:text-sm text-gray-500 mb-1">{formatDate(item.timestamp)}</p>
+                          <p className="text-xs sm:text-sm text-gray-900 font-medium">
+                            {formatSize(item.originalSize)} → {formatSize(item.processedSize)}
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            {item.dimensions.width} × {item.dimensions.height}px
+                          </p>
+                        </div>
+                        <div className="flex flex-col gap-1 sm:gap-2">
+                          <button
+                            onClick={() => loadHistoryItem(item)}
+                            className="p-1.5 sm:p-2 bg-pink-50 hover:bg-pink-100 text-pink-500 rounded-lg transition-colors touch-manipulation active:scale-95"
+                            title="Load"
+                          >
+                            <ImageIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                          </button>
+                          <button
+                            onClick={() => downloadImage(item.processed, `background-removed-${item.id}.${outputFormat}`)}
+                            className="p-1.5 sm:p-2 bg-pink-50 hover:bg-pink-100 text-pink-500 rounded-lg transition-colors touch-manipulation active:scale-95"
+                            title="Download"
+                          >
+                            <Download className="h-4 w-4 sm:h-5 sm:w-5" />
+                          </button>
+                          <button
+                            onClick={() => deleteHistoryItem(item.id)}
+                            className="p-1.5 sm:p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors touch-manipulation active:scale-95"
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8">
             {!image ? (
               <div
                 {...getRootProps()}
                 className={`border-2 border-dashed rounded-lg p-6 sm:p-8 md:p-12 text-center cursor-pointer transition-colors touch-manipulation ${
                   isDragActive
-                    ? 'border-primary-500 bg-primary-50'
-                    : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50 active:bg-primary-50'
+                    ? 'border-pink-300 bg-pink-50'
+                    : 'border-gray-300 hover:border-pink-300 hover:bg-pink-50 active:bg-pink-50'
                 }`}
               >
                 <input {...getInputProps()} />
@@ -350,24 +852,59 @@ export default function BackgroundRemover() {
                 <p className="text-xs text-gray-400 mt-2">Supports: PNG, JPG, JPEG, WEBP</p>
               </div>
             ) : (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-semibold text-gray-900">Your Image</h2>
+              <div className="space-y-4 sm:space-y-6">
+                {/* Statistics */}
+                {showStats && (originalSize > 0 || processedSize > 0) && (
+                  <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500" />
+                      <h4 className="text-sm sm:text-base font-semibold text-gray-900">Image Information</h4>
                   <button
-                    onClick={reset}
-                    className="flex items-center space-x-2 text-gray-900 hover:text-gray-900"
+                        onClick={() => setShowStats(false)}
+                        className="ml-auto text-gray-400 hover:text-gray-600"
                   >
-                    <X className="h-5 w-5" />
-                    <span>Remove</span>
+                        <X className="h-4 w-4" />
                   </button>
                 </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                      {originalSize > 0 && (
+                        <div>
+                          <p className="text-xs sm:text-sm text-gray-600">Original Size</p>
+                          <p className="text-sm sm:text-base font-bold text-gray-900">{formatSize(originalSize)}</p>
+                        </div>
+                      )}
+                      {originalDimensions && (
+                        <div>
+                          <p className="text-xs sm:text-sm text-gray-600">Dimensions</p>
+                          <p className="text-sm sm:text-base font-bold text-gray-900">
+                            {originalDimensions.width} × {originalDimensions.height}px
+                          </p>
+                        </div>
+                      )}
+                      {processedSize > 0 && (
+                        <div>
+                          <p className="text-xs sm:text-sm text-gray-600">Processed Size</p>
+                          <p className="text-sm sm:text-base font-bold text-pink-500">{formatSize(processedSize)}</p>
+                        </div>
+                      )}
+                      {processedDimensions && (
+                        <div>
+                          <p className="text-xs sm:text-sm text-gray-600">Processed</p>
+                          <p className="text-sm sm:text-base font-bold text-pink-500">
+                            {processedDimensions.width} × {processedDimensions.height}px
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Color Picker Section */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-pink-50 border border-pink-100 rounded-lg p-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <Palette className="h-4 w-4 text-blue-600" />
+                        <Palette className="h-4 w-4 text-pink-500" />
                         <span className="text-sm font-medium text-gray-900">Background Color Selector</span>
                       </div>
                       <p className="text-xs text-gray-900">
@@ -404,8 +941,8 @@ export default function BackgroundRemover() {
                       }}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                         colorPickerMode
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-white text-blue-600 border border-blue-300 hover:bg-blue-50'
+                          ? 'bg-gradient-to-r from-pink-500 to-pink-400 text-white hover:from-pink-500 hover:to-pink-400 shadow-md'
+                          : 'bg-white text-pink-500 border border-pink-100 hover:bg-pink-50'
                       }`}
                     >
                       {colorPickerMode ? 'Cancel Picker' : 'Pick Background Color'}
@@ -454,11 +991,12 @@ export default function BackgroundRemover() {
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   <button
                     onClick={removeBackground}
                     disabled={loading}
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm sm:text-base active:scale-95 touch-manipulation"
+                    className="flex-1 bg-gradient-to-r from-pink-500 to-pink-400 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base active:scale-95 touch-manipulation shadow-md"
                   >
                     {loading ? (
                       <>
@@ -474,13 +1012,33 @@ export default function BackgroundRemover() {
                   </button>
 
                   {processedImage && (
+                    <>
                     <button
-                      onClick={downloadImage}
-                      className="flex items-center justify-center space-x-2 bg-primary-600 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-sm sm:text-base active:scale-95 touch-manipulation"
+                        onClick={() => downloadImage(undefined, undefined)}
+                        className="px-4 sm:px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-500 hover:to-pink-400 text-white rounded-lg font-semibold transition-colors text-sm sm:text-base flex items-center justify-center gap-2 active:scale-95 touch-manipulation shadow-md"
                     >
                       <Download className="h-4 w-4 sm:h-5 sm:w-5" />
-                      <span>Download</span>
+                        <span className="hidden sm:inline">Download</span>
+                      </button>
+                      <button
+                        onClick={shareImage}
+                        className="px-4 sm:px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-500 hover:to-pink-400 text-white rounded-lg font-semibold transition-colors text-sm sm:text-base flex items-center justify-center gap-2 active:scale-95 touch-manipulation shadow-md"
+                      >
+                        <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                        <span className="hidden sm:inline">Share</span>
+                      </button>
+                      <button
+                        onClick={copyImageToClipboard}
+                        className="px-4 sm:px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-500 hover:to-pink-400 text-white rounded-lg font-semibold transition-colors text-sm sm:text-base flex items-center justify-center gap-2 active:scale-95 touch-manipulation shadow-md"
+                      >
+                        {copied ? (
+                          <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                        ) : (
+                          <Copy className="h-4 w-4 sm:h-5 sm:w-5" />
+                        )}
+                        <span className="hidden sm:inline">Copy</span>
                     </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -489,6 +1047,7 @@ export default function BackgroundRemover() {
         </div>
       </main>
 
+      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <Footer />
     </div>
   )

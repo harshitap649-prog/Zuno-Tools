@@ -69,7 +69,7 @@ export default function MobileBottomNav() {
             favorites.length > 0 ? 'text-pink-500' : 'text-gray-600 hover:text-pink-500'
           }`}
         >
-          <Heart className={`h-6 w-6 mb-1 ${favorites.length > 0 ? 'fill-pink-500 text-pink-500' : ''}`} strokeWidth={2.5} />
+          <Heart className={`h-6 w-6 mb-1 ${favorites.length > 0 ? 'fill-red-500 text-red-500' : ''}`} strokeWidth={2.5} />
           <span className="text-[10px] font-medium">Favorites</span>
         </button>
 

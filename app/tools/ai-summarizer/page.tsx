@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Footer from '@/components/Footer'
+import SidebarAd from '@/components/SidebarAd'
+import MobileBottomAd from '@/components/MobileBottomAd'
 import { Sparkles, Loader2, Copy, Check } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -50,14 +52,18 @@ export default function AISummarizer() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* Sidebar Ads for Desktop */}
+      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 mb-3 sm:mb-4">
-              <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+          <div className="text-center mb-8">
+            <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 mb-4">
+              <Sparkles className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">AI Summarizer</h1>
-            <p className="text-sm sm:text-base text-gray-900 px-4">Summarize long texts and documents instantly</p>
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">AI Summarizer</h1>
+            <p className="text-gray-900">Summarize long texts and documents instantly</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
@@ -137,6 +143,7 @@ export default function AISummarizer() {
         </div>
       </main>
 
+      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <Footer />
     </div>
   )
