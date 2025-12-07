@@ -5,6 +5,11 @@ const nextConfig = {
     domains: ['localhost'],
     unoptimized: true,
   },
+  // Optimize for Netlify
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
