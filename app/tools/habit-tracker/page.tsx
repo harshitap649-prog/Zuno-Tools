@@ -140,7 +140,7 @@ export default function HabitTracker() {
     )
 
     if (alreadyCompleted && dateString === today) {
-      toast.info('Already completed today!', { duration: 2000 })
+      toast('Already completed today!', { duration: 2000, icon: 'ℹ️' })
       return
     }
 

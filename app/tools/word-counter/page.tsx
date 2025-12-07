@@ -334,7 +334,7 @@ export default function WordCounter() {
       }
     } else {
       // DOCX would require a library, for now export as text
-      toast.info('DOCX export requires additional library. Exporting as TXT instead.')
+      toast('DOCX export requires additional library. Exporting as TXT instead.', { icon: 'ℹ️' })
       exportToFile('txt')
     }
   }

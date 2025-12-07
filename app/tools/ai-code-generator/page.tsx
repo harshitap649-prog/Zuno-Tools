@@ -26,7 +26,7 @@ export default function AICodeGenerator() {
     }
 
     setLoading(true)
-    toast.info('AI code generation requires an API key. This is a demo interface.')
+    toast('AI code generation requires an API key. This is a demo interface.', { icon: 'ℹ️' })
     
     // Simulate API call
     setTimeout(() => {
