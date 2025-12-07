@@ -1,5 +1,5 @@
 [build]
-  command = "npm ci && npm run build"
+  command = "npm install && npm run build"
   # Publish directory is automatically handled by @netlify/plugin-nextjs
 
 [build.environment]
