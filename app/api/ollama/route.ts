@@ -60,7 +60,7 @@ Code:`
       }
       
       const errorText = await response.text().catch(() => '')
-      let errorData = {}
+      let errorData: { error?: string; [key: string]: any } = {}
       try {
         errorData = JSON.parse(errorText)
       } catch {
