@@ -244,10 +244,10 @@ export default function WordCounter() {
     let result = text
     if (type === 'lines') {
       const lines = text.split('\n')
-      result = [...new Set(lines)].join('\n')
+      result = Array.from(new Set(lines)).join('\n')
     } else {
       const words = text.split(/\s+/)
-      result = [...new Set(words)].join(' ')
+      result = Array.from(new Set(words)).join(' ')
     }
     setText(result)
     toast.success(`Removed duplicate ${type}`)
