@@ -13,11 +13,6 @@ export default function Navbar() {
     { href: '/', label: 'Home' },
   ]
 
-  // Hide navbar on specific pages
-  if (pathname === '/tools/ai-resume-builder' || pathname === '/tools/image-resizer' || pathname === '/tools/meme-generator' || pathname === '/tools/text-to-speech' || pathname === '/tools/age-calculator' || pathname === '/tools/instagram-bio-generator') {
-    return null
-  }
-
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
