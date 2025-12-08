@@ -25,7 +25,7 @@ interface ImageFile {
   format: string
 }
 
-type Format = 'png' | 'jpg' | 'webp' | 'gif' | 'bmp' | 'ico'
+type Format = 'png' | 'jpg' | 'jpeg' | 'webp' | 'gif' | 'bmp' | 'ico'
 
 export default function ImageConverter() {
   const [images, setImages] = useState<ImageFile[]>([])
