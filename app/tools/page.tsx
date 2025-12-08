@@ -587,6 +587,7 @@ export default function ToolsPage() {
                   <div className="relative group">
                     <Link
                       href={`/tools/${tool.id}`}
+                      prefetch
                       className="block bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200/80 flex flex-col active:scale-95 touch-manipulation hover:-translate-y-0.5 hover:border-gray-300"
                     >
                       <div className={`h-1.5 bg-gradient-to-r ${tool.color} opacity-95`}></div>
@@ -625,7 +626,7 @@ export default function ToolsPage() {
                     className="flex absolute top-2 right-2 p-1 sm:p-2 bg-white/95 backdrop-blur-md rounded-full shadow-lg hover:shadow-xl transition-all touch-manipulation active:scale-90 z-10 items-center justify-center border border-gray-200/60 hover:border-gray-300 hover:bg-gray-50/80"
                     aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                   >
-                    <Heart className={`h-4 w-4 sm:h-4.5 sm:w-4.5 transition-all duration-200 ${isFavorite ? 'fill-red-500 text-red-500 scale-110' : 'text-gray-400 hover:text-gray-500'}`} />
+                    <Heart className={`h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 transition-all duration-200 ${isFavorite ? 'fill-red-500 text-red-500 scale-110' : 'text-gray-400 hover:text-gray-500'}`} />
                   </button>
                   </div>
                   {(index + 1) % 10 === 0 && (
