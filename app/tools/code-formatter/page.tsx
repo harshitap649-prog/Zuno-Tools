@@ -566,7 +566,7 @@ export default function CodeFormatter() {
                   {formattedCode && (
                     <div className="flex gap-2">
                       <button
-                        onClick={copyToClipboard}
+                        onClick={() => copyToClipboard()}
                         className="flex items-center space-x-1 text-indigo-600 hover:text-indigo-700 text-xs sm:text-sm px-2 py-1 rounded touch-manipulation active:scale-95"
                       >
                         {copied ? (
