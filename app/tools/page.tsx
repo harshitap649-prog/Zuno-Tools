@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect, useRef } from 'react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import MobileBottomNav from '@/components/MobileBottomNav'
@@ -558,7 +558,7 @@ export default function ToolsPage() {
           {/* Tools Grid */}
           {filteredTools.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-              {filteredTools.map((tool) => {
+              {filteredTools.map((tool, index) => {
               const Icon = tool.icon
               if (!Icon) {
                 console.error(`Icon is undefined for tool: ${tool.id}`)
@@ -566,50 +566,57 @@ export default function ToolsPage() {
               }
               const isFavorite = favorites.includes(tool.id)
               return (
-                <div key={tool.id} className="relative group">
-                  <Link
-                    href={`/tools/${tool.id}`}
-                    className="block bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200/80 flex flex-col active:scale-95 touch-manipulation hover:-translate-y-0.5 hover:border-gray-300"
-                  >
-                    <div className={`h-1.5 bg-gradient-to-r ${tool.color} opacity-95`}></div>
-                    <div className="p-4 sm:p-5 lg:p-6 flex flex-col items-center text-center flex-grow relative">
-                      {/* Icon with enhanced styling */}
-                      <div className="relative mb-3 sm:mb-4">
-                        <div className={`inline-flex p-3 sm:p-3.5 lg:p-4 rounded-2xl bg-gradient-to-r ${tool.color} group-hover:scale-105 transition-transform duration-300 shadow-xl group-hover:shadow-2xl`}>
-                          {Icon && <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" strokeWidth={2.5} />}
+                <React.Fragment key={tool.id}>
+                  <div className="relative group">
+                    <Link
+                      href={`/tools/${tool.id}`}
+                      className="block bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200/80 flex flex-col active:scale-95 touch-manipulation hover:-translate-y-0.5 hover:border-gray-300"
+                    >
+                      <div className={`h-1.5 bg-gradient-to-r ${tool.color} opacity-95`}></div>
+                      <div className="p-4 sm:p-5 lg:p-6 flex flex-col items-center text-center flex-grow relative">
+                        {/* Icon with enhanced styling */}
+                        <div className="relative mb-3 sm:mb-4">
+                          <div className={`inline-flex p-3 sm:p-3.5 lg:p-4 rounded-2xl bg-gradient-to-r ${tool.color} group-hover:scale-105 transition-transform duration-300 shadow-xl group-hover:shadow-2xl`}>
+                            {Icon && <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" strokeWidth={2.5} />}
+                          </div>
+                          {/* Subtle glow behind icon */}
+                          <div className={`absolute inset-0 bg-gradient-to-r ${tool.color} rounded-2xl blur-lg opacity-15 group-hover:opacity-25 transition-opacity duration-300 -z-10 scale-110`}></div>
                         </div>
-                        {/* Subtle glow behind icon */}
-                        <div className={`absolute inset-0 bg-gradient-to-r ${tool.color} rounded-2xl blur-lg opacity-15 group-hover:opacity-25 transition-opacity duration-300 -z-10 scale-110`}></div>
+                        
+                        {/* Category badge */}
+                        <div className="mb-2">
+                          <span className="text-[10px] sm:text-xs font-semibold text-gray-700 bg-gray-100 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg border border-gray-200/60">
+                            {tool.category}
+                          </span>
+                        </div>
+                        
+                        {/* Tool name */}
+                        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 group-hover:text-gray-800 transition-colors leading-tight line-clamp-2">
+                          {tool.name}
+                        </h3>
+                        
+                        {/* Description */}
+                        <p className="text-gray-600 text-xs sm:text-sm lg:text-xs leading-relaxed line-clamp-3 flex-grow">
+                          {tool.description}
+                        </p>
                       </div>
-                      
-                      {/* Category badge */}
-                      <div className="mb-2">
-                        <span className="text-[10px] sm:text-xs font-semibold text-gray-700 bg-gray-100 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg border border-gray-200/60">
-                          {tool.category}
-                        </span>
-                      </div>
-                      
-                      {/* Tool name */}
-                      <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 group-hover:text-gray-800 transition-colors leading-tight line-clamp-2">
-                        {tool.name}
-                      </h3>
-                      
-                      {/* Description */}
-                      <p className="text-gray-600 text-xs sm:text-sm lg:text-xs leading-relaxed line-clamp-3 flex-grow">
-                        {tool.description}
-                      </p>
+                    </Link>
+                    
+                    {/* Favorite button */}
+                    <button
+                      onClick={(e) => toggleFavorite(tool.id, e)}
+                      className="hidden md:flex absolute top-2 right-2 p-1 sm:p-2 bg-white/95 backdrop-blur-md rounded-full shadow-lg hover:shadow-xl transition-all touch-manipulation active:scale-90 z-10 items-center justify-center border border-gray-200/60 hover:border-gray-300 hover:bg-gray-50/80"
+                      aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                      <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 transition-all duration-200 ${isFavorite ? 'fill-red-500 text-red-500 scale-110' : 'text-gray-400 hover:text-gray-500'}`} />
+                    </button>
+                  </div>
+                  {(index + 1) % 10 === 0 && (
+                    <div className="col-span-2 sm:col-span-2 lg:hidden">
+                      <MobileBottomAd />
                     </div>
-                  </Link>
-                  
-                  {/* Favorite button */}
-                  <button
-                    onClick={(e) => toggleFavorite(tool.id, e)}
-                    className="hidden md:flex absolute top-2 right-2 p-1 sm:p-2 bg-white/95 backdrop-blur-md rounded-full shadow-lg hover:shadow-xl transition-all touch-manipulation active:scale-90 z-10 items-center justify-center border border-gray-200/60 hover:border-gray-300 hover:bg-gray-50/80"
-                    aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                  >
-                    <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 transition-all duration-200 ${isFavorite ? 'fill-red-500 text-red-500 scale-110' : 'text-gray-400 hover:text-gray-500'}`} />
-                  </button>
-                </div>
+                  )}
+                </React.Fragment>
               )
             })}
             </div>

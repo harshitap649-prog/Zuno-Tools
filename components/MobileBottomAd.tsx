@@ -2,7 +2,9 @@
 
 import { useEffect, useRef } from 'react'
 
-export default function MobileBottomAd({ adKey }: { adKey: string }) {
+const MOBILE_INLINE_AD_KEY = '34970aed813cbee86887c4caa5c6c712'
+
+export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey?: string }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const scriptLoadedRef = useRef(false)
 
@@ -18,7 +20,7 @@ export default function MobileBottomAd({ adKey }: { adKey: string }) {
       ;(window as any).atOptions = {
         'key': adKey,
         'format': 'iframe',
-        'height': 250,
+        'height': 50,
         'width': 320,
         'params': {}
       }
@@ -65,12 +67,12 @@ export default function MobileBottomAd({ adKey }: { adKey: string }) {
   }, [adKey])
 
   return (
-    <div className="lg:hidden w-full flex justify-center py-4 px-4 bg-gray-50 border-t border-gray-200">
+    <div className="lg:hidden w-full flex justify-center py-3 px-4 bg-gray-50 border-t border-gray-200">
       <div 
         ref={containerRef} 
         id="mobile-bottom-ad"
-        className="w-full max-w-[320px] h-[250px] flex items-center justify-center bg-gray-50 rounded-lg shadow-md border border-gray-200"
-        style={{ minHeight: '250px', minWidth: '320px' }}
+        className="w-full max-w-[320px] h-[50px] flex items-center justify-center bg-gray-50 rounded-lg shadow-md border border-gray-200"
+        style={{ minHeight: '50px', minWidth: '320px' }}
       ></div>
     </div>
   )
