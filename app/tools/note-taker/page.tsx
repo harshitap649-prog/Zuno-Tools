@@ -1825,7 +1825,7 @@ export default function NoteTaker() {
   // Analytics Functions
   const analyzeTopics = () => {
     const allText = notes.map(n => n.content).join(' ')
-    const words = allText.toLowerCase().match(/\b\w+\b/g) || []
+    const words: string[] = allText.toLowerCase().match(/\b\w+\b/g) || []
     const wordFreq: Record<string, number> = {}
     
     words.forEach(word => {
