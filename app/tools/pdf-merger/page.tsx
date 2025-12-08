@@ -61,7 +61,9 @@ export default function PDFMerger() {
 
       // Generate the merged PDF as a blob
       const pdfBytes = await mergedPdf.save()
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+      // Ensure a concrete ArrayBuffer-backed ArrayBufferView for Blob
+      const uint8 = new Uint8Array(pdfBytes)
+      const blob = new Blob([uint8], { type: 'application/pdf' })
       
       // Create download link
       const url = URL.createObjectURL(blob)
