@@ -359,21 +359,37 @@ export default function ToolsPage() {
   const [showFavorites, setShowFavorites] = useState(false)
   const [showRecent, setShowRecent] = useState(false)
 
+  const applyViewFromParams = () => {
+    const params = new URLSearchParams(window.location.search)
+    const fav = params.get('favorites') === 'true'
+    const rec = params.get('recent') === 'true'
+    if (fav) {
+      setShowFavorites(true)
+      setShowRecent(false)
+      setSelectedCategory('All')
+      setSearchQuery('')
+    } else if (rec) {
+      setShowRecent(true)
+      setShowFavorites(false)
+      setSelectedCategory('All')
+      setSearchQuery('')
+    } else {
+      setShowFavorites(false)
+      setShowRecent(false)
+    }
+  }
+
   // Load favorites and check URL params
   useEffect(() => {
     const savedFavorites = localStorage.getItem('zuno-favorites')
     if (savedFavorites) {
       setFavorites(JSON.parse(savedFavorites))
     }
+    applyViewFromParams()
 
-    // Check URL params
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('favorites') === 'true') {
-      setShowFavorites(true)
-    }
-    if (params.get('recent') === 'true') {
-      setShowRecent(true)
-    }
+    const handlePop = () => applyViewFromParams()
+    window.addEventListener('popstate', handlePop)
+    return () => window.removeEventListener('popstate', handlePop)
   }, [])
 
   const toggleFavorite = (toolId: string, e: React.MouseEvent) => {

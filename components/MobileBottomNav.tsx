@@ -37,13 +37,16 @@ export default function MobileBottomNav() {
   }, [pathname])
 
   const handleFavoritesClick = () => {
-    // Always navigate to tools page - empty state will handle the message
     router.push('/tools?favorites=true')
   }
 
   const handleRecentClick = () => {
-    // Always navigate to tools page - empty state will handle the message
     router.push('/tools?recent=true')
+  }
+
+  // Only show on mobile for tools pages (home grid)
+  if (!pathname.startsWith('/tools')) {
+    return null
   }
 
   return (
@@ -51,14 +54,14 @@ export default function MobileBottomNav() {
       <div className="flex justify-around items-center h-16 px-2">
         {/* Home */}
         <Link
-          href="/"
+          href="/tools"
           className={`flex flex-col items-center justify-center flex-1 h-full transition-colors touch-manipulation active:scale-95 bg-transparent outline-none focus:outline-none ${
-            pathname === '/'
+            pathname === '/tools'
               ? 'text-pink-500'
               : 'text-gray-600 hover:text-pink-500'
           }`}
         >
-          <Home className={`h-6 w-6 mb-1 ${pathname === '/' ? 'fill-current' : ''}`} strokeWidth={2.5} />
+          <Home className={`h-6 w-6 mb-1 ${pathname === '/tools' ? 'fill-current' : ''}`} strokeWidth={2.5} />
           <span className="text-[10px] font-medium">Home</span>
         </Link>
 
