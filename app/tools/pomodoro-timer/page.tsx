@@ -6,7 +6,7 @@ import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
   Clock, Play, Pause, RotateCcw, Settings, Save, Trash2, X, Plus, 
-  Volume2, VolumeX, Bell, BarChart3, Target, CheckSquare, Moon, Sun,
+  Volume2, VolumeX, Bell, BarChart3, Target, CheckSquare,
   Download, TrendingUp, Award, Zap, SkipForward, List, Edit, Download as DownloadIcon
 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -84,7 +84,7 @@ export default function PomodoroTimer() {
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null)
   
   // Themes & Visual
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const theme: 'light' = 'light'
   const [showProgressRing, setShowProgressRing] = useState(true)
   
   // Goals & Targets
@@ -202,13 +202,12 @@ export default function PomodoroTimer() {
       soundType,
       soundVolume,
       browserNotifications,
-      theme,
       autoStartBreaks,
       autoStartWork,
       dailyGoal,
       weeklyGoal
     }))
-  }, [soundEnabled, soundType, soundVolume, browserNotifications, theme, autoStartBreaks, autoStartWork, dailyGoal, weeklyGoal])
+  }, [soundEnabled, soundType, soundVolume, browserNotifications, autoStartBreaks, autoStartWork, dailyGoal, weeklyGoal])
   
   // Save tasks
   useEffect(() => {
@@ -1158,7 +1157,7 @@ export default function PomodoroTimer() {
                         </button>
                         <button
                           onClick={() => deletePreset(preset.id)}
-                          className={`p-2 rounded-xl transition-all active:scale-95 ${theme === 'dark' ? 'text-red-400 hover:bg-gray-600' : 'text-red-600 hover:bg-red-50'} shadow-sm`}
+                        className="p-2 rounded-xl transition-all active:scale-95 text-red-600 hover:bg-red-50 shadow-sm"
                         >
                           <Trash2 className="h-5 w-5" />
                         </button>
@@ -1174,12 +1173,12 @@ export default function PomodoroTimer() {
 
       {/* Tasks Panel */}
       {showTasks && (
-        <div className={`fixed right-0 top-0 h-full w-full sm:w-80 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-2xl z-40 transform transition-transform`}>
-          <div className={`p-4 sm:p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-between`}>
-            <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Tasks</h2>
+        <div className="fixed right-0 top-0 h-full w-full sm:w-80 bg-white shadow-2xl z-40 transform transition-transform">
+          <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-gray-900">Tasks</h2>
             <button
               onClick={() => setShowTasks(false)}
-              className={`p-2 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-900'}`}
+              className="p-2 rounded-lg hover:bg-gray-100 text-gray-900"
             >
               <X className="h-5 w-5" />
             </button>
@@ -1192,7 +1191,7 @@ export default function PomodoroTimer() {
                 onChange={(e) => setNewTaskText(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && addTask()}
                 placeholder="Add a task..."
-                className={`flex-1 px-4 py-2.5 border rounded-xl transition-all ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 shadow-sm'} focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:shadow-md`}
+                className="flex-1 px-4 py-2.5 border rounded-xl transition-all bg-white border-gray-300 text-gray-900 placeholder-gray-500 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:shadow-md"
               />
               <button
                 onClick={addTask}
@@ -1202,13 +1201,13 @@ export default function PomodoroTimer() {
               </button>
             </div>
             {tasks.length === 0 ? (
-              <p className={`text-center py-8 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-900'}`}>No tasks yet. Add one to get started!</p>
+              <p className="text-center py-8 text-gray-900">No tasks yet. Add one to get started!</p>
             ) : (
               <div className="space-y-2">
                 {tasks.map(task => (
                   <div
                     key={task.id}
-                    className={`p-3 sm:p-4 rounded-xl border transition-all ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200 shadow-sm'} ${
+                    className={`p-3 sm:p-4 rounded-xl border transition-all bg-gray-50 border-gray-200 shadow-sm ${
                       currentTaskId === task.id ? 'ring-2 ring-blue-500 shadow-md' : 'hover:shadow'
                     }`}
                   >
@@ -1220,17 +1219,17 @@ export default function PomodoroTimer() {
                         className="mt-1"
                       />
                       <div className="flex-1">
-                        <p className={`${task.completed ? 'line-through opacity-60' : ''} ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>
+                        <p className={`${task.completed ? 'line-through opacity-60' : ''} text-gray-900`}>
                           {task.text}
                         </p>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>
+                          <span className="text-xs text-gray-700">
                             {task.pomodoros} pomodoros
                           </span>
                           <select
                             value={task.priority}
                             onChange={(e) => setTaskPriority(task.id, e.target.value as 'low' | 'medium' | 'high')}
-                            className={`text-xs px-2 py-1 rounded ${theme === 'dark' ? 'bg-gray-600 text-white' : 'bg-white border border-gray-300 text-gray-900'}`}
+                            className="text-xs px-2 py-1 rounded bg-white border border-gray-300 text-gray-900"
                           >
                             <option value="low">Low</option>
                             <option value="medium">Medium</option>
@@ -1242,7 +1241,7 @@ export default function PomodoroTimer() {
                         {!task.completed && (
                           <button
                             onClick={() => setCurrentTaskId(currentTaskId === task.id ? null : task.id)}
-                            className={`p-1 rounded ${currentTaskId === task.id ? 'bg-blue-600 text-white' : theme === 'dark' ? 'hover:bg-gray-600 text-gray-400' : 'hover:bg-gray-200 text-gray-600'}`}
+                            className={`p-1 rounded ${currentTaskId === task.id ? 'bg-blue-600 text-white' : 'hover:bg-gray-200 text-gray-600'}`}
                             title="Set as current task"
                           >
                             <Zap className="h-4 w-4" />
@@ -1250,7 +1249,7 @@ export default function PomodoroTimer() {
                         )}
                         <button
                           onClick={() => deleteTask(task.id)}
-                          className={`p-1 rounded ${theme === 'dark' ? 'hover:bg-gray-600 text-red-400' : 'hover:bg-gray-200 text-red-600'}`}
+                          className="p-1 rounded hover:bg-gray-200 text-red-600"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -1267,9 +1266,9 @@ export default function PomodoroTimer() {
       {/* Statistics Modal */}
       {showStats && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 sm:p-6">
-          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-100'}`}>
-            <div className={`sticky top-0 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3`}>
-              <h2 className={`text-xl sm:text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Statistics & Analytics</h2>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-100">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Statistics & Analytics</h2>
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => exportStats('csv')}

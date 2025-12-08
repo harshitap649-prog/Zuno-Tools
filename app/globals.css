@@ -128,3 +128,36 @@ textarea::-moz-selection {
   background-color: #f5b8d1;
   color: #000000;
 }
+
+/* Standardized tool page header icon badge */
+.tool-header-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 0.75rem;
+  background-image: linear-gradient(to right, #ec4899, #f472b6);
+  box-shadow: 0 10px 25px -10px rgba(236, 72, 153, 0.55);
+}
+
+.tool-header-badge svg {
+  width: 28px;
+  height: 28px;
+  color: #fff !important;
+}
+
+/* Auto-standardize existing headers that already use inline-flex + gradient */
+.text-center > .inline-flex.bg-gradient-to-r {
+  width: 56px;
+  height: 56px;
+  border-radius: 0.75rem;
+  background-image: linear-gradient(to right, #ec4899, #f472b6) !important;
+  box-shadow: 0 10px 25px -10px rgba(236, 72, 153, 0.55);
+}
+
+.text-center > .inline-flex.bg-gradient-to-r svg {
+  width: 28px !important;
+  height: 28px !important;
+  color: #fff !important;
+}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Footer from '@/components/Footer'
 import { Globe, Loader2, Copy, Check, Search, MapPin, Share2, Download, RefreshCw, Shield, Wifi, Server, Clock, X, ExternalLink } from 'lucide-react'
@@ -41,12 +41,38 @@ export default function IPAddressInfo() {
   const [ipHistory, setIpHistory] = useState<IPInfo[]>([])
   const [showMap, setShowMap] = useState(false)
   const { triggerPopunder } = usePopunderAd()
+  const mountedRef = useRef(true)
+  useEffect(() => () => { mountedRef.current = false }, [])
+
+  const normalizeIPData = (source: any, ipFallback: string): IPInfo => {
+    return {
+      ip: source.ip || source.query || ipFallback,
+      city: source.city || source.city_name || 'N/A',
+      region: source.region || source.regionName || source.region_code || 'N/A',
+      country: source.country || source.country_name || 'N/A',
+      countryCode: source.country_code || source.countryCode || 'N/A',
+      timezone: source.timezone || source.timezone_name || 'N/A',
+      isp: source.org || source.isp || source.connection?.isp || 'N/A',
+      latitude: source.latitude ?? source.lat ?? 'N/A',
+      longitude: source.longitude ?? source.lon ?? 'N/A',
+      postal: source.postal || source.zip || undefined,
+      currency: source.currency || source.currency_code || undefined,
+      languages: source.languages || undefined,
+      asn: source.asn || source.as || source.connection?.asn || undefined,
+      org: source.org || source.connection?.org || undefined,
+      mobile: source.mobile || source.connection?.mobile || false,
+      proxy: source.proxy || source.security?.proxy || false,
+      hosting: source.hosting || false,
+      reverse: source.reverse || undefined,
+    }
+  }
 
   const fetchIPInfo = async (ipAddress?: string) => {
+    if (loading) return
     setLoading(true)
     try {
       let ip = ipAddress
-      
+
       // If no IP provided, get user's own IP
       if (!ip) {
         const response = await fetch('https://api.ipify.org?format=json')
@@ -56,69 +82,72 @@ export default function IPAddressInfo() {
 
       // Validate IP format
       const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
-      if (!ipRegex.test(ip)) {
+      if (!ip || !ipRegex.test(ip)) {
         toast.error('Invalid IP address format')
         setLoading(false)
         return
       }
 
       // Try multiple APIs for better data
-      let info: any = {}
-      
+      let info: any = null
+
+      // 1) ipwho.is (reliable, CORS-friendly)
       try {
-        // Primary API
-        const infoResponse = await fetch(`https://ipapi.co/${ip}/json/`)
-        info = await infoResponse.json()
-      } catch (e) {
-        // Fallback API
+        const res = await fetch(`https://ipwho.is/${ip}`)
+        const data = await res.json()
+        if (data && data.success !== false) {
+          info = {
+            ip: data.ip,
+            city: data.city,
+            region: data.region,
+            country: data.country,
+            country_code: data.country_code,
+            timezone: data.timezone?.id,
+            org: data.connection?.org,
+            isp: data.connection?.isp,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            postal: data.postal,
+            currency: data.currency?.code,
+            languages: data.languages?.map((l: any) => l.name).join(', '),
+            asn: data.connection?.asn,
+            mobile: data.connection?.mobile,
+            proxy: data.connection?.proxy,
+            hosting: data.connection?.hosting,
+          }
+        }
+      } catch {}
+
+      // 2) ipapi.co fallback
+      if (!info) {
+        try {
+          const infoResponse = await fetch(`https://ipapi.co/${ip}/json/`)
+          const data = await infoResponse.json()
+          if (!data.error) {
+            info = data
+          }
+        } catch {}
+      }
+
+      // 3) ip-api.com fallback
+      if (!info) {
         try {
           const fallbackResponse = await fetch(`https://ip-api.com/json/${ip}`)
           const fallbackData = await fallbackResponse.json()
-          info = {
-            ip: fallbackData.query || ip,
-            city: fallbackData.city || 'N/A',
-            region: fallbackData.regionName || fallbackData.region || 'N/A',
-            country_name: fallbackData.country || 'N/A',
-            country_code: fallbackData.countryCode || 'N/A',
-            timezone: fallbackData.timezone || 'N/A',
-            org: fallbackData.isp || fallbackData.org || 'N/A',
-            latitude: fallbackData.lat || 'N/A',
-            longitude: fallbackData.lon || 'N/A',
-            postal: fallbackData.zip || 'N/A',
-            currency: fallbackData.currency || 'N/A',
-            languages: fallbackData.countryCode ? `${fallbackData.countryCode.toLowerCase()}` : 'N/A',
-            asn: fallbackData.as || 'N/A',
-            mobile: fallbackData.mobile || false,
-            proxy: fallbackData.proxy || false,
-            hosting: fallbackData.hosting || false,
+          if (fallbackData && fallbackData.status === 'success') {
+            info = fallbackData
           }
-        } catch (e2) {
-          throw new Error('Failed to fetch IP information')
-        }
+        } catch {}
       }
 
-      const ipData: IPInfo = {
-        ip: info.ip || ip,
-        city: info.city || 'N/A',
-        region: info.region || info.regionName || 'N/A',
-        country: info.country_name || info.country || 'N/A',
-        countryCode: info.country_code || info.countryCode || 'N/A',
-        timezone: info.timezone || 'N/A',
-        isp: info.org || info.isp || 'N/A',
-        latitude: info.latitude || 'N/A',
-        longitude: info.longitude || 'N/A',
-        postal: info.postal || info.zip || undefined,
-        currency: info.currency || undefined,
-        languages: info.languages || undefined,
-        asn: info.asn || info.as || undefined,
-        org: info.org || undefined,
-        mobile: info.mobile || false,
-        proxy: info.proxy || false,
-        hosting: info.hosting || false,
+      if (!info) {
+        throw new Error('Failed to fetch IP information')
       }
+
+      const ipData = normalizeIPData(info, ip)
 
       setIpInfo(ipData)
-      
+
       // Add to history
       if (!ipHistory.find(h => h.ip === ipData.ip)) {
         const updatedHistory = [ipData, ...ipHistory.slice(0, 9)] // Keep last 10
@@ -152,7 +181,7 @@ export default function IPAddressInfo() {
         console.error('Failed to load history:', e)
       }
     }
-    // Fetch own IP on mount
+    // Fetch own IP on mount (guard against unmounted)
     fetchIPInfo()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

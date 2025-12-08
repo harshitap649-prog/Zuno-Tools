@@ -5,7 +5,7 @@ import Footer from '@/components/Footer'
 import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
-  Instagram, Copy, Check, Share2, Heart, Search, 
+  Instagram, Copy, Check, Share2, Heart, 
   Briefcase, Coffee, Sparkles, Laugh, Smile, Camera,
   TrendingUp, Music, Plane, Utensils, Dumbbell, Palette, Filter
 } from 'lucide-react'
@@ -697,7 +697,6 @@ const CAPTION_CATEGORIES: Record<string, string[]> = {
 export default function InstagramBioGenerator() {
   const [mode, setMode] = useState<Mode>('bio')
   const [category, setCategory] = useState<Category>('all')
-  const [searchQuery, setSearchQuery] = useState('')
   const [copiedIndex, setCopiedIndex] = useState<string | null>(null)
   const [likedItems, setLikedItems] = useState<LikedItem[]>([])
 
@@ -741,12 +740,8 @@ export default function InstagramBioGenerator() {
       result = items[category] || []
     }
 
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      result = result.filter(item => item.toLowerCase().includes(query))
-    }
     return result
-  }, [mode, category, searchQuery])
+  }, [mode, category])
 
   const copyToClipboard = async (text: string, index: string) => {
     try {
@@ -855,20 +850,6 @@ export default function InstagramBioGenerator() {
             </div>
           </div>
 
-          {/* Search Bar */}
-          <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-pink-100/60 p-5 sm:p-6 mb-6 sm:mb-8">
-            <div className="relative">
-              <Search className="absolute left-4 sm:left-5 top-1/2 transform -translate-y-1/2 h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={`Search ${mode === 'bio' ? 'bios' : 'captions'}...`}
-                className="w-full pl-12 sm:pl-14 pr-5 sm:pr-6 py-3.5 sm:py-4 border-2 border-gray-200 rounded-2xl text-base sm:text-lg text-gray-900 focus:ring-4 focus:ring-pink-500/20 focus:border-pink-500 transition-all bg-white placeholder:text-gray-400"
-              />
-            </div>
-          </div>
-
           {/* Category Filter */}
           <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-pink-100/60 p-5 sm:p-6 md:p-8 mb-6 sm:mb-8">
             <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-5 sm:mb-6 flex items-center gap-3">
@@ -914,10 +895,10 @@ export default function InstagramBioGenerator() {
             {filteredItems.length === 0 ? (
               <div className="text-center py-16 sm:py-20 md:py-24">
                 <div className="inline-flex items-center justify-center p-4 bg-gray-100 rounded-full mb-6">
-                  <Search className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400" />
+                  <Instagram className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400" />
                 </div>
                 <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-700 mb-3">No {mode === 'bio' ? 'bios' : 'captions'} found</p>
-                <p className="text-base sm:text-lg text-gray-500 max-w-md mx-auto">Try adjusting your search or category filter to find what you're looking for</p>
+                <p className="text-base sm:text-lg text-gray-500 max-w-md mx-auto">Try adjusting your category filter to find what you're looking for</p>
               </div>
             ) : (
               <>

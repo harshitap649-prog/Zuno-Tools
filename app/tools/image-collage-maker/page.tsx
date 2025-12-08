@@ -21,9 +21,48 @@ interface CollageHistory {
   dimensions: { width: number; height: number }
 }
 
+interface CollageTemplate {
+  id: string
+  name: string
+  minImages: number
+  maxImages: number
+  description: string
+  preview: string // SVG or description for preview
+}
+
+const COLLAGE_TEMPLATES: CollageTemplate[] = [
+  { id: 'grid-2x2', name: 'Grid 2x2', minImages: 4, maxImages: 4, description: 'Perfect square grid', preview: '2x2' },
+  { id: 'grid-3x3', name: 'Grid 3x3', minImages: 9, maxImages: 9, description: 'Nine square grid', preview: '3x3' },
+  { id: 'grid-4x4', name: 'Grid 4x4', minImages: 16, maxImages: 16, description: 'Sixteen square grid', preview: '4x4' },
+  { id: 'vertical-stack', name: 'Vertical Stack', minImages: 2, maxImages: 10, description: 'Stack images vertically', preview: 'vertical' },
+  { id: 'horizontal-stack', name: 'Horizontal Stack', minImages: 2, maxImages: 10, description: 'Stack images horizontally', preview: 'horizontal' },
+  { id: 'masonry-2col', name: 'Masonry 2 Columns', minImages: 3, maxImages: 20, description: 'Pinterest-style layout', preview: 'masonry' },
+  { id: 'masonry-3col', name: 'Masonry 3 Columns', minImages: 4, maxImages: 30, description: 'Three column masonry', preview: 'masonry' },
+  { id: 'big-small', name: 'Big & Small', minImages: 3, maxImages: 3, description: 'One large, two small', preview: 'bigsmall' },
+  { id: 'small-big', name: 'Small & Big', minImages: 3, maxImages: 3, description: 'Two small, one large', preview: 'smallbig' },
+  { id: 'center-focus', name: 'Center Focus', minImages: 5, maxImages: 5, description: 'One center, four corners', preview: 'center' },
+  { id: 'diagonal', name: 'Diagonal', minImages: 3, maxImages: 5, description: 'Diagonal arrangement', preview: 'diagonal' },
+  { id: 'split-screen', name: 'Split Screen', minImages: 2, maxImages: 2, description: 'Equal split', preview: 'split' },
+  { id: 'triptych', name: 'Triptych', minImages: 3, maxImages: 3, description: 'Three equal panels', preview: 'triptych' },
+  { id: 'frame', name: 'Frame', minImages: 5, maxImages: 5, description: 'Frame with center', preview: 'frame' },
+  { id: 'pyramid', name: 'Pyramid', minImages: 6, maxImages: 6, description: 'Pyramid arrangement', preview: 'pyramid' },
+  { id: 'cross', name: 'Cross', minImages: 5, maxImages: 5, description: 'Cross pattern', preview: 'cross' },
+  { id: 'circle', name: 'Circle', minImages: 4, maxImages: 8, description: 'Circular arrangement', preview: 'circle' },
+  { id: 'heart', name: 'Heart', minImages: 4, maxImages: 6, description: 'Heart shape', preview: 'heart' },
+  { id: 'star', name: 'Star', minImages: 5, maxImages: 5, description: 'Star pattern', preview: 'star' },
+  { id: 'zigzag', name: 'Zigzag', minImages: 4, maxImages: 8, description: 'Zigzag pattern', preview: 'zigzag' },
+  { id: 'spiral', name: 'Spiral', minImages: 5, maxImages: 9, description: 'Spiral arrangement', preview: 'spiral' },
+  { id: 'banner', name: 'Banner', minImages: 3, maxImages: 5, description: 'Wide banner style', preview: 'banner' },
+  { id: 'portrait', name: 'Portrait', minImages: 2, maxImages: 4, description: 'Portrait orientation', preview: 'portrait' },
+  { id: 'landscape', name: 'Landscape', minImages: 2, maxImages: 4, description: 'Landscape orientation', preview: 'landscape' },
+  { id: 'magazine', name: 'Magazine', minImages: 4, maxImages: 6, description: 'Magazine layout', preview: 'magazine' },
+  { id: 'story', name: 'Story', minImages: 3, maxImages: 5, description: 'Story format', preview: 'story' },
+  { id: 'collage-free', name: 'Free Form', minImages: 2, maxImages: 20, description: 'Auto-arrange', preview: 'free' }
+]
+
 export default function ImageCollageMaker() {
   const [images, setImages] = useState<string[]>([])
-  const [layout, setLayout] = useState('grid')
+  const [layout, setLayout] = useState('grid-2x2')
   const [spacing, setSpacing] = useState(10)
   const [borderWidth, setBorderWidth] = useState(0)
   const [borderColor, setBorderColor] = useState('#000000')
@@ -35,8 +74,10 @@ export default function ImageCollageMaker() {
   const [showHistory, setShowHistory] = useState(false)
   const [history, setHistory] = useState<CollageHistory[]>([])
   const [showSettings, setShowSettings] = useState(false)
+  const [showTemplates, setShowTemplates] = useState(false)
   const [copied, setCopied] = useState(false)
   const [collageCreated, setCollageCreated] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { triggerPopunder } = usePopunderAd()
@@ -113,10 +154,29 @@ export default function ImageCollageMaker() {
     toast.success('All images cleared')
   }
 
+  const drawImageWithBorder = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, width: number, height: number) => {
+    if (borderWidth > 0) {
+      ctx.fillStyle = borderColor
+      ctx.fillRect(x - borderWidth, y - borderWidth, width + borderWidth * 2, height + borderWidth * 2)
+    }
+    ctx.drawImage(img, x, y, width, height)
+  }
+
   const createCollage = async () => {
     const canvas = canvasRef.current
     if (!canvas || images.length === 0) {
       toast.error('Please upload at least one image')
+      return
+    }
+
+    const template = COLLAGE_TEMPLATES.find(t => t.id === layout)
+    if (!template) {
+      toast.error('Invalid template selected')
+      return
+    }
+
+    if (images.length < template.minImages) {
+      toast.error(`This template requires at least ${template.minImages} images. You have ${images.length}.`)
       return
     }
 
@@ -126,6 +186,7 @@ export default function ImageCollageMaker() {
       return
     }
 
+    setIsCreating(true)
     canvas.width = canvasWidth
     canvas.height = canvasHeight
 
@@ -139,63 +200,17 @@ export default function ImageCollageMaker() {
         const img = new window.Image()
         img.crossOrigin = 'anonymous'
         img.onload = () => resolve(img)
-        img.onerror = reject
+        img.onerror = () => reject(new Error('Failed to load image'))
         img.src = src
       })
     })
 
     try {
       const loadedImages = await Promise.all(imagePromises)
-      let imagesDrawn = 0
+      const imagesToUse = loadedImages.slice(0, Math.min(template.maxImages, loadedImages.length))
 
-      const drawComplete = () => {
-        imagesDrawn++
-        if (imagesDrawn === loadedImages.length) {
-          setCollageCreated(true)
-          toast.success('Collage created!')
-          
-          // Save to history
-          const dataUrl = canvas.toDataURL(`image/${outputFormat}`, outputFormat === 'png' ? undefined : quality)
-          const historyItem: CollageHistory = {
-            id: Date.now().toString(),
-            dataUrl,
-            layout,
-            imageCount: images.length,
-            timestamp: Date.now(),
-            dimensions: { width: canvas.width, height: canvas.height }
-          }
-          
-          const updatedHistory = [historyItem, ...history].slice(0, 20)
-          setHistory(updatedHistory)
-          localStorage.setItem('collage-maker-history', JSON.stringify(updatedHistory))
-          
-          triggerPopunder()
-        }
-      }
-
-      if (layout === 'grid') {
-        const cols = Math.ceil(Math.sqrt(images.length))
-        const rows = Math.ceil(images.length / cols)
-        const cellWidth = (canvas.width - spacing * (cols + 1)) / cols
-        const cellHeight = (canvas.height - spacing * (rows + 1)) / rows
-
-        loadedImages.forEach((img, index) => {
-          const col = index % cols
-          const row = Math.floor(index / cols)
-          const x = spacing + col * (cellWidth + spacing)
-          const y = spacing + row * (cellHeight + spacing)
-
-          // Draw border if enabled
-          if (borderWidth > 0) {
-            ctx.fillStyle = borderColor
-            ctx.fillRect(x - borderWidth, y - borderWidth, cellWidth + borderWidth * 2, cellHeight + borderWidth * 2)
-          }
-
-          // Draw image
-          ctx.drawImage(img, x, y, cellWidth, cellHeight)
-          drawComplete()
-        })
-      } else if (layout === 'grid-2x2' && images.length >= 4) {
+      // Draw based on layout
+      if (layout === 'grid-2x2') {
         const size = (canvas.width - spacing * 3) / 2
         const positions = [
           [spacing, spacing],
@@ -203,86 +218,157 @@ export default function ImageCollageMaker() {
           [spacing, spacing * 2 + size],
           [spacing * 2 + size, spacing * 2 + size],
         ]
-        loadedImages.slice(0, 4).forEach((img, index) => {
+        imagesToUse.forEach((img, index) => {
           const [x, y] = positions[index]
-          if (borderWidth > 0) {
-            ctx.fillStyle = borderColor
-            ctx.fillRect(x - borderWidth, y - borderWidth, size + borderWidth * 2, size + borderWidth * 2)
-          }
-          ctx.drawImage(img, x, y, size, size)
-          drawComplete()
+          drawImageWithBorder(ctx, img, x, y, size, size)
         })
-      } else if (layout === 'grid-3x3' && images.length >= 9) {
+      } else if (layout === 'grid-3x3') {
         const size = (canvas.width - spacing * 4) / 3
-        loadedImages.slice(0, 9).forEach((img, index) => {
+        imagesToUse.forEach((img, index) => {
           const col = index % 3
           const row = Math.floor(index / 3)
           const x = spacing + col * (size + spacing)
           const y = spacing + row * (size + spacing)
-          if (borderWidth > 0) {
-            ctx.fillStyle = borderColor
-            ctx.fillRect(x - borderWidth, y - borderWidth, size + borderWidth * 2, size + borderWidth * 2)
-          }
-          ctx.drawImage(img, x, y, size, size)
-          drawComplete()
+          drawImageWithBorder(ctx, img, x, y, size, size)
         })
-      } else if (layout === 'vertical' && images.length >= 2) {
-        const height = (canvas.height - spacing * (images.length + 1)) / images.length
+      } else if (layout === 'grid-4x4') {
+        const size = (canvas.width - spacing * 5) / 4
+        imagesToUse.forEach((img, index) => {
+          const col = index % 4
+          const row = Math.floor(index / 4)
+          const x = spacing + col * (size + spacing)
+          const y = spacing + row * (size + spacing)
+          drawImageWithBorder(ctx, img, x, y, size, size)
+        })
+      } else if (layout === 'vertical-stack') {
+        const height = (canvas.height - spacing * (imagesToUse.length + 1)) / imagesToUse.length
         const width = canvas.width - spacing * 2
-        loadedImages.forEach((img, index) => {
+        imagesToUse.forEach((img, index) => {
           const y = spacing + index * (height + spacing)
-          if (borderWidth > 0) {
-            ctx.fillStyle = borderColor
-            ctx.fillRect(spacing - borderWidth, y - borderWidth, width + borderWidth * 2, height + borderWidth * 2)
-          }
-          ctx.drawImage(img, spacing, y, width, height)
-          drawComplete()
+          drawImageWithBorder(ctx, img, spacing, y, width, height)
         })
-      } else if (layout === 'horizontal' && images.length >= 2) {
-        const width = (canvas.width - spacing * (images.length + 1)) / images.length
+      } else if (layout === 'horizontal-stack') {
+        const width = (canvas.width - spacing * (imagesToUse.length + 1)) / imagesToUse.length
         const height = canvas.height - spacing * 2
-        loadedImages.forEach((img, index) => {
+        imagesToUse.forEach((img, index) => {
           const x = spacing + index * (width + spacing)
-          if (borderWidth > 0) {
-            ctx.fillStyle = borderColor
-            ctx.fillRect(x - borderWidth, spacing - borderWidth, width + borderWidth * 2, height + borderWidth * 2)
-          }
-          ctx.drawImage(img, x, spacing, width, height)
-          drawComplete()
+          drawImageWithBorder(ctx, img, x, spacing, width, height)
         })
-      } else if (layout === 'masonry' && images.length >= 3) {
-        // Simple masonry layout
-        const cols = 2
-        const colWidth = (canvas.width - spacing * 3) / cols
+      } else if (layout === 'masonry-2col') {
+        const colWidth = (canvas.width - spacing * 3) / 2
         const colHeights = [spacing, spacing]
-        const colImages: { img: HTMLImageElement; index: number }[][] = [[], []]
-
-        loadedImages.forEach((img, index) => {
-          const col = index % cols
-          colImages[col].push({ img, index })
+        imagesToUse.forEach((img, index) => {
+          const col = index % 2
+          const imgAspect = img.width / img.height
+          const imgHeight = colWidth / imgAspect
+          const x = spacing + col * (colWidth + spacing)
+          const y = colHeights[col]
+          drawImageWithBorder(ctx, img, x, y, colWidth, imgHeight)
+          colHeights[col] += imgHeight + spacing
         })
-
-        colImages.forEach((colImgs, col) => {
-          colImgs.forEach(({ img }) => {
-            const imgAspect = img.width / img.height
-            const imgHeight = colWidth / imgAspect
-            const x = spacing + col * (colWidth + spacing)
-            const y = colHeights[col]
-
-            if (borderWidth > 0) {
-              ctx.fillStyle = borderColor
-              ctx.fillRect(x - borderWidth, y - borderWidth, colWidth + borderWidth * 2, imgHeight + borderWidth * 2)
-            }
-            ctx.drawImage(img, x, y, colWidth, imgHeight)
-            colHeights[col] += imgHeight + spacing
-            drawComplete()
-          })
+      } else if (layout === 'masonry-3col') {
+        const colWidth = (canvas.width - spacing * 4) / 3
+        const colHeights = [spacing, spacing, spacing]
+        imagesToUse.forEach((img, index) => {
+          const col = index % 3
+          const imgAspect = img.width / img.height
+          const imgHeight = colWidth / imgAspect
+          const x = spacing + col * (colWidth + spacing)
+          const y = colHeights[col]
+          drawImageWithBorder(ctx, img, x, y, colWidth, imgHeight)
+          colHeights[col] += imgHeight + spacing
+        })
+      } else if (layout === 'big-small') {
+        const bigSize = (canvas.width - spacing * 3) / 2
+        const smallSize = (bigSize - spacing) / 2
+        drawImageWithBorder(ctx, imagesToUse[0], spacing, spacing, bigSize, bigSize)
+        drawImageWithBorder(ctx, imagesToUse[1], spacing * 2 + bigSize, spacing, smallSize, smallSize)
+        drawImageWithBorder(ctx, imagesToUse[2], spacing * 2 + bigSize, spacing * 2 + smallSize, smallSize, smallSize)
+      } else if (layout === 'small-big') {
+        const bigSize = (canvas.width - spacing * 3) / 2
+        const smallSize = (bigSize - spacing) / 2
+        drawImageWithBorder(ctx, imagesToUse[0], spacing, spacing, smallSize, smallSize)
+        drawImageWithBorder(ctx, imagesToUse[1], spacing, spacing * 2 + smallSize, smallSize, smallSize)
+        drawImageWithBorder(ctx, imagesToUse[2], spacing * 2 + smallSize, spacing, bigSize, bigSize)
+      } else if (layout === 'center-focus') {
+        const centerSize = (canvas.width - spacing * 3) / 2
+        const cornerSize = (centerSize - spacing) / 2
+        drawImageWithBorder(ctx, imagesToUse[0], spacing + centerSize / 2, spacing + centerSize / 2, centerSize, centerSize)
+        drawImageWithBorder(ctx, imagesToUse[1], spacing, spacing, cornerSize, cornerSize)
+        drawImageWithBorder(ctx, imagesToUse[2], spacing + centerSize + spacing, spacing, cornerSize, cornerSize)
+        drawImageWithBorder(ctx, imagesToUse[3], spacing, spacing + centerSize + spacing, cornerSize, cornerSize)
+        drawImageWithBorder(ctx, imagesToUse[4], spacing + centerSize + spacing, spacing + centerSize + spacing, cornerSize, cornerSize)
+      } else if (layout === 'split-screen') {
+        const width = (canvas.width - spacing * 3) / 2
+        const height = canvas.height - spacing * 2
+        drawImageWithBorder(ctx, imagesToUse[0], spacing, spacing, width, height)
+        drawImageWithBorder(ctx, imagesToUse[1], spacing * 2 + width, spacing, width, height)
+      } else if (layout === 'triptych') {
+        const width = (canvas.width - spacing * 4) / 3
+        const height = canvas.height - spacing * 2
+        imagesToUse.forEach((img, index) => {
+          const x = spacing + index * (width + spacing)
+          drawImageWithBorder(ctx, img, x, spacing, width, height)
+        })
+      } else if (layout === 'frame') {
+        const frameWidth = canvas.width * 0.15
+        const centerSize = canvas.width - frameWidth * 2 - spacing * 2
+        drawImageWithBorder(ctx, imagesToUse[0], frameWidth + spacing, frameWidth + spacing, centerSize, centerSize)
+        drawImageWithBorder(ctx, imagesToUse[1], spacing, spacing, frameWidth, frameWidth)
+        drawImageWithBorder(ctx, imagesToUse[2], canvas.width - frameWidth - spacing, spacing, frameWidth, frameWidth)
+        drawImageWithBorder(ctx, imagesToUse[3], spacing, canvas.height - frameWidth - spacing, frameWidth, frameWidth)
+        drawImageWithBorder(ctx, imagesToUse[4], canvas.width - frameWidth - spacing, canvas.height - frameWidth - spacing, frameWidth, frameWidth)
+      } else if (layout === 'collage-free') {
+        // Auto grid layout
+        const cols = Math.ceil(Math.sqrt(imagesToUse.length))
+        const rows = Math.ceil(imagesToUse.length / cols)
+        const cellWidth = (canvas.width - spacing * (cols + 1)) / cols
+        const cellHeight = (canvas.height - spacing * (rows + 1)) / rows
+        imagesToUse.forEach((img, index) => {
+          const col = index % cols
+          const row = Math.floor(index / cols)
+          const x = spacing + col * (cellWidth + spacing)
+          const y = spacing + row * (cellHeight + spacing)
+          drawImageWithBorder(ctx, img, x, y, cellWidth, cellHeight)
         })
       } else {
-        toast.error(`Layout "${layout}" requires more images. Please add more images.`)
+        // Default to grid
+        const cols = Math.ceil(Math.sqrt(imagesToUse.length))
+        const rows = Math.ceil(imagesToUse.length / cols)
+        const cellWidth = (canvas.width - spacing * (cols + 1)) / cols
+        const cellHeight = (canvas.height - spacing * (rows + 1)) / rows
+        imagesToUse.forEach((img, index) => {
+          const col = index % cols
+          const row = Math.floor(index / cols)
+          const x = spacing + col * (cellWidth + spacing)
+          const y = spacing + row * (cellHeight + spacing)
+          drawImageWithBorder(ctx, img, x, y, cellWidth, cellHeight)
+        })
       }
+
+      setCollageCreated(true)
+      setIsCreating(false)
+      toast.success('Collage created!')
+      
+      // Save to history
+      const dataUrl = canvas.toDataURL(`image/${outputFormat}`, outputFormat === 'png' ? undefined : quality)
+      const historyItem: CollageHistory = {
+        id: Date.now().toString(),
+        dataUrl,
+        layout,
+        imageCount: imagesToUse.length,
+        timestamp: Date.now(),
+        dimensions: { width: canvas.width, height: canvas.height }
+      }
+      
+      const updatedHistory = [historyItem, ...history].slice(0, 20)
+      setHistory(updatedHistory)
+      localStorage.setItem('collage-maker-history', JSON.stringify(updatedHistory))
+      
+      triggerPopunder()
     } catch (error) {
       console.error('Error creating collage:', error)
+      setIsCreating(false)
       toast.error('Failed to create collage. Please try again.')
     }
   }
@@ -466,23 +552,10 @@ export default function ImageCollageMaker() {
                 </button>
               </div>
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">Layout</label>
-                  <select
-                    value={layout}
-                    onChange={(e) => {
-                      setLayout(e.target.value)
-                      setCollageCreated(false)
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900"
-                  >
-                    <option value="grid">Grid (Auto)</option>
-                    <option value="grid-2x2">Grid (2x2)</option>
-                    <option value="grid-3x3">Grid (3x3)</option>
-                    <option value="vertical">Vertical Stack</option>
-                    <option value="horizontal">Horizontal Stack</option>
-                    <option value="masonry">Masonry</option>
-                  </select>
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                  <p className="text-sm font-medium text-purple-900 mb-1">Current Template</p>
+                  <p className="text-xs text-purple-700">{COLLAGE_TEMPLATES.find(t => t.id === layout)?.name || layout}</p>
+                  <p className="text-xs text-purple-600 mt-1">Use the template selector above to change layouts</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -721,16 +794,66 @@ export default function ImageCollageMaker() {
             {images.length > 0 && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">Layout</label>
-                  <select
-                    value={layout}
-                    onChange={(e) => setLayout(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
-                  >
-                    <option value="grid">Grid (2x2)</option>
-                    <option value="vertical">Vertical Stack</option>
-                    <option value="horizontal">Horizontal Stack</option>
-                  </select>
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="block text-sm font-medium text-gray-900">Choose Template</label>
+                    <button
+                      onClick={() => setShowTemplates(!showTemplates)}
+                      className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs sm:text-sm font-medium transition-colors touch-manipulation active:scale-95 flex items-center gap-2"
+                    >
+                      <Grid className="h-4 w-4" />
+                      {showTemplates ? 'Hide' : 'Show'} Templates
+                    </button>
+                  </div>
+                  
+                  {showTemplates && (
+                    <div className="bg-gray-50 rounded-lg p-4 mb-4 max-h-96 overflow-y-auto">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                        {COLLAGE_TEMPLATES.filter(t => images.length >= t.minImages && images.length <= t.maxImages).map((template) => {
+                          const isSelected = layout === template.id
+                          const canUse = images.length >= template.minImages && images.length <= template.maxImages
+                          return (
+                            <button
+                              key={template.id}
+                              onClick={() => {
+                                if (canUse) {
+                                  setLayout(template.id)
+                                  setCollageCreated(false)
+                                  setShowTemplates(false)
+                                  toast.success(`Template "${template.name}" selected`)
+                                }
+                              }}
+                              disabled={!canUse}
+                              className={`p-3 rounded-lg border-2 transition-all text-left touch-manipulation active:scale-95 ${
+                                isSelected
+                                  ? 'border-purple-600 bg-purple-50 shadow-md'
+                                  : canUse
+                                  ? 'border-gray-200 bg-white hover:border-purple-400 hover:bg-purple-50'
+                                  : 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
+                              }`}
+                            >
+                              <div className="flex items-center justify-center mb-2 h-12 bg-gray-100 rounded">
+                                <Grid className="h-6 w-6 text-gray-400" />
+                              </div>
+                              <p className="text-xs font-semibold text-gray-900 mb-1">{template.name}</p>
+                              <p className="text-xs text-gray-500">{template.minImages}-{template.maxImages} images</p>
+                            </button>
+                          )
+                        })}
+                      </div>
+                      {COLLAGE_TEMPLATES.filter(t => images.length >= t.minImages && images.length <= t.maxImages).length === 0 && (
+                        <p className="text-center text-gray-500 py-4">No templates available for {images.length} image(s). Add more images to see more templates.</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
+                    <p className="text-sm font-medium text-purple-900">
+                      Selected: <span className="font-bold">{COLLAGE_TEMPLATES.find(t => t.id === layout)?.name || layout}</span>
+                    </p>
+                    <p className="text-xs text-purple-700 mt-1">
+                      {COLLAGE_TEMPLATES.find(t => t.id === layout)?.description || 'Template description'}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
@@ -773,11 +896,20 @@ export default function ImageCollageMaker() {
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   <button
                     onClick={createCollage}
-                    disabled={images.length === 0}
+                    disabled={images.length === 0 || isCreating}
                     className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base touch-manipulation active:scale-95"
                   >
-                    <Grid className="h-4 w-4 sm:h-5 sm:w-5" />
-                    <span>Create Collage</span>
+                    {isCreating ? (
+                      <>
+                        <RotateCw className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                        <span>Creating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Grid className="h-4 w-4 sm:h-5 sm:w-5" />
+                        <span>Create Collage</span>
+                      </>
+                    )}
                   </button>
                   {collageCreated && (
                     <>

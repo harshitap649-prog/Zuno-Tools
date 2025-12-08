@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import Footer from '@/components/Footer'
-import { Image, Wand2, Download, Share2, Copy, History, Settings, Trash2, Check, Loader2, X, RefreshCw } from 'lucide-react'
+import { Image, Wand2, Download, Share2, History, Settings, Trash2, Check, Loader2, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { usePopunderAd } from '@/hooks/usePopunderAd'
 
@@ -26,7 +26,6 @@ export default function AIImageGenerator() {
   const [history, setHistory] = useState<GeneratedImage[]>([])
   const [showSettings, setShowSettings] = useState(false)
   const [imageSize, setImageSize] = useState<'512x512' | '768x768' | '1024x1024'>('1024x1024')
-  const [copied, setCopied] = useState(false)
   const [model, setModel] = useState<'flux' | 'stable-diffusion'>('flux')
   const { triggerPopunder } = usePopunderAd()
 
@@ -265,114 +264,97 @@ export default function AIImageGenerator() {
     toast.loading('Generating your image with AI...', { id: 'generating' })
 
     try {
-      // Try using Hugging Face Inference API (free, no API key required for basic usage)
+      // Try API route first, fallback to direct Pollinations call
       let imageUrl: string | null = null
-
+      
       try {
-        // Try multiple AI image generation APIs
-        const [width, height] = imageSize.split('x').map(Number)
-        
-        // Try Hugging Face Inference API first
-        try {
-          const modelName = model === 'flux' 
-            ? 'stabilityai/stable-diffusion-2-1' // Using stable-diffusion as FLUX might not be available
-            : 'stabilityai/stable-diffusion-2-1'
-          
-          const response = await fetch(
-            `https://api-inference.huggingface.co/models/${modelName}`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                inputs: prompt,
-                parameters: {
-                  width,
-                  height,
-                }
-              }),
-            }
-          )
+        const response = await fetch('/api/ai-image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            prompt: prompt.trim(),
+            size: imageSize,
+            model: model,
+          }),
+        })
 
-          if (response.ok) {
-            const contentType = response.headers.get('content-type')
-            if (contentType && contentType.startsWith('image/')) {
-              const blob = await response.blob()
-              const reader = new FileReader()
-              imageUrl = await new Promise<string>((resolve, reject) => {
-                reader.onloadend = () => resolve(reader.result as string)
-                reader.onerror = reject
-                reader.readAsDataURL(blob)
-              })
+        if (response.ok) {
+          const data = await response.json()
+          if (data.imageUrl) {
+            imageUrl = data.imageUrl
+          }
+        }
+      } catch (apiError) {
+        console.log('API route failed, trying direct Pollinations call:', apiError)
+      }
+
+      // Fallback: Call Pollinations directly from browser
+      if (!imageUrl) {
+        const [width, height] = imageSize.split('x').map(Number)
+        const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+          prompt.trim()
+        )}?width=${width}&height=${height}&nologo=true`
+        
+        console.log('Calling Pollinations directly:', pollinationsUrl.substring(0, 100))
+        
+        const response = await fetch(pollinationsUrl)
+        if (!response.ok) {
+          throw new Error(`Image generation failed: ${response.status}`)
+        }
+        
+        const blob = await response.blob()
+        if (blob.size === 0) {
+          throw new Error('Received empty image')
+        }
+        
+        imageUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onloadend = () => {
+            if (reader.result && typeof reader.result === 'string') {
+              resolve(reader.result)
             } else {
-              // If response is not an image, try parsing as JSON for error
-              const text = await response.text()
-              try {
-                const json = JSON.parse(text)
-                if (json.error) {
-                  throw new Error(json.error)
-                }
-                if (json.estimated_time) {
-                  throw new Error(`Model is loading. Please wait ${Math.ceil(json.estimated_time)} seconds and try again.`)
-                }
-              } catch (parseError) {
-                throw new Error('API returned invalid response')
-              }
-            }
-          } else {
-            const errorText = await response.text().catch(() => 'Unknown error')
-            try {
-              const errorData = JSON.parse(errorText)
-              if (errorData.error) {
-                throw new Error(errorData.error)
-              }
-              if (errorData.estimated_time) {
-                throw new Error(`Model is loading. Please wait ${Math.ceil(errorData.estimated_time)} seconds and try again.`)
-              }
-            } catch {
-              throw new Error(`API error: ${response.status} ${response.statusText}`)
+              reject(new Error('Failed to read generated image'))
             }
           }
-        } catch (hfError: any) {
-          console.warn('Hugging Face API failed, trying alternative method:', hfError)
-          
-          // Try alternative: Use a proxy or different endpoint
-          // For now, fall back to canvas-based generation
-          throw hfError
-        }
-      } catch (apiError: any) {
-        console.warn('API generation failed, using enhanced fallback:', apiError)
-        
-        // Enhanced fallback: Generate a more sophisticated image using canvas
-        toast.loading('Using enhanced image generation...', { id: 'generating' })
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        imageUrl = generateImageFromPrompt(prompt)
-        
-        // Show info about API
-        toast('Using fallback generation. For best results, the AI API may need a moment to load.', {
-          icon: 'ℹ️',
-          duration: 4000
+          reader.onerror = () => reject(new Error('Failed to process generated image'))
+          reader.readAsDataURL(blob)
         })
       }
 
       if (!imageUrl) {
-        throw new Error('Failed to generate image')
+        throw new Error('No image was generated. Please try again.')
       }
 
       setGeneratedImage(imageUrl)
       
-      // Save to history
+      // Save to history (limit to prevent storage quota issues)
       const historyItem: GeneratedImage = {
         id: Date.now().toString(),
         prompt,
-        imageUrl,
+        imageUrl: imageUrl,
         timestamp: Date.now()
       }
       
-      const updatedHistory = [historyItem, ...history].slice(0, 20)
+      // Limit history to 10 items to prevent storage quota issues
+      const updatedHistory = [historyItem, ...history].slice(0, 10)
       setHistory(updatedHistory)
-      localStorage.setItem('ai-image-generator-history', JSON.stringify(updatedHistory))
+      
+      try {
+        localStorage.setItem('ai-image-generator-history', JSON.stringify(updatedHistory))
+      } catch (storageError) {
+        // If storage quota exceeded, clear old history and try again
+        console.warn('Storage quota exceeded, clearing old history')
+        try {
+          const reducedHistory = [historyItem, ...history].slice(0, 5)
+          localStorage.setItem('ai-image-generator-history', JSON.stringify(reducedHistory))
+          setHistory(reducedHistory)
+        } catch {
+          // If still fails, just don't save to localStorage
+          console.warn('Could not save to localStorage')
+        }
+      }
       
       toast.success('Image generated successfully!', { id: 'generating' })
       
@@ -443,9 +425,7 @@ export default function AIImageGenerator() {
       await navigator.clipboard.write([
         new ClipboardItem({ [blob.type]: blob })
       ])
-      setCopied(true)
       toast.success('Image copied to clipboard!')
-      setTimeout(() => setCopied(false), 2000)
     } catch (error) {
       toast.error('Failed to copy image')
     }
@@ -542,7 +522,7 @@ export default function AIImageGenerator() {
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">AI Model</label>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">AI Model (Free Services)</label>
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => setModel('flux')}
@@ -552,7 +532,7 @@ export default function AIImageGenerator() {
                           : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                       }`}
                     >
-                      FLUX (Recommended)
+                      FLUX (Hugging Face)
                     </button>
                     <button
                       onClick={() => setModel('stable-diffusion')}
@@ -565,6 +545,9 @@ export default function AIImageGenerator() {
                       Stable Diffusion
                     </button>
                   </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Using free AI services. If one fails, automatically falls back to Pollinations.ai
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">Image Size</label>
@@ -689,7 +672,7 @@ export default function AIImageGenerator() {
             <button
               onClick={generateImage}
               disabled={loading || !prompt.trim()}
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base touch-manipulation active:scale-95"
+              className="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white px-4 sm:px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base touch-manipulation active:scale-95"
             >
               {loading ? (
                 <>
@@ -718,7 +701,7 @@ export default function AIImageGenerator() {
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   <button
                     onClick={() => downloadImage()}
-                    className="flex-1 px-4 sm:px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors text-sm sm:text-base flex items-center justify-center gap-2 touch-manipulation active:scale-95"
+                    className="flex-1 px-4 sm:px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-lg font-semibold transition-colors text-sm sm:text-base flex items-center justify-center gap-2 touch-manipulation active:scale-95"
                   >
                     <Download className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span>Download</span>
@@ -730,25 +713,6 @@ export default function AIImageGenerator() {
                     <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span>Share</span>
                   </button>
-                  <button
-                    onClick={copyImageToClipboard}
-                    className="flex-1 px-4 sm:px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-colors text-sm sm:text-base flex items-center justify-center gap-2 touch-manipulation active:scale-95"
-                  >
-                    {copied ? (
-                      <Check className="h-4 w-4 sm:h-5 sm:w-5" />
-                    ) : (
-                      <Copy className="h-4 w-4 sm:h-5 sm:w-5" />
-                    )}
-                    <span>Copy</span>
-                  </button>
-                  <button
-                    onClick={generateImage}
-                    disabled={loading}
-                    className="flex-1 px-4 sm:px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors text-sm sm:text-base flex items-center justify-center gap-2 touch-manipulation active:scale-95 disabled:opacity-50"
-                  >
-                    <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5" />
-                    <span>Regenerate</span>
-                  </button>
                 </div>
               </div>
             )}
@@ -756,7 +720,7 @@ export default function AIImageGenerator() {
             {!generatedImage && !loading && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
                 <p className="text-xs sm:text-sm text-blue-800">
-                  <strong>Tip:</strong> Try prompts like "sunset over mountains", "abstract art", "ocean waves", "forest with trees", "night sky with stars", "geometric shapes", or "dog playing in park" for best results. The AI will generate high-quality images based on your description.
+                  <strong>Tip:</strong> For best results, try using one-word prompts like "dog", "sunset", "fruits", "mountain", or "ocean". Simple, single-word prompts often generate better quality images. You can also try longer descriptions like "sunset over mountains", "abstract art", "ocean waves", "forest with trees", "night sky with stars", or "geometric shapes". The AI will generate high-quality images based on your description.
                 </p>
               </div>
             )}

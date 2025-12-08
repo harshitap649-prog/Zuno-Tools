@@ -685,7 +685,7 @@ export default function QRGenerator() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-sm font-semibold text-gray-900 mb-2">Background</label>
                       <div className="flex gap-2">
@@ -693,13 +693,13 @@ export default function QRGenerator() {
                           type="color"
                           value={bgColor}
                           onChange={(e) => setBgColor(e.target.value)}
-                          className="w-12 h-10 rounded-lg border-2 border-gray-300 cursor-pointer"
+                          className="w-12 h-11 rounded-lg border-2 border-gray-300 cursor-pointer"
                         />
                         <input
                           type="text"
                           value={bgColor}
                           onChange={(e) => setBgColor(e.target.value)}
-                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 font-medium text-sm"
+                          className="flex-1 h-11 px-3 border-2 border-gray-300 rounded-lg text-gray-900 font-medium text-sm"
                           placeholder="#FFFFFF"
                         />
                       </div>
@@ -711,13 +711,13 @@ export default function QRGenerator() {
                           type="color"
                           value={fgColor}
                           onChange={(e) => setFgColor(e.target.value)}
-                          className="w-12 h-10 rounded-lg border-2 border-gray-300 cursor-pointer"
+                          className="w-12 h-11 rounded-lg border-2 border-gray-300 cursor-pointer"
                         />
                         <input
                           type="text"
                           value={fgColor}
                           onChange={(e) => setFgColor(e.target.value)}
-                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 font-medium text-sm"
+                          className="flex-1 h-11 px-3 border-2 border-gray-300 rounded-lg text-gray-900 font-medium text-sm"
                           placeholder="#000000"
                         />
                       </div>

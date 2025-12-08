@@ -10,7 +10,7 @@ import {
   Bold, Italic, Underline, List, Link as LinkIcon,
   Undo, Redo, History, X, Plus, Trash2, FileText,
   Smartphone, Monitor, Type, Zap, RotateCcw, 
-  ChevronDown, ChevronUp, HelpCircle
+  ChevronDown, ChevronUp, HelpCircle, Grid3x3
 } from 'lucide-react'
 
 interface EmailTemplate {
@@ -234,6 +234,7 @@ export default function EmailTemplateBuilder() {
   const [showSavedTemplates, setShowSavedTemplates] = useState(false)
   const [templateName, setTemplateName] = useState('')
   const [showSaveDialog, setShowSaveDialog] = useState(false)
+  const [showMobileCategories, setShowMobileCategories] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Load saved templates from localStorage
@@ -693,7 +694,7 @@ export default function EmailTemplateBuilder() {
               <div className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/30 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-3 sm:mb-4">
                   <label className="block text-sm sm:text-base font-semibold text-gray-900">Choose Template</label>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={() => setShowSavedTemplates(!showSavedTemplates)}
                       className="px-3 py-1.5 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
@@ -708,46 +709,54 @@ export default function EmailTemplateBuilder() {
                       <Plus className="h-3 w-3 sm:h-4 sm:w-4 inline mr-1" />
                       Save
                     </button>
+                    <button
+                      onClick={() => setShowMobileCategories(true)}
+                      className="md:hidden px-3 py-1.5 text-xs sm:text-sm bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors font-medium flex items-center gap-1"
+                      aria-label="Open template categories"
+                    >
+                      <Grid3x3 className="h-4 w-4" />
+                      Categories
+                    </button>
                   </div>
                 </div>
                 
-                {/* Category Filter */}
-                <div className="mb-3 sm:mb-4">
-                  <div className="flex flex-wrap gap-2">
-                    {categories.map((cat) => {
-                      const isActive = templateCategory === cat
-                      const categoryColors: Record<string, string> = {
-                        'all': 'from-gray-500 to-gray-600',
-                        'Welcome': 'from-green-500 to-emerald-600',
-                        'Newsletter': 'from-blue-500 to-cyan-600',
-                        'Promotional': 'from-orange-500 to-red-600',
-                        'Transactional': 'from-purple-500 to-pink-600',
-                        'Follow-up': 'from-indigo-500 to-blue-600',
-                        'Thank You': 'from-yellow-500 to-orange-600',
-                        'Announcement': 'from-red-500 to-pink-600',
-                        'Invitation': 'from-pink-500 to-rose-600',
-                        'Reminder': 'from-teal-500 to-cyan-600',
-                        'Custom': 'from-violet-500 to-purple-600'
-                      }
-                      return (
-                        <button
-                          key={cat}
-                          onClick={() => {
-                            setTemplateCategory(cat)
-                            toast.success(`Filtered by: ${cat.charAt(0).toUpperCase() + cat.slice(1)}`, { duration: 1500 })
-                          }}
-                          className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                            isActive
-                              ? `bg-gradient-to-r ${categoryColors[cat] || 'from-blue-500 to-indigo-600'} text-white shadow-md transform scale-105`
-                              : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300'
-                          }`}
-                        >
-                          {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                        </button>
-                      )
-                    })}
-                  </div>
+              {/* Category Filter */}
+              <div className="mb-3 sm:mb-4">
+                <div className="hidden md:flex flex-wrap gap-2">
+                  {categories.map((cat) => {
+                    const isActive = templateCategory === cat
+                    const categoryColors: Record<string, string> = {
+                      'all': 'from-gray-500 to-gray-600',
+                      'Welcome': 'from-green-500 to-emerald-600',
+                      'Newsletter': 'from-blue-500 to-cyan-600',
+                      'Promotional': 'from-orange-500 to-red-600',
+                      'Transactional': 'from-purple-500 to-pink-600',
+                      'Follow-up': 'from-indigo-500 to-blue-600',
+                      'Thank You': 'from-yellow-500 to-orange-600',
+                      'Announcement': 'from-red-500 to-pink-600',
+                      'Invitation': 'from-pink-500 to-rose-600',
+                      'Reminder': 'from-teal-500 to-cyan-600',
+                      'Custom': 'from-violet-500 to-purple-600'
+                    }
+                    return (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          setTemplateCategory(cat)
+                          toast.success(`Filtered by: ${cat.charAt(0).toUpperCase() + cat.slice(1)}`, { duration: 1500 })
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                          isActive
+                            ? `bg-gradient-to-r ${categoryColors[cat] || 'from-blue-500 to-indigo-600'} text-white shadow-md transform scale-105`
+                            : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300'
+                        }`}
+                      >
+                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                      </button>
+                    )
+                  })}
                 </div>
+              </div>
 
                 {/* Templates Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 sm:max-h-64 overflow-y-auto">
@@ -766,7 +775,7 @@ export default function EmailTemplateBuilder() {
                   ))}
                 </div>
 
-                {/* Saved Templates */}
+              {/* Saved Templates */}
                 {showSavedTemplates && savedTemplates.length > 0 && (
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <h3 className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">Saved Templates</h3>
@@ -1154,6 +1163,62 @@ export default function EmailTemplateBuilder() {
               <p className="text-xs text-gray-500 text-center">
                 Keyboard shortcut: <kbd className="px-2 py-1 bg-gray-200 rounded text-xs font-mono">Ctrl/Cmd + S</kbd>
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Categories Drawer */}
+      {showMobileCategories && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div
+            className="absolute inset-0 bg-black bg-opacity-40"
+            onClick={() => setShowMobileCategories(false)}
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl p-4 border-t border-gray-200">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-bold text-gray-900">Template Categories</h3>
+              <button
+                onClick={() => setShowMobileCategories(false)}
+                className="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {categories.map((cat) => {
+                const isActive = templateCategory === cat
+                const categoryColors: Record<string, string> = {
+                  'all': 'from-gray-500 to-gray-600',
+                  'Welcome': 'from-green-500 to-emerald-600',
+                  'Newsletter': 'from-blue-500 to-cyan-600',
+                  'Promotional': 'from-orange-500 to-red-600',
+                  'Transactional': 'from-purple-500 to-pink-600',
+                  'Follow-up': 'from-indigo-500 to-blue-600',
+                  'Thank You': 'from-yellow-500 to-orange-600',
+                  'Announcement': 'from-red-500 to-pink-600',
+                  'Invitation': 'from-pink-500 to-rose-600',
+                  'Reminder': 'from-teal-500 to-cyan-600',
+                  'Custom': 'from-violet-500 to-purple-600'
+                }
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      setTemplateCategory(cat)
+                      setShowMobileCategories(false)
+                      toast.success(`Filtered by: ${cat.charAt(0).toUpperCase() + cat.slice(1)}`, { duration: 1500 })
+                    }}
+                    className={`w-full px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                      isActive
+                        ? `bg-gradient-to-r ${categoryColors[cat] || 'from-blue-500 to-indigo-600'} text-white shadow-md`
+                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                    }`}
+                  >
+                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                  </button>
+                )
+              })}
             </div>
           </div>
         </div>

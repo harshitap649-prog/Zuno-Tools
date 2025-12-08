@@ -699,8 +699,8 @@ export default function MemeGenerator() {
       <main className="flex-grow py-3 sm:py-5 md:py-8 pb-16 md:pb-0">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <div className="text-center mb-8">
-            <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 mb-4">
-              <ImageIcon className="h-8 w-8 text-white" />
+            <div className="tool-header-badge mb-4">
+              <ImageIcon />
             </div>
             <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">Meme Generator</h1>
             <p className="text-gray-900">Create hilarious memes with images, text, stickers, and drawings</p>

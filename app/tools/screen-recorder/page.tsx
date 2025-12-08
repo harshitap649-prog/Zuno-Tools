@@ -24,6 +24,7 @@ export default function ScreenRecorder() {
   const [videoQuality, setVideoQuality] = useState<'high' | 'medium' | 'low'>('high')
   const [recordings, setRecordings] = useState<Array<{ id: string; url: string; blob: Blob; timestamp: number; duration: number }>>([])
   const [copied, setCopied] = useState(false)
+  const isMobile = typeof navigator !== 'undefined' ? /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) : false
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
@@ -31,6 +32,18 @@ export default function ScreenRecorder() {
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const { triggerPopunder } = usePopunderAd()
+
+  // Ensure mobile defaults avoid system audio (often unsupported) and stop tracks on unmount
+  useEffect(() => {
+    if (isMobile) {
+      setSystemAudio(false)
+    }
+    return () => {
+      stopRecording()
+      stopStreams()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Timer effect
   useEffect(() => {
@@ -74,11 +87,25 @@ export default function ScreenRecorder() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
+  const stopStreams = () => {
+    try {
+      streamRef.current?.getTracks().forEach(t => t.stop())
+      audioStreamRef.current?.getTracks().forEach(t => t.stop())
+      streamRef.current = null
+      audioStreamRef.current = null
+    } catch {}
+  }
+
   const startRecording = async () => {
     try {
       chunksRef.current = []
       setRecordingTime(0)
       
+      if (typeof MediaRecorder === 'undefined') {
+        toast.error('MediaRecorder not supported in this browser.')
+        return
+      }
+
       const videoConstraints: any = {
         mediaSource: 'screen',
       }
@@ -98,10 +125,10 @@ export default function ScreenRecorder() {
         videoConstraints.frameRate = { ideal: 20 }
       }
 
-      // Request screen share with system audio if enabled
+      // Request screen share; many mobile browsers do not support system audio
       const displayStream = await navigator.mediaDevices.getDisplayMedia({
         video: videoConstraints,
-        audio: systemAudio && audioEnabled,
+        audio: !isMobile && systemAudio && audioEnabled,
       })
 
       streamRef.current = displayStream
@@ -221,8 +248,8 @@ export default function ScreenRecorder() {
 
       // Stop recording when user stops sharing screen
       displayStream.getVideoTracks()[0].addEventListener('ended', () => {
-        if (isRecording) {
-          stopRecording()
+      if (isRecording) {
+        stopRecording()
         }
       })
 
@@ -238,6 +265,8 @@ export default function ScreenRecorder() {
         toast.error('Permission denied. Please allow screen sharing.')
       } else if (error.name === 'NotFoundError') {
         toast.error('No screen/window available to record.')
+      } else if (isMobile) {
+        toast.error('Your mobile browser may not support screen recording. Try Chrome/Edge on Android.')
       } else {
         toast.error('Failed to start recording. Please try again.')
       }
@@ -277,32 +306,20 @@ export default function ScreenRecorder() {
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
       try {
-        // Stop the media recorder
         if (mediaRecorderRef.current.state !== 'inactive') {
           mediaRecorderRef.current.stop()
         }
-        
-        // Stop all tracks
-        streamRef.current?.getTracks().forEach(track => {
-          track.stop()
-        })
-        
-        audioStreamRef.current?.getTracks().forEach(track => {
-          track.stop()
-        })
-        
-        // Clean up
-        setIsRecording(false)
-        setIsPaused(false)
-        
-        if (timerRef.current) {
-          clearInterval(timerRef.current)
-          timerRef.current = null
-        }
       } catch (error) {
-        console.error('Error stopping recording:', error)
+        console.error('Error stopping recorder:', error)
         toast.error('Error stopping recording')
       }
+    }
+    stopStreams()
+    setIsRecording(false)
+    setIsPaused(false)
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
     }
   }
 

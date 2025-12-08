@@ -69,7 +69,7 @@ export default function SidebarAd({ position, adKey }: { position: 'left' | 'rig
   }, [position, adKey])
 
   return (
-    <div className={`hidden lg:block fixed ${position === 'left' ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 z-40`}>
+    <div className={`hidden xl:block fixed ${position === 'left' ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 z-40`}>
       <div 
         ref={containerRef} 
         id={`sidebar-ad-${position}`}

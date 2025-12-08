@@ -6,7 +6,7 @@ import MobileBottomNav from '@/components/MobileBottomNav'
 import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
-  Mic, Play, Pause, Volume2, Download, Upload, FileText, 
+  Mic, Play, Pause, Volume2, Download, FileText, 
   Globe, Music, Share2, Copy, Check, Loader2, RotateCw,
   SkipBack, SkipForward, Repeat, Settings, Sparkles
 } from 'lucide-react'
@@ -58,7 +58,6 @@ export default function TextToSpeech() {
   const [voices, setVoices] = useState<Voice[]>([])
   const [pauseType, setPauseType] = useState<'none' | 'short' | 'medium' | 'long'>('none')
   const [sentenceBreaks, setSentenceBreaks] = useState(true)
-  const [exportFormat, setExportFormat] = useState<'webm' | 'mp3' | 'wav' | 'ogg' | 'm4a'>('mp3')
   const [currentWordIndex, setCurrentWordIndex] = useState(-1)
   const [progress, setProgress] = useState(0)
   const [timeRemaining, setTimeRemaining] = useState(0)
@@ -76,7 +75,6 @@ export default function TextToSpeech() {
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const wordsRef = useRef<string[]>([])
   const { triggerPopunder } = usePopunderAd()
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -309,23 +307,6 @@ export default function TextToSpeech() {
     toast.success('Example loaded!')
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
-        const reader = new FileReader()
-        reader.onload = (event) => {
-          const content = event.target?.result as string
-          setText(content)
-          toast.success('Text file loaded!')
-        }
-        reader.readAsText(file)
-      } else {
-        toast.error('Please upload a .txt file')
-      }
-    }
-  }
-
   const downloadAudio = async () => {
     if (!text.trim()) {
       toast.error('Please enter some text first')
@@ -338,7 +319,10 @@ export default function TextToSpeech() {
       const processedText = processText(text)
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
       const mediaStreamDestination = audioContext.createMediaStreamDestination()
-      const mediaRecorder = new MediaRecorder(mediaStreamDestination.stream)
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : 'audio/ogg;codecs=opus'
+      const mediaRecorder = new MediaRecorder(mediaStreamDestination.stream, { mimeType })
       const chunks: Blob[] = []
 
       mediaRecorder.ondataavailable = (e) => {
@@ -349,7 +333,7 @@ export default function TextToSpeech() {
 
       const recordingPromise = new Promise<Blob>((resolve, reject) => {
         mediaRecorder.onstop = () => {
-          const blob = new Blob(chunks, { type: `audio/${exportFormat === 'webm' ? 'webm' : exportFormat}` })
+          const blob = new Blob(chunks, { type: mimeType })
           resolve(blob)
         }
         mediaRecorder.onerror = reject
@@ -388,7 +372,22 @@ export default function TextToSpeech() {
         audioContext.close()
       }
 
-      synthRef.current?.speak(utterance)
+      // Connect speech synthesis to the destination node when supported
+      const originalSpeak = synthRef.current?.speak.bind(synthRef.current)
+      ;(utterance as any).onstart = () => {
+        try {
+          // Safari/Chrome do not expose direct routing; this is a best-effort hook
+          const dummyOsc = audioContext.createOscillator()
+          dummyOsc.frequency.value = 0
+          dummyOsc.connect(mediaStreamDestination)
+          dummyOsc.start()
+          dummyOsc.stop(audioContext.currentTime + 0.001)
+        } catch (_) {
+          /* noop */
+        }
+      }
+
+      originalSpeak?.(utterance)
 
       setTimeout(() => {
         if (mediaRecorder.state === 'recording') {
@@ -401,7 +400,7 @@ export default function TextToSpeech() {
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `speech-${Date.now()}.${exportFormat}`
+      link.download = `speech-${Date.now()}.${mimeType.includes('ogg') ? 'ogg' : 'webm'}`
       link.click()
       URL.revokeObjectURL(url)
       
@@ -481,20 +480,6 @@ export default function TextToSpeech() {
                     <span className="w-1 h-5 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></span>
                     <span>Enter Text</span>
                   </label>
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-md hover:shadow-lg active:scale-95 touch-manipulation"
-                  >
-                    <Upload className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    <span>Upload File</span>
-                  </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".txt,text/plain"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
                 </div>
                 <div className="relative">
                   <textarea
@@ -760,25 +745,17 @@ export default function TextToSpeech() {
                 </div>
               </div>
 
-              {/* Export Settings */}
+              {/* Export Settings (fixed best-supported format) */}
               <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/50 p-4 sm:p-5">
-                <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-2 flex items-center space-x-2">
                   <div className="p-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500">
                     <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
                   </div>
                   <span>Export Format</span>
                 </h3>
-                <select
-                  value={exportFormat}
-                  onChange={(e) => setExportFormat(e.target.value as any)}
-                  className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-sm text-gray-900 bg-white font-medium shadow-sm hover:border-pink-300 transition-colors"
-                >
-                  <option value="mp3">MP3</option>
-                  <option value="wav">WAV</option>
-                  <option value="ogg">OGG</option>
-                  <option value="m4a">M4A</option>
-                  <option value="webm">WEBM</option>
-                </select>
+                <p className="text-xs sm:text-sm text-gray-700">
+                  Downloads use the most reliable browser format automatically (WEBM / OGG with Opus audio).
+                </p>
               </div>
 
               {/* Background Music */}

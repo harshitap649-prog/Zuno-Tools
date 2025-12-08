@@ -504,7 +504,7 @@ export default function CurrencyConverter() {
           {/* Header */}
           <div className="text-center mb-4 sm:mb-6">
             <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 mb-3 sm:mb-4">
-              <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+              <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-black" />
             </div>
             <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">Currency Converter</h1>
             <p className="text-sm sm:text-base text-gray-900 px-4">Convert between different currencies</p>
@@ -550,7 +550,7 @@ export default function CurrencyConverter() {
                 className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm whitespace-nowrap touch-manipulation active:scale-95 ${
                   activeTab === 'convert'
                     ? 'bg-green-600 text-white shadow-md'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    : 'bg-white text-black hover:bg-gray-100 border border-gray-200'
                 }`}
               >
                 Convert
@@ -560,7 +560,7 @@ export default function CurrencyConverter() {
                 className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm whitespace-nowrap touch-manipulation active:scale-95 ${
                   activeTab === 'chart'
                     ? 'bg-green-600 text-white shadow-md'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    : 'bg-white text-black hover:bg-gray-100 border border-gray-200'
                 }`}
               >
                 <BarChart3 className="h-4 w-4 inline mr-1" />
@@ -571,7 +571,7 @@ export default function CurrencyConverter() {
                 className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm whitespace-nowrap touch-manipulation active:scale-95 ${
                   activeTab === 'compare'
                     ? 'bg-green-600 text-white shadow-md'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    : 'bg-white text-black hover:bg-gray-100 border border-gray-200'
                 }`}
               >
                 Compare
@@ -581,7 +581,7 @@ export default function CurrencyConverter() {
                 className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm whitespace-nowrap touch-manipulation active:scale-95 ${
                   activeTab === 'history'
                     ? 'bg-green-600 text-white shadow-md'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    : 'bg-white text-black hover:bg-gray-100 border border-gray-200'
                 }`}
               >
                 History
@@ -589,9 +589,9 @@ export default function CurrencyConverter() {
             </div>
           </div>
 
-          {/* Quick action buttons */}
-          <div className="overflow-x-auto mb-4 sm:mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
-            <div className="flex gap-2 min-w-max sm:flex-wrap sm:justify-center">
+        {/* Quick action buttons */}
+        <div className="mb-4 sm:mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 min-w-0">
               <button
                 onClick={() => setShowFavorites(!showFavorites)}
                 className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm touch-manipulation active:scale-95 whitespace-nowrap"

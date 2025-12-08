@@ -20,6 +20,14 @@ import {
 
 const allTools = [
   {
+    id: 'ai-image-generator',
+    name: 'AI Image Generator',
+    description: 'Generate images from text prompts using AI',
+    icon: Wand2,
+    color: 'from-indigo-500 to-purple-500',
+    category: 'AI Tools',
+  },
+  {
     id: 'background-remover',
     name: 'Background Remover',
     description: 'Remove backgrounds from images instantly with AI',
@@ -316,14 +324,6 @@ const allTools = [
     category: 'Image Tools',
   },
   {
-    id: 'ai-image-generator',
-    name: 'AI Image Generator',
-    description: 'Generate images from text prompts using AI',
-    icon: Wand2,
-    color: 'from-indigo-500 to-purple-500',
-    category: 'AI Tools',
-  },
-  {
     id: 'ai-code-generator',
     name: 'AI Code Generator',
     description: 'Generate code from natural language descriptions',
@@ -469,22 +469,22 @@ export default function ToolsPage() {
           </div>
 
           {/* Search Bar */}
-          <div className="mb-5 sm:mb-8">
+          <div className="mb-4 sm:mb-8">
             <div className="relative max-w-2xl mx-auto">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search tools by name, description, or category..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-12 py-3.5 sm:py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-300/20 focus:border-pink-300 text-base text-gray-900 placeholder:text-gray-400 bg-white shadow-sm"
+                className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-4 border border-gray-200 sm:border-2 rounded-lg sm:rounded-xl focus:ring-1 sm:focus:ring-2 focus:ring-pink-300/20 focus:border-pink-300 text-sm sm:text-base text-gray-900 placeholder:text-gray-400 bg-white shadow-sm"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-900"
+                  className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-900 active:scale-95"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
               )}
             </div>

@@ -15,7 +15,7 @@ import {
   Clock, CalendarDays, Layers, BookOpen,
   CheckSquare, FileEdit, Zap, Library, BarChart3,
   TrendingUp, Shield, Key, Undo2, Redo2, Search as FindIcon, Replace,
-  Type, Moon, Sun, Settings, Command, Timer, Target,
+  Type, Settings, Command, Timer, Target,
   Activity, Flame, Database, Cloud, RefreshCw, Palette,
   Archive, FolderPlus, Link2, Merge, File, Table, Calculator,
   Mail, Printer, Award, Trophy, TrendingDown, Brain, Sparkles,
@@ -335,7 +335,7 @@ export default function NoteTaker() {
   })
   
   // Customization states
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const theme: 'light' = 'light'
   const [fontSize, setFontSize] = useState(14)
   const [fontFamily, setFontFamily] = useState('monospace')
   const [showSettings, setShowSettings] = useState(false)
@@ -452,7 +452,6 @@ export default function NoteTaker() {
     const savedSettings = localStorage.getItem('zuno-note-settings')
     if (savedSettings) {
       const settings = JSON.parse(savedSettings)
-      setTheme(settings.theme || 'light')
       setFontSize(settings.fontSize || 14)
       setFontFamily(settings.fontFamily || 'monospace')
       setAutoSaveEnabled(settings.autoSaveEnabled !== false)
@@ -2257,7 +2256,7 @@ export default function NoteTaker() {
           background: #94a3b8;
         }
       `}</style>
-      <div className={`min-h-screen flex flex-col ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Sidebar Ads for Desktop */}
       <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
@@ -2265,11 +2264,11 @@ export default function NoteTaker() {
       <main className="flex-grow py-4 sm:py-6 md:py-8 lg:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">
-            <div className={`inline-flex p-3 rounded-lg bg-gradient-to-r ${theme === 'dark' ? 'from-blue-500 to-indigo-500' : 'from-blue-500 to-indigo-500'} mb-4`}>
+            <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 mb-4">
               <FileText className="h-8 w-8 text-white" />
             </div>
-            <h1 className={`text-xl sm:text-2xl md:text-2xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Note Taker</h1>
-            <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>Take and organize your notes</p>
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold mb-2 text-black">Note Taker</h1>
+            <p className="text-gray-600">Take and organize your notes</p>
           </div>
           
           <div className="mb-4 sm:mb-6 flex items-center justify-between">
@@ -2297,13 +2296,6 @@ export default function NoteTaker() {
                 title="Settings"
               >
                 <Settings className="h-5 w-5 text-gray-700" />
-              </button>
-              <button
-                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                className="p-2.5 bg-white hover:bg-gray-50 rounded-xl shadow-sm border border-gray-200 hover:border-gray-300 transition-all active:scale-95"
-                title="Toggle Theme"
-              >
-                {theme === 'light' ? <Moon className="h-5 w-5 text-gray-700" /> : <Sun className="h-5 w-5 text-gray-700" />}
               </button>
             </div>
           </div>
@@ -2392,7 +2384,7 @@ export default function NoteTaker() {
               )}
 
               {/* Filters Row */}
-              <div className="flex flex-wrap gap-2 sm:gap-3 items-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 items-center">
                 {/* Category Filter */}
                 <select
                   value={selectedCategory}
@@ -3941,23 +3933,6 @@ export default function NoteTaker() {
               </button>
             </div>
             <div className="p-6 space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">Theme</label>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setTheme('light')}
-                    className={`px-4 py-2 rounded-lg ${theme === 'light' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
-                  >
-                    Light
-                  </button>
-                  <button
-                    onClick={() => setTheme('dark')}
-                    className={`px-4 py-2 rounded-lg ${theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
-                  >
-                    Dark
-                  </button>
-                </div>
-              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">Font Size: {fontSize}px</label>
                 <input

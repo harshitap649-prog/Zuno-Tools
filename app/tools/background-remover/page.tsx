@@ -22,6 +22,17 @@ interface ProcessedImage {
   dimensions: { width: number; height: number }
 }
 
+const IMG_LY_PUBLIC_PATH = 'https://staticimgly.com/@imgly/background-removal-data/1.7.0/dist/'
+
+const loadRemoveBg = async () => {
+  const module = await import('@imgly/background-removal')
+  const removeBg = (module as any).removeBackground || (module as any).default
+  if (typeof removeBg !== 'function') {
+    throw new Error('Background removal function not found in module')
+  }
+  return removeBg as (image: Blob, config?: any) => Promise<Blob>
+}
+
 export default function BackgroundRemover() {
   const [image, setImage] = useState<string | null>(null)
   const [processedImage, setProcessedImage] = useState<string | null>(null)
@@ -136,8 +147,7 @@ export default function BackgroundRemover() {
       const preloadModel = async () => {
         setModelLoading(true)
         try {
-          // @ts-ignore
-          const { removeBackground: removeBg } = await import('@imgly/background-removal')
+          const removeBg = await loadRemoveBg()
           // Preload with a tiny test image
           const testCanvas = document.createElement('canvas')
           testCanvas.width = 10
@@ -156,6 +166,28 @@ export default function BackgroundRemover() {
       preloadModel()
     }
   }, [image, modelLoading])
+
+  const buildOptions = (forcedFormat?: 'image/png') => {
+    return {
+      publicPath: IMG_LY_PUBLIC_PATH,
+      output: {
+        format: forcedFormat || 'image/png',
+        quality: 0.92
+      },
+      device: 'cpu',
+      debug: false,
+      progress: (key: string, current: number, total: number) => {
+        try {
+          const percentage = Math.round((current / total) * 100)
+          if (percentage % 10 === 0 || percentage === 100) {
+            toast.loading(`Processing: ${percentage}%`, { id: 'processing' })
+          }
+        } catch (progressError) {
+          console.warn('Progress update error:', progressError)
+        }
+      }
+    }
+  }
 
   const removeBackground = async () => {
     if (!image) {
@@ -177,18 +209,14 @@ export default function BackgroundRemover() {
       toast.loading('Loading AI model...', { id: 'processing' })
       
       // Dynamic import with timeout
-      const importPromise = import('@imgly/background-removal')
+      const importPromise = loadRemoveBg()
       const timeoutPromise = new Promise((_, reject) => {
         timeoutId = setTimeout(() => reject(new Error('Model loading timeout')), 45000)
       })
       
       let removeBg: any
       try {
-        const module = await Promise.race([importPromise, timeoutPromise]) as any
-        removeBg = module.removeBackground || module.default?.removeBackground
-        if (!removeBg) {
-          throw new Error('Background removal function not found in module')
-        }
+        removeBg = await Promise.race([importPromise, timeoutPromise])
       } catch (importError) {
         console.error('Import error:', importError)
         throw new Error('Failed to load background removal library. Please refresh the page and try again.')
@@ -288,22 +316,9 @@ export default function BackgroundRemover() {
         toast.loading('Processing takes longer for high-quality images...', { id: 'processing' })
       }, 5000)
       
-      // Prepare options
-      const options: any = {
-        outputFormat: 'image/png',
-        progress: (key: string, current: number, total: number) => {
-          try {
-          const percentage = Math.round((current / total) * 100)
-          if (percentage % 10 === 0 || percentage === 100) {
-            toast.loading(`Processing: ${percentage}%`, { id: 'processing' })
-            }
-          } catch (progressError) {
-            // Ignore progress errors
-            console.warn('Progress update error:', progressError)
-          }
-        }
-      }
-      
+      // Prepare options (always process to PNG, convert later on download)
+      const options = buildOptions('image/png')
+     
       // If user selected a background color, we'll use it as a hint
       let finalBlob = processBlob
       if (selectedColor) {
@@ -529,6 +544,42 @@ export default function BackgroundRemover() {
         URL.revokeObjectURL(url)
         toast.success('Image downloaded!')
       }, mimeType, outputFormat === 'jpg' ? 0.95 : undefined)
+    }
+  }
+
+  const downloadMask = async () => {
+    if (!processedImage) return
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.src = processedImage
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      ctx.drawImage(img, 0, 0)
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+      const data = imageData.data
+      for (let i = 0; i < data.length; i += 4) {
+        // Use alpha as mask channel
+        const alpha = data[i + 3]
+        data[i] = alpha
+        data[i + 1] = alpha
+        data[i + 2] = alpha
+        data[i + 3] = 255
+      }
+      ctx.putImageData(imageData, 0, 0)
+      canvas.toBlob((blob) => {
+        if (!blob) return
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = 'background-mask.png'
+        link.click()
+        URL.revokeObjectURL(url)
+        toast.success('Mask downloaded!')
+      }, 'image/png', 1)
     }
   }
 
@@ -951,7 +1002,7 @@ export default function BackgroundRemover() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                  <div>
+                  <div className="flex flex-col">
                     <h3 className="text-sm font-medium text-gray-900 mb-2">Original</h3>
                     <div className="border rounded-lg overflow-hidden relative">
                       <img 
@@ -973,9 +1024,12 @@ export default function BackgroundRemover() {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="flex flex-col">
                     <h3 className="text-sm font-medium text-gray-900 mb-2">Processed</h3>
-                    <div className="border rounded-lg overflow-hidden bg-gray-100">
+                    <div
+                      className="border rounded-lg overflow-hidden"
+                      style={{ backgroundColor: backgroundColor === 'transparent' ? '#f3f4f6' : backgroundColor }}
+                    >
                       {loading ? (
                         <div className="flex items-center justify-center h-48 sm:h-64">
                           <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 text-primary-600 animate-spin" />
