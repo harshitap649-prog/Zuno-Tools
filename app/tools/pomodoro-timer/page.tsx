@@ -7,7 +7,8 @@ import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
   Clock, Play, Pause, RotateCcw, Settings, Save, Trash2, X, Plus, 
   Volume2, VolumeX, Bell, BarChart3, Target, CheckSquare,
-  Download, TrendingUp, Award, Zap, SkipForward, List, Edit, Download as DownloadIcon
+  Download, TrendingUp, Award, Zap, SkipForward, List, Edit, Download as DownloadIcon,
+  Moon, Sun
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -84,7 +85,7 @@ export default function PomodoroTimer() {
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null)
   
   // Themes & Visual
-  const theme: 'light' = 'light'
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const [showProgressRing, setShowProgressRing] = useState(true)
   
   // Goals & Targets
