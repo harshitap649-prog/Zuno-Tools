@@ -329,11 +329,20 @@ export default function CodeFormatter() {
     toast.success('History item deleted!')
   }
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(formattedCode)
-    setCopied(true)
-    toast.success('Copied to clipboard!')
-    setTimeout(() => setCopied(false), 2000)
+  const copyToClipboard = async (text?: string) => {
+    const codeToCopy = text || formattedCode
+    if (!codeToCopy) {
+      toast.error('No code to copy')
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(codeToCopy)
+      setCopied(true)
+      toast.success('Copied to clipboard!')
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      toast.error('Failed to copy to clipboard')
+    }
   }
 
   const downloadCode = () => {
