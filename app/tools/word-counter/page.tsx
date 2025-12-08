@@ -573,7 +573,7 @@ ${text.substring(0, 100)}...`
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only handle if not typing in an input field (except textarea)
       const target = e.target as HTMLElement
-      if (target.tagName === 'INPUT' && target.tagName !== 'TEXTAREA') {
+      if (target.tagName === 'INPUT') {
         return
       }
 
