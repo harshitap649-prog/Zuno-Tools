@@ -2850,13 +2850,13 @@ export default function NoteTaker() {
                               {new Date(note.updatedAt || note.createdAt).toLocaleDateString()}
                             </p>
                             {note.isArchived && (
-                              <Archive className="h-3 w-3 text-gray-400" title="Archived" />
+                              <Archive className="h-3 w-3 text-gray-400" aria-label="Archived" role="img" />
                             )}
                             {note.isTrashed && (
-                              <Trash2 className="h-3 w-3 text-red-400" title="Trashed" />
+                              <Trash2 className="h-3 w-3 text-red-400" aria-label="Trashed" role="img" />
                             )}
                             {note.linkedNotes && note.linkedNotes.length > 0 && (
-                              <Link2 className="h-3 w-3 text-blue-400" title={`Linked to ${note.linkedNotes.length} note(s)`} />
+                              <Link2 className="h-3 w-3 text-blue-400" aria-label={`Linked to ${note.linkedNotes.length} note(s)`} role="img" />
                             )}
                           </div>
                         </div>
