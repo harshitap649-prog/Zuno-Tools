@@ -30,7 +30,7 @@ const loadPopunderScript = (): Promise<void> => {
     scriptLoading = true
     const script = document.createElement('script')
     script.type = 'text/javascript'
-    script.src = '//pl28169842.effectivegatecpm.com/5c/c7/46/5cc74644083b1ea098136c62aaa39ff3.js'
+    script.src = '//pl28220032.effectivegatecpm.com/ae/e1/74/aee174c2b9abf65e83a1821b853f20eb.js'
     script.async = true
     
     script.onload = () => {

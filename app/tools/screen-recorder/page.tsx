@@ -24,6 +24,9 @@ export default function ScreenRecorder() {
   const [videoQuality, setVideoQuality] = useState<'high' | 'medium' | 'low'>('high')
   const [recordings, setRecordings] = useState<Array<{ id: string; url: string; blob: Blob; timestamp: number; duration: number }>>([])
   const [copied, setCopied] = useState(false)
+  const [countdownEnabled, setCountdownEnabled] = useState(true)
+  const [countdownSeconds, setCountdownSeconds] = useState(3)
+  const [isCountingDown, setIsCountingDown] = useState(false)
   const isMobile = typeof navigator !== 'undefined' ? /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) : false
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -97,6 +100,24 @@ export default function ScreenRecorder() {
   }
 
   const startRecording = async () => {
+    if (isCountingDown) return
+    if (countdownEnabled && countdownSeconds > 0) {
+      setIsCountingDown(true)
+      let remaining = countdownSeconds
+      const interval = setInterval(() => {
+        remaining -= 1
+        if (remaining <= 0) {
+          clearInterval(interval)
+          setIsCountingDown(false)
+          startRecordingCore()
+        }
+      }, 1000)
+    } else {
+      startRecordingCore()
+    }
+  }
+
+  const startRecordingCore = async () => {
     try {
       chunksRef.current = []
       setRecordingTime(0)
@@ -106,9 +127,7 @@ export default function ScreenRecorder() {
         return
       }
 
-      const videoConstraints: any = {
-        mediaSource: 'screen',
-      }
+      const videoConstraints: MediaTrackConstraints = {}
 
       // Set video quality
       if (videoQuality === 'high') {
@@ -424,8 +443,8 @@ export default function ScreenRecorder() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -455,17 +474,42 @@ export default function ScreenRecorder() {
                 </div>
                 
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2">Video Quality</label>
-                    <select
-                      value={videoQuality}
-                      onChange={(e) => setVideoQuality(e.target.value as 'high' | 'medium' | 'low')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-white"
-                    >
-                      <option value="high">High (1080p)</option>
-                      <option value="medium">Medium (720p)</option>
-                      <option value="low">Low (480p)</option>
-                    </select>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 mb-2">Video Quality</label>
+                      <select
+                        value={videoQuality}
+                        onChange={(e) => setVideoQuality(e.target.value as 'high' | 'medium' | 'low')}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-white"
+                      >
+                        <option value="high">High (1080p)</option>
+                        <option value="medium">Medium (720p)</option>
+                        <option value="low">Low (480p)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 mb-2">Countdown (seconds)</label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="number"
+                          min={0}
+                          max={10}
+                          value={countdownSeconds}
+                          onChange={(e) => setCountdownSeconds(Math.max(0, Math.min(10, Number(e.target.value) || 0)))}
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-white"
+                          disabled={!countdownEnabled}
+                        />
+                        <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-900">
+                          <input
+                            type="checkbox"
+                            checked={countdownEnabled}
+                            onChange={(e) => setCountdownEnabled(e.target.checked)}
+                            className="w-4 h-4 text-red-600 rounded focus:ring-red-500"
+                          />
+                          Enable countdown before start
+                        </label>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="space-y-3">
@@ -537,11 +581,11 @@ export default function ScreenRecorder() {
                   </button>
                   <button
                     onClick={startRecording}
-                    disabled={!isSupported}
+                    disabled={!isSupported || isCountingDown}
                     className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-pink-600 text-white px-8 py-4 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-base sm:text-lg touch-manipulation active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Play className="h-5 w-5 sm:h-6 sm:w-6" />
-                    <span>Start Recording</span>
+                    <span>{isCountingDown ? 'Starting...' : 'Start Recording'}</span>
                   </button>
                 </>
               ) : (
@@ -588,6 +632,14 @@ export default function ScreenRecorder() {
                     <span className="font-mono font-bold text-sm sm:text-base">{formatTime(recordingTime)}</span>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Countdown overlay (mobile-friendly) */}
+            {isCountingDown && !isRecording && (
+              <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-4 text-center">
+                <p className="text-orange-800 font-semibold text-base">Starting in a moment...</p>
+                <p className="text-sm text-orange-700 mt-1">Please keep this tab open and select your screen when prompted.</p>
               </div>
             )}
 
@@ -711,7 +763,7 @@ export default function ScreenRecorder() {
         </div>
       </main>
 
-      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       <Footer />
     </div>
   )

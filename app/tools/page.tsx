@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useState, useMemo, useEffect, useRef } from 'react'
+import React, { useState, useMemo, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import Footer from '@/components/Footer'
 import MobileBottomNavWrapper from '@/components/MobileBottomNavWrapper'
 import SidebarAd from '@/components/SidebarAd'
@@ -180,14 +181,6 @@ const allTools = [
     category: 'Image Tools',
   },
   {
-    id: 'ip-address-info',
-    name: 'IP Address Info',
-    description: 'Get information about your IP address',
-    icon: Globe,
-    color: 'from-blue-500 to-cyan-500',
-    category: 'Utility Tools',
-  },
-  {
     id: 'favicon-generator',
     name: 'Favicon Generator',
     description: 'Generate favicons from images in multiple sizes',
@@ -308,14 +301,6 @@ const allTools = [
     category: 'Business Tools',
   },
   {
-    id: 'instagram-story-maker',
-    name: 'Instagram Story Ideas',
-    description: 'Get creative Instagram story ideas and inspiration',
-    icon: Image,
-    color: 'from-pink-500 to-rose-500',
-    category: 'Creative Tools',
-  },
-  {
     id: 'image-collage-maker',
     name: 'Image Collage Maker',
     description: 'Create beautiful photo collages',
@@ -351,17 +336,27 @@ const allTools = [
 
 const categories = ['All', 'Image Tools', 'Document Tools', 'AI Tools', 'Creative Tools', 'Utility Tools', 'Study Tools', 'Text Tools', 'Developer Tools', 'Security Tools', 'Design Tools', 'Productivity Tools', 'Business Tools']
 
-export default function ToolsPage() {
+function ToolsPageContent() {
+  const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [favorites, setFavorites] = useState<string[]>([])
   const [showFavorites, setShowFavorites] = useState(false)
   const [showRecent, setShowRecent] = useState(false)
 
-  const applyViewFromParams = () => {
-    const params = new URLSearchParams(window.location.search)
-    const fav = params.get('favorites') === 'true'
-    const rec = params.get('recent') === 'true'
+  // Load favorites from localStorage
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('zuno-favorites')
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites))
+    }
+  }, [])
+
+  // React to URL search params changes
+  useEffect(() => {
+    const fav = searchParams.get('favorites') === 'true'
+    const rec = searchParams.get('recent') === 'true'
+    
     if (fav) {
       setShowFavorites(true)
       setShowRecent(false)
@@ -376,20 +371,7 @@ export default function ToolsPage() {
       setShowFavorites(false)
       setShowRecent(false)
     }
-  }
-
-  // Load favorites and check URL params
-  useEffect(() => {
-    const savedFavorites = localStorage.getItem('zuno-favorites')
-    if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites))
-    }
-    applyViewFromParams()
-
-    const handlePop = () => applyViewFromParams()
-    window.addEventListener('popstate', handlePop)
-    return () => window.removeEventListener('popstate', handlePop)
-  }, [])
+  }, [searchParams])
 
   const toggleFavorite = (toolId: string, e: React.MouseEvent) => {
     e.preventDefault()
@@ -436,8 +418,8 @@ export default function ToolsPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white pb-16 md:pb-0">
       {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       
       <main className="flex-grow py-5 sm:py-8 md:py-12">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -689,10 +671,25 @@ export default function ToolsPage() {
         </div>
       </main>
 
-      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       <Footer />
       <MobileBottomNavWrapper />
     </div>
+  )
+}
+
+export default function ToolsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading tools...</p>
+        </div>
+      </div>
+    }>
+      <ToolsPageContent />
+    </Suspense>
   )
 }
 

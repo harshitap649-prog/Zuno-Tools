@@ -2,13 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Sparkles, Menu, X, Grid3x3 } from 'lucide-react'
+import { Sparkles, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Navbar() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false)
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -49,13 +48,6 @@ export default function Navbar() {
           <div className="flex items-center gap-2 md:hidden">
             <button
               className="p-2 rounded-md text-gray-700 hover:text-pink-500 hover:bg-pink-50 transition-colors"
-              onClick={() => setMobileCategoriesOpen((v) => !v)}
-              aria-label="Open tool categories"
-            >
-              {mobileCategoriesOpen ? <X className="h-6 w-6" /> : <Grid3x3 className="h-6 w-6" />}
-            </button>
-            <button
-              className="p-2 rounded-md text-gray-700 hover:text-pink-500 hover:bg-pink-50 transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -84,30 +76,6 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Mobile Categories */}
-        {mobileCategoriesOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { href: '/tools', label: 'All' },
-                { href: '/tools?category=Image%20Tools', label: 'Image Tools' },
-                { href: '/tools?category=Document%20Tools', label: 'Document Tools' },
-                { href: '/tools?category=AI%20Tools', label: 'AI Tools' },
-                { href: '/tools?category=Utility%20Tools', label: 'Utility Tools' },
-                { href: '/tools?category=Security', label: 'Security' },
-              ].map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileCategoriesOpen(false)}
-                  className="w-full text-center px-3 py-3 rounded-xl bg-pink-50 text-pink-600 font-semibold shadow-sm hover:bg-pink-100 transition-colors touch-manipulation active:scale-95"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </nav>
   )

@@ -695,8 +695,8 @@ export default function AgeCalculator() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/30">
       {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       
       <main className="flex-grow py-3 sm:py-5 md:py-8 pb-20 md:pb-0">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
@@ -1192,7 +1192,7 @@ export default function AgeCalculator() {
         </div>
       </main>
 
-      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       <Footer />
       <MobileBottomNavWrapper />
     </div>

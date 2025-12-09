@@ -496,15 +496,15 @@ export default function CurrencyConverter() {
         `
       }} />
       {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       
       <main className="flex-grow py-4 sm:py-6 md:py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-4 sm:mb-6">
-            <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 mb-3 sm:mb-4">
-              <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-black" />
+            <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 mb-3 sm:mb-4 shadow-sm">
+              <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">Currency Converter</h1>
             <p className="text-sm sm:text-base text-gray-900 px-4">Convert between different currencies</p>
@@ -594,35 +594,32 @@ export default function CurrencyConverter() {
           <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 min-w-0">
               <button
                 onClick={() => setShowFavorites(!showFavorites)}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm touch-manipulation active:scale-95 whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm touch-manipulation active:scale-95 whitespace-nowrap text-gray-800"
               >
-                <Star className={`h-4 w-4 flex-shrink-0 ${favoriteCurrencies.length > 0 ? 'fill-yellow-400 text-yellow-400' : ''}`} />
-                <span className="hidden xs:inline">Favorites</span>
-                <span className="xs:hidden">Fav</span>
-                {favoriteCurrencies.length > 0 && <span className="text-xs">({favoriteCurrencies.length})</span>}
+                <Star className={`h-4 w-4 flex-shrink-0 ${favoriteCurrencies.length > 0 ? 'fill-yellow-400 text-yellow-500' : 'text-gray-600'}`} />
+                <span>Favorites</span>
+                {favoriteCurrencies.length > 0 && <span className="text-xs text-gray-600">({favoriteCurrencies.length})</span>}
               </button>
               <button
                 onClick={() => setShowAlerts(true)}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm touch-manipulation active:scale-95 whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm touch-manipulation active:scale-95 whitespace-nowrap text-gray-800"
               >
-                <Bell className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden xs:inline">Alerts</span>
-                <span className="xs:hidden">Alert</span>
-                {alerts.filter(a => a.isActive).length > 0 && <span className="text-xs">({alerts.filter(a => a.isActive).length})</span>}
+                <Bell className="h-4 w-4 flex-shrink-0 text-gray-600" />
+                <span>Alerts</span>
+                {alerts.filter(a => a.isActive).length > 0 && <span className="text-xs text-gray-600">({alerts.filter(a => a.isActive).length})</span>}
               </button>
               <button
                 onClick={() => setShowCurrencyInfo(true)}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm touch-manipulation active:scale-95 whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm touch-manipulation active:scale-95 whitespace-nowrap text-gray-800"
               >
-                <Info className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden sm:inline">Currency Info</span>
-                <span className="sm:hidden">Info</span>
+                <Info className="h-4 w-4 flex-shrink-0 text-gray-600" />
+                <span>Currency Info</span>
               </button>
               <button
                 onClick={() => setShowNews(true)}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm touch-manipulation active:scale-95 whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm touch-manipulation active:scale-95 whitespace-nowrap text-gray-800"
               >
-                <Newspaper className="h-4 w-4 flex-shrink-0" />
+                <Newspaper className="h-4 w-4 flex-shrink-0 text-gray-600" />
                 <span>News</span>
               </button>
               <button
@@ -630,12 +627,11 @@ export default function CurrencyConverter() {
                   setShowHistory(true)
                   setActiveTab('history')
                 }}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm touch-manipulation active:scale-95 whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm touch-manipulation active:scale-95 whitespace-nowrap text-gray-800"
               >
-                <Clock className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden xs:inline">History</span>
-                <span className="xs:hidden">Hist</span>
-                {conversionHistory.length > 0 && <span className="text-xs">({conversionHistory.length})</span>}
+                <Clock className="h-4 w-4 flex-shrink-0 text-gray-600" />
+                <span>History</span>
+                {conversionHistory.length > 0 && <span className="text-xs text-gray-600">({conversionHistory.length})</span>}
               </button>
             </div>
           </div>
@@ -1402,7 +1398,7 @@ export default function CurrencyConverter() {
         </div>
       )}
 
-      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       <Footer />
     </div>
   )

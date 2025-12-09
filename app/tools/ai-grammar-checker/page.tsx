@@ -138,6 +138,8 @@ export default function AIGrammarChecker() {
   const [copied, setCopied] = useState(false)
   const [showStats, setShowStats] = useState(false)
   const [autoCheck, setAutoCheck] = useState(false)
+  const [useLanguageTool, setUseLanguageTool] = useState(true)
+  const [ltError, setLtError] = useState<string | null>(null)
   const { triggerPopunder } = usePopunderAd()
 
   const textStats: TextStats = useMemo(() => {
@@ -214,6 +216,39 @@ export default function AIGrammarChecker() {
     }
   }, [text])
 
+  const applyLanguageTool = (rawText: string, matches: any[]) => {
+    // Build corrected text using matches (apply from end to avoid index shift)
+    let corrected = rawText
+    const ordered = [...matches].sort((a, b) => (b.offset ?? 0) - (a.offset ?? 0))
+    ordered.forEach(m => {
+      if (!m.replacements || m.replacements.length === 0) return
+      if (typeof m.offset !== 'number' || typeof m.length !== 'number') return
+      const replacement = m.replacements[0].value
+      corrected = corrected.slice(0, m.offset) + replacement + corrected.slice(m.offset + m.length)
+    })
+    return corrected
+  }
+
+  const mapLanguageToolMatches = (matches: any[]): GrammarError[] => {
+    return matches.map((m) => {
+      const replacement = m.replacements?.[0]?.value ?? ''
+      const type = m.rule?.issueType || m.rule?.id || 'Grammar'
+      const severity: 'error' | 'warning' | 'info' =
+        (m.rule?.issueType === 'misspelling' || m.rule?.issueType === 'typographical') ? 'error'
+        : m.rule?.issueType === 'hint' ? 'info'
+        : 'warning'
+
+      return {
+        word: m.context?.text?.slice(m.context?.offset ?? 0, (m.context?.offset ?? 0) + (m.context?.length ?? 0)) || m.message || '',
+        position: m.offset ?? 0,
+        suggestion: replacement || m.message || '',
+        type,
+        severity,
+        context: m.message || ''
+      }
+    })
+  }
+
   const checkGrammar = async () => {
     if (!text.trim()) {
       toast.error('Please enter text to check')
@@ -223,9 +258,49 @@ export default function AIGrammarChecker() {
     setLoading(true)
     setErrors([])
     setCheckedText('')
+    setLtError(null)
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 800))
+      if (useLanguageTool) {
+        // LanguageTool public API (free tier)
+        const params = new URLSearchParams()
+        params.append('text', text)
+        params.append('language', 'en-US')
+        params.append('enabledOnly', 'false')
+        params.append('level', 'picky')
+
+        const res = await fetch('https://api.languagetool.org/v2/check', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: params.toString()
+        })
+
+        if (!res.ok) {
+          throw new Error(`LanguageTool error (${res.status})`)
+        }
+
+        const data = await res.json()
+        const ltMatches = data?.matches || []
+        const mapped = mapLanguageToolMatches(ltMatches)
+        setErrors(mapped)
+
+        if (ltMatches.length === 0) {
+          setCheckedText(text)
+          toast.success('No grammar issues found! (LanguageTool)')
+        } else {
+          const corrected = applyLanguageTool(text, ltMatches)
+          if (corrected && corrected !== text) {
+            setCheckedText(corrected)
+          }
+          toast.success(`Found ${ltMatches.length} issue${ltMatches.length !== 1 ? 's' : ''} (LanguageTool)`)
+        }
+
+        return
+      }
+
+      // Fallback to local checker (previous heuristic)
       
       const foundErrors: GrammarError[] = []
       let correctedText = text
@@ -614,6 +689,7 @@ export default function AIGrammarChecker() {
       }
     } catch (error: any) {
       console.error('Grammar check error:', error)
+      setLtError(error?.message || 'Language check failed')
       toast.error(`Failed to check grammar: ${error?.message || 'Unknown error'}`)
     } finally {
       setLoading(false)
@@ -680,8 +756,8 @@ export default function AIGrammarChecker() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       <main className="flex-grow py-4 sm:py-6 md:py-8 lg:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-4 sm:mb-6 md:mb-8">
@@ -757,7 +833,7 @@ export default function AIGrammarChecker() {
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 mb-2">
                 <label className="block text-sm sm:text-base font-medium text-gray-900">Enter Text</label>
-                <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                   <label className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-700 cursor-pointer">
                     <input
                       type="checkbox"
@@ -767,6 +843,15 @@ export default function AIGrammarChecker() {
                     />
                     <Zap className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>Auto-check</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-700 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={useLanguageTool}
+                      onChange={(e) => setUseLanguageTool(e.target.checked)}
+                      className="w-3 h-3 sm:w-4 sm:h-4"
+                    />
+                    <span>Use LanguageTool (better accuracy)</span>
                   </label>
                   {text.trim() && (
                     <button
@@ -948,7 +1033,7 @@ export default function AIGrammarChecker() {
         </div>
       </main>
 
-      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       <Footer />
     </div>
   )

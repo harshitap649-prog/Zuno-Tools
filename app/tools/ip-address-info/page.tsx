@@ -262,8 +262,8 @@ export default function IPAddressInfo() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -533,7 +533,7 @@ export default function IPAddressInfo() {
         </div>
       </main>
 
-      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       <Footer />
     </div>
   )

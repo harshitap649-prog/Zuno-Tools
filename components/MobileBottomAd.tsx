@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 
-const MOBILE_INLINE_AD_KEY = '34970aed813cbee86887c4caa5c6c712'
+const MOBILE_INLINE_AD_KEY = '36d691042d95ac1ac33375038ec47a5c'
 
 export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey?: string }) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -47,7 +47,7 @@ export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey
       // Create and append the invoke script to document head
       const script = document.createElement('script')
       script.type = 'text/javascript'
-      script.src = `https://www.highperformanceformat.com/${adKey}/invoke.js`
+      script.src = `//www.highperformanceformat.com/${adKey}/invoke.js`
       script.async = true
       script.id = 'ad-script-mobile-bottom'
       

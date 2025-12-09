@@ -176,8 +176,8 @@ export default function TimezoneConverter() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       <main className="flex-grow py-4 sm:py-6 md:py-8 lg:py-12">
         <div className="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6">
           {/* Header */}
@@ -448,7 +448,7 @@ export default function TimezoneConverter() {
         </div>
       </main>
 
-      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       <Footer />
     </div>
   )

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Footer from '@/components/Footer'
 import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
+import { usePopunderAd } from '@/hooks/usePopunderAd'
 import { 
   Clock, Play, Pause, RotateCcw, Settings, Save, Trash2, X, Plus, 
   Volume2, VolumeX, Bell, BarChart3, Target, CheckSquare,
@@ -46,6 +47,9 @@ interface DailyStats {
 }
 
 export default function PomodoroTimer() {
+  // Initialize popunder ad hook (script loads automatically)
+  usePopunderAd()
+  
   const [minutes, setMinutes] = useState(25)
   const [seconds, setSeconds] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
@@ -659,9 +663,9 @@ export default function PomodoroTimer() {
         <source src={getSoundPath()} type="audio/wav" />
       </audio>
       
-      {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      {/* Sidebar Ads for Desktop - 160x600 Banner Ads */}
+      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1417,7 +1421,8 @@ export default function PomodoroTimer() {
         </div>
       )}
 
-      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      {/* Mobile Bottom Ad - 320x50 Banner Ad */}
+      <MobileBottomAd adKey="36d691042d95ac1ac33375038ec47a5c" />
       <Footer />
     </div>
   )

@@ -57,6 +57,9 @@ export default function TaskManager() {
   const [notes, setNotes] = useState('')
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [showTaskDetails, setShowTaskDetails] = useState<string | null>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [confirmDeleteName, setConfirmDeleteName] = useState<string>('this task')
 
   const categories = ['Work', 'Personal', 'Shopping', 'Health', 'Learning', 'Other']
   const priorities = [
@@ -125,7 +128,20 @@ export default function TaskManager() {
   }
 
   const deleteTask = (id: string) => {
-    setTasks(tasks.filter(task => task.id !== id))
+    const task = tasks.find(t => t.id === id)
+    setConfirmDeleteId(id)
+    setConfirmDeleteName(task?.text || 'this task')
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDeleteTask = () => {
+    if (!confirmDeleteId) {
+      setShowDeleteConfirm(false)
+      return
+    }
+    setTasks(tasks.filter(task => task.id !== confirmDeleteId))
+    setShowDeleteConfirm(false)
+    setConfirmDeleteId(null)
     toast.success('Task deleted!', { duration: 2000 })
   }
 
@@ -705,6 +721,39 @@ export default function TaskManager() {
           </div>
         </div>
       </main>
+
+      {/* Delete confirmation modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600">
+                <Trash2 className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900">Delete task?</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  “{confirmDeleteName}” will be removed. This cannot be undone.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors text-sm font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteTask}
+                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors text-sm font-semibold shadow-sm"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <Footer />

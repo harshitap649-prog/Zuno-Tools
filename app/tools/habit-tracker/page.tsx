@@ -57,6 +57,9 @@ export default function HabitTracker() {
   const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'custom'>('daily')
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [showArchived, setShowArchived] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [confirmDeleteName, setConfirmDeleteName] = useState<string>('this habit')
 
   const colors = [
     { value: 'from-blue-500 to-cyan-500', name: 'Blue' },
@@ -198,8 +201,21 @@ export default function HabitTracker() {
   }
 
   const deleteHabit = (id: string) => {
-    setHabits(habits.filter(habit => habit.id !== id))
-    setCompletions(completions.filter(c => c.habitId !== id))
+    const habit = habits.find(h => h.id === id)
+    setConfirmDeleteId(id)
+    setConfirmDeleteName(habit?.name || 'this habit')
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDeleteHabit = () => {
+    if (!confirmDeleteId) {
+      setShowDeleteConfirm(false)
+      return
+    }
+    setHabits(habits.filter(habit => habit.id !== confirmDeleteId))
+    setCompletions(completions.filter(c => c.habitId !== confirmDeleteId))
+    setShowDeleteConfirm(false)
+    setConfirmDeleteId(null)
     toast.success('Habit deleted!', { duration: 2000 })
   }
 
@@ -368,8 +384,8 @@ export default function HabitTracker() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       
       <main className="flex-grow py-4 sm:py-6 md:py-8 lg:py-12">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
@@ -1100,7 +1116,40 @@ export default function HabitTracker() {
         </div>
       </main>
 
-      <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
+      {/* Delete confirmation modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600">
+                <Trash2 className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900">Delete habit?</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  “{confirmDeleteName}” and all its completion history will be removed. This cannot be undone.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors text-sm font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteHabit}
+                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors text-sm font-semibold shadow-sm"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       <Footer />
     </div>
   )

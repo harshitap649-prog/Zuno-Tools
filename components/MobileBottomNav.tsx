@@ -46,7 +46,7 @@ export default function MobileBottomNav() {
   }
 
   const onHomeClick = () => {
-    router.push('/tools')
+    router.replace('/tools')
   }
 
   const isHome = pathname === '/tools' && !searchParams.get('favorites') && !searchParams.get('recent')
