@@ -8,8 +8,7 @@ import { usePopunderAd } from '@/hooks/usePopunderAd'
 import { 
   Clock, Play, Pause, RotateCcw, Settings, Save, Trash2, X, Plus, 
   Volume2, VolumeX, Bell, BarChart3, Target, CheckSquare,
-  Download, TrendingUp, Award, Zap, SkipForward, List, Edit, Download as DownloadIcon,
-  Moon, Sun
+  Download, TrendingUp, Award, Zap, SkipForward, List, Edit, Download as DownloadIcon
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -88,9 +87,9 @@ export default function PomodoroTimer() {
   const [newTaskText, setNewTaskText] = useState('')
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null)
   
-  // Themes & Visual
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  // Visual
   const [showProgressRing, setShowProgressRing] = useState(true)
+  const theme: 'light' | 'dark' = 'light' as 'light' | 'dark'
   
   // Goals & Targets
   const [dailyGoal, setDailyGoal] = useState(4)
@@ -143,7 +142,6 @@ export default function PomodoroTimer() {
         setSoundType(settings.soundType || 'bell')
         setSoundVolume(settings.soundVolume ?? 0.7)
         setBrowserNotifications(settings.browserNotifications || false)
-        setTheme(settings.theme || 'light')
         setAutoStartBreaks(settings.autoStartBreaks || false)
         setAutoStartWork(settings.autoStartWork || false)
         setDailyGoal(settings.dailyGoal || 4)
@@ -657,7 +655,7 @@ export default function PomodoroTimer() {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Hidden audio element for sounds */}
       <audio ref={audioRef} preload="auto">
         <source src={getSoundPath()} type="audio/wav" />
@@ -689,31 +687,24 @@ export default function PomodoroTimer() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowTasks(!showTasks)}
-                className={`p-2.5 rounded-xl transition-all active:scale-95 ${theme === 'dark' ? 'hover:bg-gray-800 text-gray-300 shadow-sm' : 'hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-200'}`}
+                className="p-2.5 rounded-xl transition-all active:scale-95 hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-200"
                 title="Tasks"
               >
                 <List className="h-5 w-5" />
               </button>
               <button
                 onClick={() => setShowStats(true)}
-                className={`p-2.5 rounded-xl transition-all active:scale-95 ${theme === 'dark' ? 'hover:bg-gray-800 text-gray-300 shadow-sm' : 'hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-200'}`}
+                className="p-2.5 rounded-xl transition-all active:scale-95 hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-200"
                 title="Statistics"
               >
                 <BarChart3 className="h-5 w-5" />
               </button>
               <button
                 onClick={() => setShowGoals(true)}
-                className={`p-2.5 rounded-xl transition-all active:scale-95 ${theme === 'dark' ? 'hover:bg-gray-800 text-gray-300 shadow-sm' : 'hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-200'}`}
+                className="p-2.5 rounded-xl transition-all active:scale-95 hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-200"
                 title="Goals"
               >
                 <Target className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                className={`p-2.5 rounded-xl transition-all active:scale-95 ${theme === 'dark' ? 'hover:bg-gray-800 text-gray-300 shadow-sm' : 'hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-200'}`}
-                title="Toggle Theme"
-              >
-                {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
               </button>
             </div>
           </div>
@@ -724,11 +715,11 @@ export default function PomodoroTimer() {
             } mb-4`}>
               <Clock className="h-8 w-8 text-white" />
             </div>
-            <h1 className={`text-xl sm:text-2xl md:text-2xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Pomodoro Timer</h1>
-            <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}>Focus timer for productive work sessions</p>
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold mb-2 text-black">Pomodoro Timer</h1>
+            <p className="text-gray-900">Focus timer for productive work sessions</p>
           </div>
 
-          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-100'} p-6 sm:p-8 md:p-10`}>
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8 md:p-10">
             <div className="text-center mb-6 sm:mb-8">
               {/* Progress Ring */}
               {showProgressRing && (

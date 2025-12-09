@@ -458,35 +458,7 @@ export default function ColorPicker() {
 
           {/* Main Color Display */}
           <div className="bg-gradient-to-br from-white via-pink-50/20 to-rose-50/20 rounded-xl sm:rounded-2xl shadow-xl border border-gray-100 p-4 sm:p-6 md:p-8 mb-4 sm:mb-6">
-            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mb-4 sm:mb-6">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-200 via-rose-200 to-pink-300 rounded-xl blur-2xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
-                <div
-                  className="relative w-full sm:w-64 h-48 sm:h-64 rounded-xl shadow-2xl border-4 border-white overflow-hidden transition-transform hover:scale-105"
-                  style={{ backgroundColor: color }}
-                >
-                  {/* Transparency checkerboard pattern */}
-                  <div 
-                    className="absolute inset-0 opacity-40"
-                    style={{
-                      backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
-                      backgroundSize: '16px 16px',
-                      backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px'
-                    }}
-                  />
-                  <div 
-                    className="absolute inset-0 transition-opacity duration-300"
-                    style={{ backgroundColor: color, opacity: alphaValue }}
-                  />
-                  {/* Opacity indicator */}
-                  {alpha < 100 && (
-                    <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
-                      {alpha}%
-                    </div>
-                  )}
-                </div>
-              </div>
-
+            <div className="flex flex-col gap-4 sm:gap-6 mb-4 sm:mb-6">
               <div className="flex-1 w-full space-y-4">
                 {/* Color Name */}
                 {colorName && (
@@ -516,7 +488,7 @@ export default function ColorPicker() {
                         }
                       }}
                       placeholder="#000000"
-                      className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 font-mono text-sm sm:text-base"
+                      className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 font-mono text-sm sm:text-base text-gray-900"
                     />
                   </div>
                 </div>

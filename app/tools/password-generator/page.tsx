@@ -866,7 +866,7 @@ export default function PasswordGenerator() {
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
       <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       
@@ -876,35 +876,35 @@ export default function PasswordGenerator() {
           <div className="text-center mb-6 sm:mb-8 lg:mb-10">
             <div className="inline-flex items-center justify-center mb-4 sm:mb-5">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 rounded-3xl blur-2xl opacity-50 animate-pulse"></div>
-                <div className="relative bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 p-4 sm:p-5 rounded-3xl shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                  <Key className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-white" />
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-300 via-amber-300 to-orange-400 rounded-3xl blur-2xl opacity-50 animate-pulse"></div>
+                <div className="relative bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600 p-3 sm:p-4 rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-300">
+                  <Key className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
                 </div>
               </div>
             </div>
-            <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-3 sm:mb-4">
+            <h1 className="text-lg sm:text-xl md:text-xl font-bold text-black mb-2 sm:mb-3">
               Password Generator
             </h1>
-            <p className="text-sm sm:text-base md:text-lg text-gray-900 px-4 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xs sm:text-sm md:text-base text-gray-900 px-4 max-w-3xl mx-auto leading-relaxed">
               Generate strong, secure passwords with advanced customization options
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-5 text-sm">
             {/* Main Generator */}
             <div className="lg:col-span-2 space-y-4">
               {/* Presets */}
-              <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-purple-100/60 p-5 sm:p-6 hover:shadow-3xl transition-all duration-300">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-5">
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2.5">
-                    <div className="p-2 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl">
-                      <Settings className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
+              <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-orange-100/60 p-4 sm:p-5 hover:shadow-3xl transition-all duration-300">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-4">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <div className="p-2 bg-gradient-to-br from-orange-100 to-amber-100 rounded-xl">
+                      <Settings className="h-5 w-5 sm:h-5 sm:w-5 text-orange-600" />
                     </div>
                     Quick Presets
                   </h3>
                   <button
                     onClick={savePreset}
-                    className="w-full sm:w-auto text-sm px-4 py-2.5 bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 text-purple-700 rounded-xl font-semibold transition-all shadow-sm hover:shadow-md border border-purple-200"
+                    className="w-full sm:w-auto text-xs sm:text-sm px-3 py-2 bg-gradient-to-r from-orange-100 to-amber-100 hover:from-orange-200 hover:to-amber-200 text-orange-700 rounded-lg font-semibold transition-all shadow-sm hover:shadow-md border border-orange-200"
                   >
                     <Save className="h-4 w-4 inline mr-2" />
                     Save Current
@@ -915,9 +915,9 @@ export default function PasswordGenerator() {
                     <button
                       key={preset.id}
                       onClick={() => applyPreset(preset.id)}
-                      className={`px-4 py-2.5 rounded-xl text-sm sm:text-base font-semibold transition-all transform hover:scale-105 ${
+                      className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all transform hover:scale-105 ${
                         selectedPreset === preset.id
-                          ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 text-white shadow-lg scale-105'
+                          ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white shadow-lg scale-105'
                           : 'bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 text-gray-700 border border-gray-200 shadow-sm hover:shadow-md'
                       }`}
                     >
@@ -928,19 +928,19 @@ export default function PasswordGenerator() {
               </div>
 
               {/* Generator Card */}
-              <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-purple-100/60 p-5 sm:p-6 md:p-7 lg:p-8 space-y-6 hover:shadow-3xl transition-all duration-300">
+              <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-orange-100/60 p-4 sm:p-5 md:p-6 lg:p-7 space-y-5 hover:shadow-3xl transition-all duration-300">
                 {/* Password Type */}
                 <div>
-                  <label className="block text-base sm:text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Type className="h-5 w-5 text-purple-600" />
+                  <label className="block text-sm sm:text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+                  <Type className="h-5 w-5 text-orange-600" />
                     Password Type
                   </label>
-                  <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                  <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => setPasswordType('random')}
-                      className={`px-4 py-3 rounded-xl text-sm sm:text-base font-bold transition-all transform hover:scale-105 ${
+                      className={`px-3 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all transform hover:scale-105 ${
                         passwordType === 'random'
-                          ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 text-white shadow-xl scale-105'
+                        ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white shadow-xl scale-105'
                           : 'bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 text-gray-700 border border-gray-200 shadow-sm hover:shadow-md'
                       }`}
                     >
@@ -948,9 +948,9 @@ export default function PasswordGenerator() {
                     </button>
                     <button
                       onClick={() => setPasswordType('pattern')}
-                      className={`px-4 py-3 rounded-xl text-sm sm:text-base font-bold transition-all transform hover:scale-105 ${
+                    className={`px-3 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all transform hover:scale-105 ${
                         passwordType === 'pattern'
-                          ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 text-white shadow-xl scale-105'
+                        ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white shadow-xl scale-105'
                           : 'bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 text-gray-700 border border-gray-200 shadow-sm hover:shadow-md'
                       }`}
                     >
@@ -958,9 +958,9 @@ export default function PasswordGenerator() {
                     </button>
                     <button
                       onClick={() => setPasswordType('passphrase')}
-                      className={`px-4 py-3 rounded-xl text-sm sm:text-base font-bold transition-all transform hover:scale-105 ${
+                    className={`px-3 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all transform hover:scale-105 ${
                         passwordType === 'passphrase'
-                          ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 text-white shadow-xl scale-105'
+                        ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white shadow-xl scale-105'
                           : 'bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 text-gray-700 border border-gray-200 shadow-sm hover:shadow-md'
                       }`}
                     >
@@ -1312,9 +1312,9 @@ export default function PasswordGenerator() {
                 {/* Generate Button */}
                 <button
                   onClick={generatePassword}
-                  className="w-full bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 text-white px-6 py-4 rounded-2xl font-bold hover:shadow-2xl transition-all flex items-center justify-center space-x-3 text-base sm:text-lg transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                  className="w-full bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 text-white px-4 py-3 rounded-xl font-bold hover:shadow-xl transition-all flex items-center justify-center space-x-2 text-sm sm:text-base transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
                 >
-                  <RefreshCw className="h-6 w-6 animate-spin-slow" />
+                  <RefreshCw className="h-5 w-5 animate-spin-slow" />
                   <span>Generate Password{generateMultiple ? 's' : ''}</span>
                 </button>
 

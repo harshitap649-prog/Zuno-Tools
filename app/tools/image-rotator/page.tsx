@@ -390,7 +390,7 @@ export default function ImageRotator() {
                         max="360"
                         value={customRotation}
                         onChange={(e) => setCustomAngle(Number(e.target.value))}
-                        className="w-20 sm:w-24 px-2 py-1.5 border-2 border-gray-300 rounded-lg text-sm font-mono text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-20 sm:w-24 px-2 py-1.5 border-2 border-gray-300 rounded-lg text-sm font-mono text-center text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
                       <span className="text-sm font-semibold text-gray-700">°</span>
                     </div>
@@ -522,7 +522,7 @@ export default function ImageRotator() {
                         <select
                           value={outputFormat}
                           onChange={(e) => setOutputFormat(e.target.value as 'png' | 'jpg' | 'webp')}
-                          className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium text-sm"
+                          className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium text-sm text-gray-900"
                         >
                           <option value="png">PNG (Lossless)</option>
                           <option value="jpg">JPG (Compressed)</option>

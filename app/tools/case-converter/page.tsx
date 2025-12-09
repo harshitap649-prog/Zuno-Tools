@@ -645,9 +645,13 @@ export default function CaseConverter() {
               {cases
                 .filter(caseType => selectedCases.includes(caseType.id))
                 .map((caseType) => {
-                  const converted = text.trim() ? convert(caseType.id) : ''
+                  const userText = text.trim()
+                  const sampleText = 'Hello World 123'
+                  const sourceText = userText || sampleText
+                  const converted = convert(caseType.id, sourceText)
+                  const isSample = !userText
                   const hasOutput = converted.length > 0
-                  const isDifferent = hasOutput && converted !== text.trim()
+                  const isDifferent = hasOutput && converted !== sourceText
                   
                   return (
                     <div 
@@ -660,6 +664,9 @@ export default function CaseConverter() {
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{caseType.name}</h3>
                           <p className="text-xs text-gray-600 mt-1">{caseType.description}</p>
+                          {isSample && (
+                            <p className="text-[11px] text-gray-500 mt-1 italic">Sample preview (enter text to use your own)</p>
+                          )}
                         </div>
                         {hasOutput && (
                           <button

@@ -308,111 +308,11 @@ export default function TextToSpeech() {
   }
 
   const downloadAudio = async () => {
-    if (!text.trim()) {
-      toast.error('Please enter some text first')
-      return
-    }
-
-    toast.loading('Generating audio file...', { id: 'download' })
-    
-    try {
-      const processedText = processText(text)
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const mediaStreamDestination = audioContext.createMediaStreamDestination()
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-        ? 'audio/webm;codecs=opus'
-        : 'audio/ogg;codecs=opus'
-      const mediaRecorder = new MediaRecorder(mediaStreamDestination.stream, { mimeType })
-      const chunks: Blob[] = []
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          chunks.push(e.data)
-        }
-      }
-
-      const recordingPromise = new Promise<Blob>((resolve, reject) => {
-        mediaRecorder.onstop = () => {
-          const blob = new Blob(chunks, { type: mimeType })
-          resolve(blob)
-        }
-        mediaRecorder.onerror = reject
-      })
-
-      mediaRecorder.start()
-
-      const utterance = new SpeechSynthesisUtterance(processedText)
-      utterance.rate = rate
-      utterance.pitch = pitch
-      utterance.volume = volume
-
-      if (voice) {
-        const selectedVoice = filteredVoices.find(v => v.name === voice)
-        if (selectedVoice) {
-          utterance.voice = selectedVoice as SpeechSynthesisVoice
-        }
-      }
-
-      const estimatedDuration = (text.length / 10) * 1000 * (1 / rate)
-      const timeout = Math.max(estimatedDuration + 2000, 5000)
-
-      utterance.onend = () => {
-        setTimeout(() => {
-          if (mediaRecorder.state === 'recording') {
-            mediaRecorder.stop()
-          }
-          audioContext.close()
-        }, 500)
-      }
-
-      utterance.onerror = () => {
-        if (mediaRecorder.state === 'recording') {
-          mediaRecorder.stop()
-        }
-        audioContext.close()
-      }
-
-      // Connect speech synthesis to the destination node when supported
-      const originalSpeak = synthRef.current?.speak.bind(synthRef.current)
-      ;(utterance as any).onstart = () => {
-        try {
-          // Safari/Chrome do not expose direct routing; this is a best-effort hook
-          const dummyOsc = audioContext.createOscillator()
-          dummyOsc.frequency.value = 0
-          dummyOsc.connect(mediaStreamDestination)
-          dummyOsc.start()
-          dummyOsc.stop(audioContext.currentTime + 0.001)
-        } catch (_) {
-          /* noop */
-        }
-      }
-
-      originalSpeak?.(utterance)
-
-      setTimeout(() => {
-        if (mediaRecorder.state === 'recording') {
-          mediaRecorder.stop()
-        }
-        audioContext.close()
-      }, timeout)
-
-      const blob = await recordingPromise
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `speech-${Date.now()}.${mimeType.includes('ogg') ? 'ogg' : 'webm'}`
-      link.click()
-      URL.revokeObjectURL(url)
-      
-      triggerPopunder()
-      toast.success('Audio downloaded successfully!', { id: 'download' })
-    } catch (error) {
-      console.error('Download error:', error)
-      toast.error('Download requires browser support. Try using the Speak button and record your screen audio instead.', { 
-        id: 'download',
-        duration: 5000
-      })
-    }
+    // The Web Speech API (browser TTS) doesn’t expose raw audio for download.
+    // To avoid broken/empty files, we disable download and guide the user.
+    toast.error('Direct audio download is not supported by the browser TTS. Please use Speak and record the audio output instead.', {
+      duration: 6000,
+    })
   }
 
   const generateShareLink = () => {

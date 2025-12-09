@@ -432,7 +432,7 @@ export default function ImageConverter() {
                         <div>
                           <label className="block text-sm font-semibold text-gray-900 mb-2">Output Format</label>
                           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                            {(['png', 'jpg', 'webp', 'gif', 'bmp', 'ico'] as Format[]).map((fmt) => (
+                            {(['png', 'jpg', 'webp'] as Format[]).map((fmt) => (
                               <button
                                 key={fmt}
                                 onClick={() => setFormat(fmt)}

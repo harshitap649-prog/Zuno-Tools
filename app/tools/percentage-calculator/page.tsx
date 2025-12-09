@@ -36,6 +36,18 @@ export default function PercentageCalculator() {
   const [history, setHistory] = useState<CalculationHistory[]>([])
   const [showHistory, setShowHistory] = useState(false)
 
+  const hasResult = () => {
+    if (activeTab === 'percentage-of') return result1 !== null
+    if (activeTab === 'what-percentage') return result2 !== null
+    if (activeTab === 'increase-decrease') return result3 !== null
+    if (activeTab === 'add-subtract') return result4 !== null
+    if (activeTab === 'reverse') return result5 !== null
+    if (activeTab === 'discount') return result6 !== null
+    if (activeTab === 'markup-margin') return result7 !== null
+    if (activeTab === 'converters') return result8 !== null
+    return false
+  }
+
   // Percentage Of
   const [value1, setValue1] = useState('')
   const [percentage1, setPercentage1] = useState('')
@@ -249,6 +261,99 @@ export default function PercentageCalculator() {
       timestamp: new Date()
     }
     setHistory([newEntry, ...history].slice(0, 10)) // Keep last 10
+    toast.success('Added to history!')
+  }
+
+  const addCurrentToHistory = () => {
+    if (!hasResult()) {
+      toast.error('No result to save')
+      return
+    }
+
+    switch (activeTab) {
+      case 'percentage-of':
+        if (result1 !== null) {
+          addToHistory(
+            'percentage-of',
+            { value: value1, percentage: percentage1 },
+            result1,
+            `${percentage1 || 0}% of ${value1 || 0} = ${result1.toFixed(2)}`
+          )
+        }
+        break
+      case 'what-percentage':
+        if (result2 !== null) {
+          addToHistory(
+            'what-percentage',
+            { part, whole },
+            result2,
+            `${part || 0} is ${result2.toFixed(2)}% of ${whole || 0}`
+          )
+        }
+        break
+      case 'increase-decrease':
+        if (result3 !== null) {
+          addToHistory(
+            'increase-decrease',
+            { fromValue, toValue },
+            result3.percentage,
+            `${fromValue || 0} → ${toValue || 0}: ${result3.type} ${result3.percentage.toFixed(2)}%`
+          )
+        }
+        break
+      case 'add-subtract':
+        if (result4 !== null) {
+          addToHistory(
+            'add-subtract',
+            { baseValue, percentage2, operation },
+            result4,
+            `${operation === 'add' ? '+' : '-'}${percentage2 || 0}% of ${baseValue || 0} = ${result4.toFixed(2)}`
+          )
+        }
+        break
+      case 'reverse':
+        if (result5 !== null) {
+          addToHistory(
+            'reverse',
+            { partialValue, percentage3 },
+            result5,
+            `${partialValue || 0} is ${percentage3 || 0}% of ${result5.toFixed(2)}`
+          )
+        }
+        break
+      case 'discount':
+        if (result6 !== null) {
+          addToHistory(
+            'discount',
+            { originalPrice, discountPercent },
+            result6.finalPrice,
+            `${discountPercent || 0}% off ${originalPrice || 0} = ${result6.finalPrice.toFixed(2)} (save ${result6.savings.toFixed(2)})`
+          )
+        }
+        break
+      case 'markup-margin':
+        if (result7 !== null) {
+          addToHistory(
+            'markup-margin',
+            { cost, sellingPrice, markupType },
+            result7,
+            `${markupType === 'markup' ? 'Markup' : 'Margin'} from ${cost || 0} to ${sellingPrice || 0} = ${result7.toFixed(2)}%`
+          )
+        }
+        break
+      case 'converters':
+        if (result8 !== null) {
+          addToHistory(
+            'converters',
+            { decimalValue, fractionValue },
+            result8.percentage,
+            `${result8.decimal.toFixed(2)} = ${result8.percentage.toFixed(2)}% (${result8.fraction})`
+          )
+        }
+        break
+      default:
+        break
+    }
   }
 
   const copyToClipboard = async (text: string, id: string) => {
@@ -914,6 +1019,18 @@ export default function PercentageCalculator() {
               >
                 <RotateCcw className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
                 Reset <span className="hidden md:inline text-xs text-gray-400 font-normal">(Esc)</span>
+              </button>
+              <button
+                onClick={addCurrentToHistory}
+                disabled={!hasResult()}
+                className={`flex-1 sm:flex-none px-4 sm:px-5 py-3 sm:py-3.5 border-2 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 sm:gap-2.5 active:scale-95 touch-manipulation font-semibold shadow-sm min-h-[48px] text-sm sm:text-base ${
+                  hasResult()
+                    ? 'border-purple-500 bg-purple-50 text-purple-700 hover:bg-purple-100'
+                    : 'border-gray-200 text-gray-400 bg-gray-100 cursor-not-allowed'
+                }`}
+              >
+                <History className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+                Save to History
               </button>
             <button
                 onClick={() => setShowHistory(!showHistory)}

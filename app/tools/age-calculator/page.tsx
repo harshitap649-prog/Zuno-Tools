@@ -1000,11 +1000,11 @@ export default function AgeCalculator() {
           {activeTab === 'compare' && (
             <div className="space-y-4 sm:space-y-5">
               <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/60 p-5 sm:p-6 md:p-8 ring-1 ring-gray-100/50">
-                <h3 className="text-xl sm:text-2xl font-black text-gray-900 mb-5 flex items-center space-x-2.5">
+                <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-5 flex items-center space-x-2.5">
                   <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg">
                     <Users className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                   </div>
-                  <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Compare Two Ages</span>
+                  <span className="text-gray-900">Compare Two Ages</span>
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                   <div>
@@ -1107,11 +1107,11 @@ export default function AgeCalculator() {
           {activeTab === 'multiple' && (
             <div className="space-y-4 sm:space-y-5">
               <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/60 p-5 sm:p-6 md:p-8 ring-1 ring-gray-100/50">
-                <h3 className="text-xl sm:text-2xl font-black text-gray-900 mb-5 flex items-center space-x-2.5">
+                <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-5 flex items-center space-x-2.5">
                   <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl shadow-lg">
                     <Users className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                   </div>
-                  <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Multiple People Age Calculator</span>
+                  <span className="text-gray-900">Multiple People Age Calculator</span>
                 </h3>
                 <div className="space-y-4 mb-5">
                   <input
