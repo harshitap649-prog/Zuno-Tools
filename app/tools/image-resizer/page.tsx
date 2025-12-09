@@ -173,8 +173,8 @@ export default function ImageResizer() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-blue-50/30 to-cyan-50/20">
       {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
-      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
+      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
       
       <main className="flex-grow py-4 sm:py-6 md:py-8">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
@@ -470,9 +470,10 @@ export default function ImageResizer() {
         </div>
       </main>
 
-      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <MobileBottomAd adKey="36d691042d95ac1ac33375038ec47a5c" />
       <Footer />
     </div>
   )
 }
+
 

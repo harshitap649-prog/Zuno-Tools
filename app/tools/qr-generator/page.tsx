@@ -292,8 +292,8 @@ export default function QRGenerator() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
-      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
+      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
       
       <main className="flex-grow py-4 sm:py-6 md:py-8 lg:py-12">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
@@ -913,8 +913,9 @@ export default function QRGenerator() {
         </div>
       </main>
 
-      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <MobileBottomAd adKey="36d691042d95ac1ac33375038ec47a5c" />
       <Footer />
     </div>
   )
 }
+

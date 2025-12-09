@@ -418,8 +418,8 @@ function ToolsPageContent() {
   return (
     <div className="min-h-screen flex flex-col bg-white pb-16 md:pb-0">
       {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
-      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
+      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
       
       <main className="flex-grow py-5 sm:py-8 md:py-12">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -671,7 +671,7 @@ function ToolsPageContent() {
         </div>
       </main>
 
-      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <MobileBottomAd adKey="36d691042d95ac1ac33375038ec47a5c" />
       <Footer />
       <MobileBottomNavWrapper />
     </div>
@@ -692,4 +692,5 @@ export default function ToolsPage() {
     </Suspense>
   )
 }
+
 

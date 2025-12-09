@@ -867,8 +867,8 @@ export default function PasswordGenerator() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
-      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
-      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
+      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
       
       <main className="flex-grow py-4 sm:py-6 md:py-8 lg:py-10">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
@@ -1835,8 +1835,9 @@ export default function PasswordGenerator() {
         </div>
       </main>
 
-      <MobileBottomAd adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
+      <MobileBottomAd adKey="36d691042d95ac1ac33375038ec47a5c" />
       <Footer />
     </div>
   )
 }
+
