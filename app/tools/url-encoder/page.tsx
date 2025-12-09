@@ -46,8 +46,13 @@ export default function URLEncoder() {
 
   // Real-time encoding/decoding
   useEffect(() => {
-    if (realTime && input.trim()) {
+    if (realTime) {
       const timer = setTimeout(() => {
+        if (!input.trim()) {
+          setOutput('')
+          return
+        }
+        
         try {
           let result = ''
           if (mode === 'encode') {
@@ -56,33 +61,57 @@ export default function URLEncoder() {
             } else if (encodingType === 'uri') {
               result = encodeURI(input)
             } else if (encodingType === 'base64') {
-              result = btoa(unescape(encodeURIComponent(input)))
+              // Properly handle Unicode characters
+              try {
+                result = btoa(unescape(encodeURIComponent(input)))
+              } catch (e) {
+                setOutput('')
+                return
+              }
             }
           } else {
             if (encodingType === 'url') {
-              result = decodeURIComponent(input)
+              try {
+                result = decodeURIComponent(input)
+              } catch (e) {
+                setOutput('')
+                return
+              }
             } else if (encodingType === 'uri') {
-              result = decodeURI(input)
+              try {
+                result = decodeURI(input)
+              } catch (e) {
+                setOutput('')
+                return
+              }
             } else if (encodingType === 'base64') {
-              result = decodeURIComponent(escape(atob(input)))
+              try {
+                // Validate Base64 string
+                const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/
+                if (!base64Regex.test(input.trim())) {
+                  setOutput('')
+                  return
+                }
+                result = decodeURIComponent(escape(atob(input.trim())))
+              } catch (e) {
+                setOutput('')
+                return
+              }
             }
           }
           setOutput(result)
         } catch (error) {
-          // Silently fail in real-time mode
           setOutput('')
         }
       }, 300) // Debounce for 300ms
       
       return () => clearTimeout(timer)
-    } else if (realTime && !input.trim()) {
-      setOutput('')
     }
   }, [input, mode, encodingType, realTime])
 
   const encode = () => {
     if (!input.trim()) {
-      if (!realTime) toast.error('Please enter some text')
+      toast.error('Please enter some text to encode')
       return
     }
 
@@ -97,85 +126,123 @@ export default function URLEncoder() {
           // Handle Unicode characters properly
           encoded = btoa(unescape(encodeURIComponent(input)))
         } catch (e) {
-          throw new Error('Failed to encode to Base64. Ensure input contains valid characters.')
+          toast.error('Failed to encode to Base64. Please check your input contains valid characters.')
+          return
         }
+      }
+      
+      if (!encoded) {
+        toast.error('Encoding produced empty result')
+        return
       }
       
       setOutput(encoded)
       
       // Save to history
-      if (!realTime) {
-        const historyItem: EncodingHistory = {
-          id: Date.now().toString(),
-          input: input, // Save full input
-          output: encoded, // Save full output
-          mode: 'encode',
-          encodingType,
-          timestamp: Date.now()
-        }
-        
-        const updatedHistory = [historyItem, ...history].slice(0, 20)
-        setHistory(updatedHistory)
-        localStorage.setItem('url-encoder-history', JSON.stringify(updatedHistory))
-        
-        toast.success('Encoded successfully!')
-        
-        // Trigger popunder after encoding
-        setTimeout(() => {
-          triggerPopunder()
-        }, 2000)
+      const historyItem: EncodingHistory = {
+        id: Date.now().toString(),
+        input: input,
+        output: encoded,
+        mode: 'encode',
+        encodingType,
+        timestamp: Date.now()
       }
-    } catch (error) {
-      if (!realTime) toast.error('Failed to encode')
+      
+      const updatedHistory = [historyItem, ...history].slice(0, 50) // Increased to 50 items
+      setHistory(updatedHistory)
+      localStorage.setItem('url-encoder-history', JSON.stringify(updatedHistory))
+      
+      toast.success('Encoded successfully!')
+      
+      // Trigger popunder after encoding
+      setTimeout(() => {
+        triggerPopunder()
+      }, 2000)
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to encode. Please check your input.')
     }
   }
 
   const decode = () => {
     if (!input.trim()) {
-      if (!realTime) toast.error('Please enter some text')
+      toast.error('Please enter some text to decode')
       return
     }
 
     try {
       let decoded = ''
       if (encodingType === 'url') {
-        decoded = decodeURIComponent(input)
+        try {
+          decoded = decodeURIComponent(input)
+        } catch (e) {
+          toast.error('Invalid URL encoded string. Please check your input.')
+          return
+        }
       } else if (encodingType === 'uri') {
-        decoded = decodeURI(input)
+        try {
+          decoded = decodeURI(input)
+        } catch (e) {
+          toast.error('Invalid URI encoded string. Please check your input.')
+          return
+        }
       } else if (encodingType === 'base64') {
         try {
-          decoded = decodeURIComponent(escape(atob(input)))
-        } catch (e) {
-          throw new Error('Invalid Base64 string')
+          // Validate Base64 string format
+          const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/
+          const trimmedInput = input.trim().replace(/\s/g, '') // Remove whitespace
+          
+          if (!trimmedInput) {
+            toast.error('Empty Base64 string')
+            return
+          }
+          
+          if (!base64Regex.test(trimmedInput)) {
+            toast.error('Invalid Base64 format. Base64 strings can only contain A-Z, a-z, 0-9, +, /, and = characters.')
+            return
+          }
+          
+          // Check if length is valid (must be multiple of 4 after padding)
+          if (trimmedInput.length % 4 !== 0) {
+            toast.error('Invalid Base64 length. Base64 strings must have length that is a multiple of 4.')
+            return
+          }
+          
+          decoded = decodeURIComponent(escape(atob(trimmedInput)))
+        } catch (e: any) {
+          toast.error('Invalid Base64 string. ' + (e.message || 'Please check your input.'))
+          return
         }
+      }
+      
+      if (decoded === undefined || decoded === null) {
+        toast.error('Decoding produced invalid result')
+        return
       }
       
       setOutput(decoded)
       
       // Save to history
-      if (!realTime) {
-        const historyItem: EncodingHistory = {
-          id: Date.now().toString(),
-          input: input, // Save full input
-          output: decoded, // Save full output
-          mode: 'decode',
-          encodingType,
-          timestamp: Date.now()
-        }
-        
-        const updatedHistory = [historyItem, ...history].slice(0, 20)
-        setHistory(updatedHistory)
-        localStorage.setItem('url-encoder-history', JSON.stringify(updatedHistory))
-        
-        toast.success('Decoded successfully!')
-        
-        // Trigger popunder after decoding
-        setTimeout(() => {
-          triggerPopunder()
-        }, 2000)
+      const historyItem: EncodingHistory = {
+        id: Date.now().toString(),
+        input: input,
+        output: decoded,
+        mode: 'decode',
+        encodingType,
+        timestamp: Date.now()
       }
-    } catch (error) {
-      if (!realTime) toast.error('Invalid encoded string')
+      
+      const updatedHistory = [historyItem, ...history].slice(0, 50) // Increased to 50 items
+      setHistory(updatedHistory)
+      localStorage.setItem('url-encoder-history', JSON.stringify(updatedHistory))
+      
+      toast.success('Decoded successfully!')
+      
+      // Trigger popunder after decoding
+      setTimeout(() => {
+        triggerPopunder()
+      }, 2000)
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to decode. Please check your input.')
     }
   }
 
@@ -201,9 +268,22 @@ export default function URLEncoder() {
   }
 
   const swapMode = () => {
+    if (!output && !input) {
+      toast.error('Nothing to swap')
+      return
+    }
+    
+    // Swap input and output
+    const tempInput = input
+    const tempOutput = output
+    
+    setInput(tempOutput || '')
+    setOutput(tempInput || '')
+    
+    // Toggle mode
     setMode(mode === 'encode' ? 'decode' : 'encode')
-    setInput(output)
-    setOutput(input)
+    
+    toast.success('Swapped!')
   }
 
   const exportData = (format: 'txt' | 'json') => {
@@ -299,8 +379,22 @@ export default function URLEncoder() {
   const loadExample = (example: string) => {
     if (mode === 'encode') {
       setInput(example)
+      setOutput('') // Clear output when loading new example
     } else {
-      setInput(encodeURIComponent(example))
+      // For decode mode, encode the example first
+      try {
+        if (encodingType === 'url') {
+          setInput(encodeURIComponent(example))
+        } else if (encodingType === 'uri') {
+          setInput(encodeURI(example))
+        } else if (encodingType === 'base64') {
+          setInput(btoa(unescape(encodeURIComponent(example))))
+        }
+        setOutput('') // Clear output when loading new example
+      } catch (e) {
+        toast.error('Failed to load example')
+        return
+      }
     }
     toast.success('Example loaded!')
   }
@@ -323,7 +417,7 @@ export default function URLEncoder() {
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-4 sm:mb-6">
-            <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 mb-3 sm:mb-4">
+            <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-pink-500 to-rose-500 mb-3 sm:mb-4">
               <LinkIcon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">URL Encoder/Decoder</h1>
@@ -378,7 +472,7 @@ export default function URLEncoder() {
                     <button
                       onClick={() => setEncodingType('url')}
                       className={`px-3 py-2 rounded-lg font-medium transition-all text-sm touch-manipulation active:scale-95 ${
-                        encodingType === 'url' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
+                        encodingType === 'url' ? 'bg-pink-600 text-white' : 'bg-gray-100 text-gray-900'
                       }`}
                     >
                       URL Component
@@ -386,7 +480,7 @@ export default function URLEncoder() {
                     <button
                       onClick={() => setEncodingType('uri')}
                       className={`px-3 py-2 rounded-lg font-medium transition-all text-sm touch-manipulation active:scale-95 ${
-                        encodingType === 'uri' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
+                        encodingType === 'uri' ? 'bg-pink-600 text-white' : 'bg-gray-100 text-gray-900'
                       }`}
                     >
                       URI
@@ -394,7 +488,7 @@ export default function URLEncoder() {
                     <button
                       onClick={() => setEncodingType('base64')}
                       className={`px-3 py-2 rounded-lg font-medium transition-all text-sm touch-manipulation active:scale-95 ${
-                        encodingType === 'base64' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
+                        encodingType === 'base64' ? 'bg-pink-600 text-white' : 'bg-gray-100 text-gray-900'
                       }`}
                     >
                       Base64
@@ -408,7 +502,7 @@ export default function URLEncoder() {
                     id="realtime"
                     checked={realTime}
                     onChange={(e) => setRealTime(e.target.checked)}
-                    className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                    className="w-5 h-5 text-pink-600 rounded focus:ring-pink-500"
                   />
                   <label htmlFor="realtime" className="text-sm font-medium text-gray-900 flex items-center gap-2">
                     <Zap className="h-4 w-4" />
@@ -461,7 +555,7 @@ export default function URLEncoder() {
                         <div className="flex gap-1 sm:gap-2">
                           <button
                             onClick={() => loadHistoryItem(item)}
-                            className="p-1.5 sm:p-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors touch-manipulation active:scale-95"
+                            className="p-1.5 sm:p-2 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-lg transition-colors touch-manipulation active:scale-95"
                             title="Load"
                           >
                             <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -490,7 +584,7 @@ export default function URLEncoder() {
                   onClick={() => setMode('encode')}
                   className={`px-4 sm:px-6 py-2 rounded-md font-semibold transition-all text-sm sm:text-base touch-manipulation active:scale-95 ${
                     mode === 'encode'
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-pink-600 text-white'
                       : 'text-gray-900 hover:bg-gray-100'
                   }`}
                 >
@@ -500,7 +594,7 @@ export default function URLEncoder() {
                   onClick={() => setMode('decode')}
                   className={`px-4 sm:px-6 py-2 rounded-md font-semibold transition-all text-sm sm:text-base touch-manipulation active:scale-95 ${
                     mode === 'decode'
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-pink-600 text-white'
                       : 'text-gray-900 hover:bg-gray-100'
                   }`}
                 >
@@ -513,24 +607,24 @@ export default function URLEncoder() {
             {(input || output) && (
               <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-pink-600" />
                   <h4 className="text-sm sm:text-base font-semibold text-gray-900">Statistics</h4>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                   <div className="text-center">
-                    <p className="text-lg sm:text-xl font-bold text-blue-600">{inputCharCount}</p>
+                    <p className="text-lg sm:text-xl font-bold text-pink-600">{inputCharCount}</p>
                     <p className="text-xs sm:text-sm text-gray-600">Input Chars</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-lg sm:text-xl font-bold text-blue-600">{outputCharCount}</p>
+                    <p className="text-lg sm:text-xl font-bold text-pink-600">{outputCharCount}</p>
                     <p className="text-xs sm:text-sm text-gray-600">Output Chars</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-lg sm:text-xl font-bold text-blue-600">{inputWordCount}</p>
+                    <p className="text-lg sm:text-xl font-bold text-pink-600">{inputWordCount}</p>
                     <p className="text-xs sm:text-sm text-gray-600">Words</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-lg sm:text-xl font-bold text-blue-600">{encodingType.toUpperCase()}</p>
+                    <p className="text-lg sm:text-xl font-bold text-pink-600">{encodingType.toUpperCase()}</p>
                     <p className="text-xs sm:text-sm text-gray-600">Type</p>
                   </div>
                 </div>
@@ -539,24 +633,24 @@ export default function URLEncoder() {
 
             {/* Examples */}
             {mode === 'encode' && !input && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
-                <h4 className="text-sm font-semibold text-blue-900 mb-2">Quick Examples:</h4>
+              <div className="bg-pink-50 border border-pink-200 rounded-lg p-3 sm:p-4">
+                <h4 className="text-sm font-semibold text-pink-900 mb-2">Quick Examples:</h4>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => loadExample('Hello World')}
-                    className="px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-xs sm:text-sm font-medium transition-colors touch-manipulation active:scale-95"
+                    className="px-3 py-1.5 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-lg text-xs sm:text-sm font-medium transition-colors touch-manipulation active:scale-95"
                   >
                     Hello World
                   </button>
                   <button
                     onClick={() => loadExample('https://example.com?q=test')}
-                    className="px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-xs sm:text-sm font-medium transition-colors touch-manipulation active:scale-95"
+                    className="px-3 py-1.5 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-lg text-xs sm:text-sm font-medium transition-colors touch-manipulation active:scale-95"
                   >
                     URL Example
                   </button>
                   <button
                     onClick={() => loadExample('Special chars: !@#$%')}
-                    className="px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-xs sm:text-sm font-medium transition-colors touch-manipulation active:scale-95"
+                    className="px-3 py-1.5 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-lg text-xs sm:text-sm font-medium transition-colors touch-manipulation active:scale-95"
                   >
                     Special Chars
                   </button>
@@ -585,7 +679,7 @@ export default function URLEncoder() {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder={mode === 'encode' ? 'Enter text to encode...' : 'Enter URL encoded string...'}
                   rows={10}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-xs sm:text-sm text-gray-900"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none font-mono text-xs sm:text-sm text-gray-900"
                 />
               </div>
 
@@ -598,7 +692,7 @@ export default function URLEncoder() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => copyToClipboard()}
-                        className="flex items-center space-x-1 px-2 sm:px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-xs sm:text-sm font-medium transition-colors touch-manipulation active:scale-95"
+                        className="flex items-center space-x-1 px-2 sm:px-3 py-1.5 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-lg text-xs sm:text-sm font-medium transition-colors touch-manipulation active:scale-95"
                       >
                         {copied ? (
                           <>
@@ -644,7 +738,7 @@ export default function URLEncoder() {
               <button
                 onClick={handleConvert}
                 disabled={realTime}
-                className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-sm sm:text-base active:scale-95 touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-gradient-to-r from-pink-600 to-rose-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-sm sm:text-base active:scale-95 touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {realTime ? (
                   <>

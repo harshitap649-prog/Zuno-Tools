@@ -462,24 +462,253 @@ export default function AIResumeBuilder() {
     }
   }
 
+  // Helper function to add profile image with shape
+  const addProfileImage = (pdf: jsPDF, x: number, y: number, size: number, shape: 'circle' | 'square' | 'rounded') => {
+    if (!profileImage) return
+    
+    try {
+      // Add image first
+      pdf.addImage(profileImage, 'JPEG', x, y, size, size, undefined, 'FAST')
+      
+      // Draw border based on shape
+      if (shape === 'circle') {
+        // Draw circular border
+        pdf.setDrawColor(200, 200, 200)
+        pdf.setLineWidth(1)
+        pdf.circle(x + size/2, y + size/2, size/2, 'D')
+      } else if (shape === 'rounded') {
+        // Draw rounded square border
+        pdf.setDrawColor(200, 200, 200)
+        pdf.setLineWidth(1)
+        // jsPDF doesn't have roundedRect, so we'll use regular rect with rounded corners approximation
+        pdf.rect(x, y, size, size, 'D')
+      } else {
+        // Square border
+        pdf.setDrawColor(200, 200, 200)
+        pdf.setLineWidth(1)
+        pdf.rect(x, y, size, size, 'D')
+      }
+    } catch (e) {
+      console.error('Error adding image:', e)
+      // Try with PNG if JPEG fails
+      try {
+        pdf.addImage(profileImage, 'PNG', x, y, size, size, undefined, 'FAST')
+        if (shape === 'circle') {
+          pdf.setDrawColor(200, 200, 200)
+          pdf.setLineWidth(1)
+          pdf.circle(x + size/2, y + size/2, size/2, 'D')
+        } else {
+          pdf.setDrawColor(200, 200, 200)
+          pdf.setLineWidth(1)
+          pdf.rect(x, y, size, size, 'D')
+        }
+      } catch (e2) {
+        console.error('Error adding image as PNG:', e2)
+      }
+    }
+  }
+
+  // Helper function to render common sections
+  const renderCommonSections = (pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number, rgb: { r: number; g: number; b: number }) => {
+    let yPos = startY
+    pdf.setTextColor(0, 0, 0)
+
+    // Objective
+    if (personalInfo.objective) {
+      pdf.setFontSize(14)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('Objective', leftMargin, yPos)
+      yPos += 7
+      pdf.setFontSize(10)
+      pdf.setFont('helvetica', 'normal')
+      const objLines = pdf.splitTextToSize(personalInfo.objective, pageWidth - leftMargin - rightMargin)
+      pdf.text(objLines, leftMargin, yPos)
+      yPos += objLines.length * 5 + 10
+    }
+
+    // Professional Summary
+    if (personalInfo.summary) {
+      pdf.setFontSize(14)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('Professional Summary', leftMargin, yPos)
+      yPos += 7
+      pdf.setFontSize(10)
+      pdf.setFont('helvetica', 'normal')
+      const summaryLines = pdf.splitTextToSize(personalInfo.summary, pageWidth - leftMargin - rightMargin)
+      pdf.text(summaryLines, leftMargin, yPos)
+      yPos += summaryLines.length * 5 + 10
+    }
+
+    // Experience
+    if (experiences.length > 0) {
+      pdf.setFontSize(14)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('Experience', leftMargin, yPos)
+      yPos += 7
+      pdf.setFontSize(10)
+      experiences.forEach(exp => {
+        if (exp.company && exp.position) {
+          if (yPos > 270) {
+            pdf.addPage()
+            yPos = 20
+          }
+          pdf.setFont('helvetica', 'bold')
+          pdf.text(`${exp.position}`, leftMargin, yPos)
+          pdf.setFont('helvetica', 'normal')
+          pdf.text(`${exp.company}`, leftMargin + 60, yPos)
+          if (exp.duration) {
+            pdf.text(exp.duration, pageWidth - rightMargin - 30, yPos, { align: 'right' })
+          }
+          yPos += 5
+          if (exp.description) {
+            const descLines = pdf.splitTextToSize(exp.description, pageWidth - leftMargin - rightMargin)
+            pdf.text(descLines, leftMargin + 5, yPos)
+            yPos += descLines.length * 5 + 3
+          }
+          yPos += 3
+        }
+      })
+      yPos += 5
+    }
+
+    // Education
+    if (educations.length > 0) {
+      if (yPos > 270) {
+        pdf.addPage()
+        yPos = 20
+      }
+      pdf.setFontSize(14)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('Education', leftMargin, yPos)
+      yPos += 7
+      pdf.setFontSize(10)
+      educations.forEach(edu => {
+        if (edu.institution && edu.degree) {
+          pdf.setFont('helvetica', 'bold')
+          pdf.text(`${edu.degree}`, leftMargin, yPos)
+          pdf.setFont('helvetica', 'normal')
+          pdf.text(`${edu.institution}`, leftMargin + 60, yPos)
+          if (edu.year) {
+            pdf.text(edu.year, pageWidth - rightMargin - 30, yPos, { align: 'right' })
+          }
+          yPos += 7
+        }
+      })
+      yPos += 5
+    }
+
+    // Skills
+    const validSkills = skills.filter(s => s.trim())
+    if (validSkills.length > 0) {
+      if (yPos > 270) {
+        pdf.addPage()
+        yPos = 20
+      }
+      pdf.setFontSize(14)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('Skills', leftMargin, yPos)
+      yPos += 7
+      pdf.setFontSize(10)
+      pdf.setFont('helvetica', 'normal')
+      pdf.text(validSkills.join(', '), leftMargin, yPos)
+      yPos += 10
+    }
+
+    // Languages
+    if (languages.length > 0) {
+      if (yPos > 270) {
+        pdf.addPage()
+        yPos = 20
+      }
+      pdf.setFontSize(14)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('Languages', leftMargin, yPos)
+      yPos += 7
+      pdf.setFontSize(10)
+      pdf.setFont('helvetica', 'normal')
+      languages.forEach(lang => {
+        if (lang.name) {
+          pdf.text(`${lang.name}: ${lang.proficiency}`, leftMargin, yPos)
+          yPos += 5
+        }
+      })
+      yPos += 5
+    }
+
+    // Courses
+    if (courses.length > 0) {
+      if (yPos > 270) {
+        pdf.addPage()
+        yPos = 20
+      }
+      pdf.setFontSize(14)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('Courses & Certifications', leftMargin, yPos)
+      yPos += 7
+      pdf.setFontSize(10)
+      pdf.setFont('helvetica', 'normal')
+      courses.forEach(course => {
+        if (course.name) {
+          pdf.setFont('helvetica', 'bold')
+          pdf.text(course.name, leftMargin, yPos)
+          pdf.setFont('helvetica', 'normal')
+          if (course.institution) {
+            pdf.text(course.institution, leftMargin + 60, yPos)
+          }
+          if (course.year) {
+            pdf.text(course.year, pageWidth - rightMargin - 30, yPos, { align: 'right' })
+          }
+          yPos += 7
+        }
+      })
+      yPos += 5
+    }
+
+    // References
+    if (references.length > 0) {
+      if (yPos > 250) {
+        pdf.addPage()
+        yPos = 20
+      }
+      pdf.setFontSize(14)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('References', leftMargin, yPos)
+      yPos += 7
+      pdf.setFontSize(10)
+      pdf.setFont('helvetica', 'normal')
+      references.forEach(ref => {
+        if (ref.name) {
+          pdf.setFont('helvetica', 'bold')
+          pdf.text(ref.name, leftMargin, yPos)
+          pdf.setFont('helvetica', 'normal')
+          if (ref.position && ref.company) {
+            pdf.text(`${ref.position} at ${ref.company}`, leftMargin + 5, yPos + 5)
+            yPos += 5
+          }
+          if (ref.email) {
+            pdf.text(`Email: ${ref.email}`, leftMargin + 5, yPos + 5)
+            yPos += 5
+          }
+          if (ref.phone) {
+            pdf.text(`Phone: ${ref.phone}`, leftMargin + 5, yPos + 5)
+            yPos += 5
+          }
+          yPos += 5
+        }
+      })
+    }
+  }
+
   const generateModernTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
-    let yPos = 20
     const pageWidth = pdf.internal.pageSize.getWidth()
+    const pageHeight = pdf.internal.pageSize.getHeight()
     const margin = 20
+    const sidebarWidth = 60
 
     // Header with colored bar
     pdf.setFillColor(rgb.r, rgb.g, rgb.b)
     pdf.rect(0, 0, pageWidth, 50, 'F')
     
-    // Profile image
-    if (profileImage) {
-      try {
-        pdf.addImage(profileImage, 'JPEG', pageWidth - 50, 5, 40, 40, undefined, 'FAST')
-      } catch (e) {
-        console.error('Error adding image:', e)
-      }
-    }
-
     // Name in header
     pdf.setTextColor(255, 255, 255)
     pdf.setFontSize(28)
@@ -497,206 +726,318 @@ export default function AIResumeBuilder() {
     ].filter(Boolean).join(' | ')
     pdf.text(contactInfo, margin, 40)
 
-    yPos = 60
-    pdf.setTextColor(0, 0, 0)
-
-    // Objective
-    if (personalInfo.objective) {
-      pdf.setFillColor(rgb.r, rgb.g, rgb.b)
-      pdf.setDrawColor(rgb.r, rgb.g, rgb.b)
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Objective', margin, yPos)
-      yPos += 7
-      pdf.setFontSize(10)
-      pdf.setFont('helvetica', 'normal')
-      const objLines = pdf.splitTextToSize(personalInfo.objective, pageWidth - 2 * margin)
-      pdf.text(objLines, margin, yPos)
-      yPos += objLines.length * 5 + 10
+    // Left sidebar with colored background
+    pdf.setFillColor(rgb.r, rgb.g, rgb.b)
+    pdf.setGState(pdf.GState({opacity: 0.1}))
+    pdf.rect(0, 50, sidebarWidth, pageHeight - 50, 'F')
+    pdf.setGState(pdf.GState({opacity: 1}))
+    
+    // Profile image in left sidebar (circular)
+    if (profileImage) {
+      addProfileImage(pdf, margin, 60, 40, 'circle')
     }
 
-    // Professional Summary
-    if (personalInfo.summary) {
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Professional Summary', margin, yPos)
-      yPos += 7
-      pdf.setFontSize(10)
-      pdf.setFont('helvetica', 'normal')
-      const summaryLines = pdf.splitTextToSize(personalInfo.summary, pageWidth - 2 * margin)
-      pdf.text(summaryLines, margin, yPos)
-      yPos += summaryLines.length * 5 + 10
-    }
+    // Render content sections in main area
+    renderCommonSections(pdf, 60, margin + sidebarWidth + 10, margin, pageWidth, rgb)
 
-    // Experience
-    if (experiences.length > 0) {
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Experience', margin, yPos)
-      yPos += 7
-      pdf.setFontSize(10)
-      experiences.forEach(exp => {
-        if (exp.company && exp.position) {
-          pdf.setFont('helvetica', 'bold')
-          pdf.text(`${exp.position}`, margin, yPos)
-          pdf.setFont('helvetica', 'normal')
-          pdf.text(`${exp.company}`, margin + 60, yPos)
-          if (exp.duration) {
-            pdf.text(exp.duration, pageWidth - margin - 30, yPos, { align: 'right' })
-          }
-          yPos += 5
-          if (exp.description) {
-            const descLines = pdf.splitTextToSize(exp.description, pageWidth - 2 * margin)
-            pdf.text(descLines, margin + 5, yPos)
-            yPos += descLines.length * 5 + 3
-          }
-          yPos += 3
-        }
-      })
-      yPos += 5
-    }
-
-    // Education
-    if (educations.length > 0) {
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Education', margin, yPos)
-      yPos += 7
-      pdf.setFontSize(10)
-      educations.forEach(edu => {
-        if (edu.institution && edu.degree) {
-          pdf.setFont('helvetica', 'bold')
-          pdf.text(`${edu.degree}`, margin, yPos)
-          pdf.setFont('helvetica', 'normal')
-          pdf.text(`${edu.institution}`, margin + 60, yPos)
-          if (edu.year) {
-            pdf.text(edu.year, pageWidth - margin - 30, yPos, { align: 'right' })
-          }
-          yPos += 7
-        }
-      })
-      yPos += 5
-    }
-
-    // Skills
-    const validSkills = skills.filter(s => s.trim())
-    if (validSkills.length > 0) {
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Skills', margin, yPos)
-      yPos += 7
-      pdf.setFontSize(10)
-      pdf.setFont('helvetica', 'normal')
-      pdf.text(validSkills.join(', '), margin, yPos)
-      yPos += 10
-    }
-
-    // Languages
-    if (languages.length > 0) {
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Languages', margin, yPos)
-      yPos += 7
-      pdf.setFontSize(10)
-      pdf.setFont('helvetica', 'normal')
-      languages.forEach(lang => {
-        if (lang.name) {
-          pdf.text(`${lang.name}: ${lang.proficiency}`, margin, yPos)
-          yPos += 5
-        }
-      })
-      yPos += 5
-    }
-
-    // Courses
-    if (courses.length > 0) {
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Courses & Certifications', margin, yPos)
-      yPos += 7
-      pdf.setFontSize(10)
-      pdf.setFont('helvetica', 'normal')
-      courses.forEach(course => {
-        if (course.name) {
-          pdf.setFont('helvetica', 'bold')
-          pdf.text(course.name, margin, yPos)
-          pdf.setFont('helvetica', 'normal')
-          if (course.institution) {
-            pdf.text(course.institution, margin + 60, yPos)
-          }
-          if (course.year) {
-            pdf.text(course.year, pageWidth - margin - 30, yPos, { align: 'right' })
-          }
-          yPos += 7
-        }
-      })
-      yPos += 5
-    }
-
-    // References
-    if (references.length > 0) {
-      if (yPos > 250) {
-        pdf.addPage()
-        yPos = 20
-      }
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('References', margin, yPos)
-      yPos += 7
-      pdf.setFontSize(10)
-      pdf.setFont('helvetica', 'normal')
-      references.forEach(ref => {
-        if (ref.name) {
-          pdf.setFont('helvetica', 'bold')
-          pdf.text(ref.name, margin, yPos)
-          pdf.setFont('helvetica', 'normal')
-          if (ref.position && ref.company) {
-            pdf.text(`${ref.position} at ${ref.company}`, margin + 5, yPos + 5)
-            yPos += 5
-          }
-          if (ref.email) {
-            pdf.text(`Email: ${ref.email}`, margin + 5, yPos + 5)
-            yPos += 5
-          }
-          if (ref.phone) {
-            pdf.text(`Phone: ${ref.phone}`, margin + 5, yPos + 5)
-            yPos += 5
-          }
-          yPos += 5
-        }
-      })
-    }
   }
 
   const generateClassicTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
-    // Similar structure but with classic styling
-    await generateModernTemplate(pdf, rgb)
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const margin = 20
+    let yPos = 20
+
+    // Header border
+    pdf.setDrawColor(rgb.r, rgb.g, rgb.b)
+    pdf.setLineWidth(2)
+    pdf.line(0, yPos, pageWidth, yPos)
+    yPos += 10
+
+    // Name
+    pdf.setTextColor(0, 0, 0)
+    pdf.setFontSize(24)
+    pdf.setFont('helvetica', 'bold')
+    pdf.text(personalInfo.name || 'Your Name', margin, yPos)
+    yPos += 8
+
+    // Profile image at top center (circular)
+    if (profileImage) {
+      const imgSize = 35
+      const imgX = (pageWidth - imgSize) / 2
+      addProfileImage(pdf, imgX, yPos, imgSize, 'circle')
+      yPos += imgSize + 10
+    }
+
+    // Contact info
+    pdf.setFontSize(10)
+    pdf.setFont('helvetica', 'normal')
+    const contactInfo = [
+      personalInfo.email && `Email: ${personalInfo.email}`,
+      personalInfo.phone && `Phone: ${personalInfo.phone}`,
+      personalInfo.address && `Address: ${personalInfo.address}`,
+      personalInfo.linkedin && `LinkedIn: ${personalInfo.linkedin}`,
+    ].filter(Boolean).join(' | ')
+    pdf.text(contactInfo, margin, yPos)
+    yPos += 10
+
+    // Bottom border
+    pdf.setDrawColor(rgb.r, rgb.g, rgb.b)
+    pdf.setLineWidth(1)
+    pdf.line(0, yPos, pageWidth, yPos)
+    yPos += 10
+
+    renderCommonSections(pdf, yPos, margin, margin, pageWidth, rgb)
   }
 
   const generateCreativeTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
-    // Similar structure but with creative styling
-    await generateModernTemplate(pdf, rgb)
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    const margin = 20
+    const sidebarWidth = 15
+
+    // Colored sidebar
+    pdf.setFillColor(rgb.r, rgb.g, rgb.b)
+    pdf.rect(0, 0, sidebarWidth, pageHeight, 'F')
+
+    // Header with accent
+    pdf.setFillColor(rgb.r, rgb.g, rgb.b)
+    pdf.setGState(pdf.GState({opacity: 0.3}))
+    pdf.rect(sidebarWidth, 0, pageWidth * 0.45, 30, 'F')
+    pdf.setGState(pdf.GState({opacity: 1}))
+
+    // Name
+    pdf.setTextColor(0, 0, 0)
+    pdf.setFontSize(26)
+    pdf.setFont('helvetica', 'bold')
+    pdf.text(personalInfo.name || 'Your Name', sidebarWidth + margin, 20)
+
+    // Contact info
+    pdf.setFontSize(9)
+    pdf.setFont('helvetica', 'normal')
+    const contactInfo = [
+      personalInfo.email && personalInfo.email,
+      personalInfo.phone && personalInfo.phone,
+      personalInfo.linkedin && personalInfo.linkedin,
+    ].filter(Boolean).join(' | ')
+    pdf.text(contactInfo, sidebarWidth + margin, 30)
+
+    // Profile image in left sidebar area (circular)
+    if (profileImage) {
+      addProfileImage(pdf, sidebarWidth + margin, 40, 35, 'circle')
+    }
+
+    renderCommonSections(pdf, 40, sidebarWidth + margin + 10, margin, pageWidth, rgb)
   }
 
   const generateMinimalTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
-    // Similar structure but with minimal styling
-    await generateModernTemplate(pdf, rgb)
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const margin = 20
+    let yPos = 20
+
+    // Minimal header - just name
+    pdf.setTextColor(0, 0, 0)
+    pdf.setFontSize(22)
+    pdf.setFont('helvetica', 'bold')
+    pdf.text(personalInfo.name || 'Your Name', margin, yPos)
+    yPos += 8
+
+    // Thin divider
+    pdf.setDrawColor(200, 200, 200)
+    pdf.setLineWidth(0.5)
+    pdf.line(margin, yPos, pageWidth - margin, yPos)
+    yPos += 8
+
+    // Profile image at top (circular)
+    if (profileImage) {
+      addProfileImage(pdf, margin, yPos, 30, 'circle')
+      yPos += 35
+    }
+
+    // Contact info - minimal
+    pdf.setFontSize(9)
+    pdf.setFont('helvetica', 'normal')
+    const contactInfo = [
+      personalInfo.email && personalInfo.email,
+      personalInfo.phone && personalInfo.phone,
+    ].filter(Boolean).join(' • ')
+    pdf.text(contactInfo, margin, yPos)
+    yPos += 10
+
+    // Thin divider
+    pdf.setDrawColor(200, 200, 200)
+    pdf.setLineWidth(0.5)
+    pdf.line(margin, yPos, pageWidth - margin, yPos)
+    yPos += 10
+
+    renderCommonSections(pdf, yPos, margin, margin, pageWidth, rgb)
   }
 
   const generateExecutiveTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
-    await generateModernTemplate(pdf, rgb)
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    const margin = 20
+    const sidebarWidth = 55
+
+    // Dark header
+    pdf.setFillColor(30, 30, 30)
+    pdf.rect(0, 0, pageWidth, 45, 'F')
+
+    // Name in header
+    pdf.setTextColor(255, 255, 255)
+    pdf.setFontSize(26)
+    pdf.setFont('helvetica', 'bold')
+    pdf.text(personalInfo.name || 'Your Name', margin, 30)
+
+    // Contact info in header
+    pdf.setFontSize(9)
+    pdf.setFont('helvetica', 'normal')
+    const contactInfo = [
+      personalInfo.email && personalInfo.email,
+      personalInfo.phone && personalInfo.phone,
+      personalInfo.linkedin && personalInfo.linkedin,
+    ].filter(Boolean).join(' | ')
+    pdf.text(contactInfo, margin, 40)
+
+    // Left sidebar with light background
+    pdf.setFillColor(240, 240, 240)
+    pdf.rect(0, 45, sidebarWidth, pageHeight - 45, 'F')
+
+    // Profile image in sidebar (circular)
+    if (profileImage) {
+      addProfileImage(pdf, margin, 55, 35, 'circle')
+    }
+
+    renderCommonSections(pdf, 55, sidebarWidth + margin + 10, margin, pageWidth, rgb)
   }
 
   const generateAcademicTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
-    await generateModernTemplate(pdf, rgb)
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const margin = 20
+    let yPos = 20
+
+    // Header with border
+    pdf.setDrawColor(rgb.r, rgb.g, rgb.b)
+    pdf.setLineWidth(1.5)
+    pdf.rect(margin, yPos, pageWidth - 2 * margin, 60, 'D')
+    yPos += 10
+
+    // Name
+    pdf.setTextColor(0, 0, 0)
+    pdf.setFontSize(24)
+    pdf.setFont('helvetica', 'bold')
+    pdf.text(personalInfo.name || 'Your Name', margin + 5, yPos)
+    yPos += 8
+
+    // Profile image at top center (circular)
+    if (profileImage) {
+      const imgSize = 32
+      const imgX = (pageWidth - imgSize) / 2
+      addProfileImage(pdf, imgX, yPos, imgSize, 'circle')
+      yPos += imgSize + 8
+    }
+
+    // Contact info
+    pdf.setFontSize(9)
+    pdf.setFont('helvetica', 'normal')
+    const contactInfo = [
+      personalInfo.email && `Email: ${personalInfo.email}`,
+      personalInfo.phone && `Phone: ${personalInfo.phone}`,
+      personalInfo.address && `Address: ${personalInfo.address}`,
+    ].filter(Boolean).join(' | ')
+    pdf.text(contactInfo, margin + 5, yPos)
+    yPos += 15
+
+    renderCommonSections(pdf, yPos, margin, margin, pageWidth, rgb)
   }
 
   const generateTechTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
-    await generateModernTemplate(pdf, rgb)
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    const margin = 20
+    const sidebarWidth = 60
+
+    // Gradient header effect
+    pdf.setFillColor(rgb.r, rgb.g, rgb.b)
+    pdf.rect(0, 0, pageWidth, 40, 'F')
+    pdf.setFillColor(rgb.r * 0.85, rgb.g * 0.85, rgb.b * 0.85)
+    pdf.rect(0, 0, pageWidth, 35, 'F')
+
+    // Name in header
+    pdf.setTextColor(255, 255, 255)
+    pdf.setFontSize(26)
+    pdf.setFont('helvetica', 'bold')
+    pdf.text(personalInfo.name || 'Your Name', margin, 28)
+
+    // Contact info
+    pdf.setFontSize(9)
+    pdf.setFont('helvetica', 'normal')
+    const contactInfo = [
+      personalInfo.email && personalInfo.email,
+      personalInfo.phone && personalInfo.phone,
+      personalInfo.linkedin && personalInfo.linkedin,
+    ].filter(Boolean).join(' | ')
+    pdf.text(contactInfo, margin, 38)
+
+    // Left sidebar with subtle color
+    pdf.setFillColor(rgb.r, rgb.g, rgb.b)
+    pdf.setGState(pdf.GState({opacity: 0.08}))
+    pdf.rect(0, 40, sidebarWidth, pageHeight - 40, 'F')
+    pdf.setGState(pdf.GState({opacity: 1}))
+
+    // Profile image in sidebar (rounded square)
+    if (profileImage) {
+      addProfileImage(pdf, margin, 50, 40, 'rounded')
+    }
+
+    renderCommonSections(pdf, 50, sidebarWidth + margin + 10, margin, pageWidth, rgb)
   }
 
   const generateDesignerTemplate = async (pdf: jsPDF, rgb: { r: number; g: number; b: number }) => {
-    await generateModernTemplate(pdf, rgb)
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    const margin = 20
+    const sidebarWidth = 70
+
+    // Decorative corner
+    pdf.setFillColor(rgb.r, rgb.g, rgb.b)
+    pdf.setGState(pdf.GState({opacity: 0.15}))
+    pdf.circle(pageWidth, 0, 80, 'F')
+    pdf.setGState(pdf.GState({opacity: 1}))
+
+    // Header with accent bar
+    pdf.setFillColor(rgb.r, rgb.g, rgb.b)
+    pdf.setGState(pdf.GState({opacity: 0.5}))
+    pdf.rect(0, 0, pageWidth * 0.5, 35, 'F')
+    pdf.setGState(pdf.GState({opacity: 1}))
+
+    // Name
+    pdf.setTextColor(0, 0, 0)
+    pdf.setFontSize(28)
+    pdf.setFont('helvetica', 'bold')
+    pdf.text(personalInfo.name || 'Your Name', margin, 25)
+
+    // Contact info
+    pdf.setFontSize(9)
+    pdf.setFont('helvetica', 'normal')
+    const contactInfo = [
+      personalInfo.email && personalInfo.email,
+      personalInfo.phone && personalInfo.phone,
+      personalInfo.linkedin && personalInfo.linkedin,
+    ].filter(Boolean).join(' • ')
+    pdf.text(contactInfo, margin, 35)
+
+    // Left sidebar
+    pdf.setFillColor(rgb.r, rgb.g, rgb.b)
+    pdf.setGState(pdf.GState({opacity: 0.1}))
+    pdf.rect(0, 40, sidebarWidth, pageHeight - 40, 'F')
+    pdf.setGState(pdf.GState({opacity: 1}))
+
+    // Profile image in sidebar (circular)
+    if (profileImage) {
+      addProfileImage(pdf, margin, 50, 45, 'circle')
+    }
+
+    renderCommonSections(pdf, 50, sidebarWidth + margin + 10, margin, pageWidth, rgb)
   }
 
   return (

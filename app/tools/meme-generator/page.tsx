@@ -431,6 +431,20 @@ export default function MemeGenerator() {
     setSelectedElement(elementId)
   }
 
+  const handleTouchStart = (e: React.TouchEvent, elementId: string, elementX: number, elementY: number) => {
+    e.stopPropagation()
+    const touch = e.touches[0]
+    dragState.current = {
+      isDragging: true,
+      elementId,
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startElementX: elementX,
+      startElementY: elementY
+    }
+    setSelectedElement(elementId)
+  }
+
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!dragState.current.isDragging || !memeRef.current || !dragState.current.elementId) return
     
@@ -466,12 +480,12 @@ export default function MemeGenerator() {
   }
 
   useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
+    const updateElementPosition = (clientX: number, clientY: number) => {
       if (!dragState.current.isDragging || !memeRef.current || !dragState.current.elementId) return
       
       const rect = memeRef.current.getBoundingClientRect()
-      const deltaX = ((e.clientX - dragState.current.startX) / rect.width) * 100
-      const deltaY = ((e.clientY - dragState.current.startY) / rect.height) * 100
+      const deltaX = ((clientX - dragState.current.startX) / rect.width) * 100
+      const deltaY = ((clientY - dragState.current.startY) / rect.height) * 100
       
       const newX = dragState.current.startElementX + deltaX
       const newY = dragState.current.startElementY + deltaY
@@ -503,7 +517,24 @@ export default function MemeGenerator() {
       }
     }
 
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      updateElementPosition(e.clientX, e.clientY)
+    }
+
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+      e.preventDefault() // Prevent scrolling while dragging
+      if (e.touches.length > 0) {
+        const touch = e.touches[0]
+        updateElementPosition(touch.clientX, touch.clientY)
+      }
+    }
+
     const handleGlobalMouseUp = () => {
+      dragState.current.isDragging = false
+      dragState.current.elementId = null
+    }
+
+    const handleGlobalTouchEnd = () => {
       dragState.current.isDragging = false
       dragState.current.elementId = null
     }
@@ -511,10 +542,16 @@ export default function MemeGenerator() {
     // Always attach listeners, they check dragState internally
     window.addEventListener('mousemove', handleGlobalMouseMove)
     window.addEventListener('mouseup', handleGlobalMouseUp)
+    window.addEventListener('touchmove', handleGlobalTouchMove, { passive: false })
+    window.addEventListener('touchend', handleGlobalTouchEnd)
+    window.addEventListener('touchcancel', handleGlobalTouchEnd)
 
     return () => {
       window.removeEventListener('mousemove', handleGlobalMouseMove)
       window.removeEventListener('mouseup', handleGlobalMouseUp)
+      window.removeEventListener('touchmove', handleGlobalTouchMove)
+      window.removeEventListener('touchend', handleGlobalTouchEnd)
+      window.removeEventListener('touchcancel', handleGlobalTouchEnd)
     }
   }, [])
 
@@ -1236,10 +1273,12 @@ export default function MemeGenerator() {
                                 padding: '4px',
                                 zIndex: selectedElement === textEl.id ? 10 : 1,
                                 border: selectedElement === textEl.id ? '2px dashed blue' : 'none',
-                                backgroundColor: selectedElement === textEl.id ? 'rgba(59, 130, 246, 0.1)' : 'transparent'
+                                backgroundColor: selectedElement === textEl.id ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                                touchAction: 'none'
                               }}
                               onClick={() => setSelectedElement(textEl.id)}
                               onMouseDown={(e) => handleMouseDown(e, textEl.id, textEl.x, textEl.y)}
+                              onTouchStart={(e) => handleTouchStart(e, textEl.id, textEl.x, textEl.y)}
                             >
                               {textEl.text || 'Click to edit'}
                             </div>
@@ -1260,10 +1299,12 @@ export default function MemeGenerator() {
                                 transform: `translate(-50%, -50%) rotate(${overlay.rotation}deg)`,
                                 zIndex: selectedElement === overlay.id ? 10 : 1,
                                 border: selectedElement === overlay.id ? '2px dashed green' : 'none',
-                                backgroundColor: selectedElement === overlay.id ? 'rgba(34, 197, 94, 0.1)' : 'transparent'
+                                backgroundColor: selectedElement === overlay.id ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
+                                touchAction: 'none'
                               }}
                               onClick={() => setSelectedElement(overlay.id)}
                               onMouseDown={(e) => handleMouseDown(e, overlay.id, overlay.x, overlay.y)}
+                              onTouchStart={(e) => handleTouchStart(e, overlay.id, overlay.x, overlay.y)}
                             />
                           ))}
 
@@ -1280,10 +1321,12 @@ export default function MemeGenerator() {
                                 zIndex: selectedElement === sticker.id ? 10 : 1,
                                 border: selectedElement === sticker.id ? '2px dashed pink' : 'none',
                                 padding: '4px',
-                                backgroundColor: selectedElement === sticker.id ? 'rgba(236, 72, 153, 0.1)' : 'transparent'
+                                backgroundColor: selectedElement === sticker.id ? 'rgba(236, 72, 153, 0.1)' : 'transparent',
+                                touchAction: 'none'
                               }}
                               onClick={() => setSelectedElement(sticker.id)}
                               onMouseDown={(e) => handleMouseDown(e, sticker.id, sticker.x, sticker.y)}
+                              onTouchStart={(e) => handleTouchStart(e, sticker.id, sticker.x, sticker.y)}
                             >
                               {sticker.emoji}
                             </div>

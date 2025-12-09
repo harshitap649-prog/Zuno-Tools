@@ -503,7 +503,7 @@ export default function CurrencyConverter() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-4 sm:mb-6">
-            <div className="inline-flex p-2 sm:p-3 rounded-lg bg-gradient-to-r from-green-600 to-emerald-500 mb-3 sm:mb-4 shadow-md">
+            <div className="inline-flex p-2 sm:p-3 rounded-lg bg-green-600 mb-3 sm:mb-4 shadow-md">
               <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
             <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">Currency Converter</h1>

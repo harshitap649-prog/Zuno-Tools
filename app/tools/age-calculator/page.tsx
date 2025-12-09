@@ -702,7 +702,7 @@ export default function AgeCalculator() {
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 mb-4">
+            <div className="inline-flex p-3 rounded-lg bg-blue-600 mb-4">
               <Calendar className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-xl sm:text-2xl md:text-2xl font-bold text-black mb-2">Age Calculator</h1>
@@ -1108,7 +1108,7 @@ export default function AgeCalculator() {
             <div className="space-y-4 sm:space-y-5">
               <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/60 p-5 sm:p-6 md:p-8 ring-1 ring-gray-100/50">
                 <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-5 flex items-center space-x-2.5">
-                  <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl shadow-lg">
+                  <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg">
                     <Users className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                   </div>
                   <span className="text-gray-900">Multiple People Age Calculator</span>
@@ -1131,7 +1131,7 @@ export default function AgeCalculator() {
                   />
                   <button
                     onClick={addPerson}
-                    className="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white px-6 py-4 rounded-xl font-bold text-sm sm:text-base hover:shadow-2xl hover:shadow-purple-500/40 hover:scale-[1.02] transition-all duration-300 active:scale-95 touch-manipulation ring-4 ring-purple-500/20"
+                    className="w-full bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 text-white px-6 py-4 rounded-xl font-bold text-sm sm:text-base hover:shadow-2xl hover:shadow-blue-500/40 hover:scale-[1.02] transition-all duration-300 active:scale-95 touch-manipulation ring-4 ring-blue-500/20"
                   >
                     Add Person
                   </button>
@@ -1140,7 +1140,7 @@ export default function AgeCalculator() {
                 {people.length > 0 && (
                   <div className="space-y-3">
                     <h4 className="text-lg sm:text-xl font-black text-gray-900 mb-4">
-                      <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">People ({people.length})</span>
+                      <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">People ({people.length})</span>
                     </h4>
                     <div className="space-y-3">
                       {people

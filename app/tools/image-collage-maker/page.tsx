@@ -155,11 +155,34 @@ export default function ImageCollageMaker() {
   }
 
   const drawImageWithBorder = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, width: number, height: number) => {
+    // Calculate aspect ratio to maintain image proportions
+    const imgAspect = img.width / img.height
+    const targetAspect = width / height
+    
+    let drawWidth = width
+    let drawHeight = height
+    let drawX = x
+    let drawY = y
+    
+    // Fit image within bounds while maintaining aspect ratio
+    if (imgAspect > targetAspect) {
+      // Image is wider - fit to width
+      drawHeight = width / imgAspect
+      drawY = y + (height - drawHeight) / 2
+    } else {
+      // Image is taller - fit to height
+      drawWidth = height * imgAspect
+      drawX = x + (width - drawWidth) / 2
+    }
+    
+    // Draw border if needed
     if (borderWidth > 0) {
       ctx.fillStyle = borderColor
       ctx.fillRect(x - borderWidth, y - borderWidth, width + borderWidth * 2, height + borderWidth * 2)
     }
-    ctx.drawImage(img, x, y, width, height)
+    
+    // Draw image
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight)
   }
 
   const createCollage = async () => {
@@ -176,9 +199,12 @@ export default function ImageCollageMaker() {
     }
 
     if (images.length < template.minImages) {
-      toast.error(`This template requires at least ${template.minImages} images. You have ${images.length}.`)
+      toast.error(`This template requires at least ${template.minImages} images. You have ${images.length}. Please upload more images.`)
       return
     }
+
+    // Limit images to maxImages for templates that have a maximum
+    // Images will be automatically limited in the slice operation below
 
     const ctx = canvas.getContext('2d')
     if (!ctx) {
@@ -198,9 +224,15 @@ export default function ImageCollageMaker() {
     const imagePromises = images.map((src) => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new window.Image()
-        img.crossOrigin = 'anonymous'
+        // Only set crossOrigin for external URLs, not data URLs
+        if (!src.startsWith('data:')) {
+          img.crossOrigin = 'anonymous'
+        }
         img.onload = () => resolve(img)
-        img.onerror = () => reject(new Error('Failed to load image'))
+        img.onerror = (e) => {
+          console.error('Failed to load image:', src, e)
+          reject(new Error('Failed to load image'))
+        }
         img.src = src
       })
     })
@@ -318,6 +350,160 @@ export default function ImageCollageMaker() {
         drawImageWithBorder(ctx, imagesToUse[2], canvas.width - frameWidth - spacing, spacing, frameWidth, frameWidth)
         drawImageWithBorder(ctx, imagesToUse[3], spacing, canvas.height - frameWidth - spacing, frameWidth, frameWidth)
         drawImageWithBorder(ctx, imagesToUse[4], canvas.width - frameWidth - spacing, canvas.height - frameWidth - spacing, frameWidth, frameWidth)
+      } else if (layout === 'diagonal') {
+        // Diagonal arrangement
+        const imgSize = Math.min((canvas.width - spacing * 4) / 3, (canvas.height - spacing * 4) / 3)
+        imagesToUse.forEach((img, index) => {
+          const offset = index * (imgSize * 0.3)
+          const x = spacing + offset
+          const y = spacing + offset
+          drawImageWithBorder(ctx, img, x, y, imgSize, imgSize)
+        })
+      } else if (layout === 'pyramid') {
+        // Pyramid: 1, 2, 3 images stacked
+        const baseSize = (canvas.width - spacing * 4) / 3
+        const sizes = [baseSize * 1.2, baseSize, baseSize * 0.8]
+        const rows = [1, 2, 3]
+        let imgIndex = 0
+        rows.forEach((count, row) => {
+          const size = sizes[row]
+          const totalWidth = count * size + (count - 1) * spacing
+          const startX = (canvas.width - totalWidth) / 2
+          for (let i = 0; i < count && imgIndex < imagesToUse.length; i++) {
+            const x = startX + i * (size + spacing)
+            const y = spacing + row * (size * 0.8 + spacing)
+            drawImageWithBorder(ctx, imagesToUse[imgIndex], x, y, size, size)
+            imgIndex++
+          }
+        })
+      } else if (layout === 'cross') {
+        // Cross pattern: center + 4 corners
+        const centerSize = (canvas.width - spacing * 3) / 2
+        const cornerSize = (centerSize - spacing) / 2
+        drawImageWithBorder(ctx, imagesToUse[0], spacing + centerSize / 2, spacing + centerSize / 2, centerSize, centerSize)
+        drawImageWithBorder(ctx, imagesToUse[1], spacing, spacing, cornerSize, cornerSize)
+        drawImageWithBorder(ctx, imagesToUse[2], canvas.width - spacing - cornerSize, spacing, cornerSize, cornerSize)
+        drawImageWithBorder(ctx, imagesToUse[3], spacing, canvas.height - spacing - cornerSize, cornerSize, cornerSize)
+        drawImageWithBorder(ctx, imagesToUse[4], canvas.width - spacing - cornerSize, canvas.height - spacing - cornerSize, cornerSize, cornerSize)
+      } else if (layout === 'circle') {
+        // Circular arrangement
+        const centerX = canvas.width / 2
+        const centerY = canvas.height / 2
+        const radius = Math.min(canvas.width, canvas.height) * 0.35
+        const imgSize = Math.min(canvas.width, canvas.height) * 0.2
+        imagesToUse.forEach((img, index) => {
+          const angle = (index * 2 * Math.PI) / imagesToUse.length
+          const x = centerX + radius * Math.cos(angle) - imgSize / 2
+          const y = centerY + radius * Math.sin(angle) - imgSize / 2
+          drawImageWithBorder(ctx, img, x, y, imgSize, imgSize)
+        })
+      } else if (layout === 'heart') {
+        // Heart shape arrangement
+        const imgSize = (canvas.width - spacing * 3) / 3
+        const positions = [
+          [spacing + imgSize, spacing],
+          [spacing, spacing + imgSize],
+          [spacing + imgSize * 2, spacing + imgSize],
+          [spacing + imgSize / 2, spacing + imgSize * 2],
+          [spacing + imgSize * 1.5, spacing + imgSize * 2],
+        ]
+        imagesToUse.forEach((img, index) => {
+          if (index < positions.length) {
+            const [x, y] = positions[index]
+            drawImageWithBorder(ctx, img, x, y, imgSize, imgSize)
+          }
+        })
+      } else if (layout === 'star') {
+        // Star pattern: center + 4 points
+        const centerSize = (canvas.width - spacing * 3) / 3
+        const pointSize = centerSize * 0.6
+        const centerX = canvas.width / 2
+        const centerY = canvas.height / 2
+        drawImageWithBorder(ctx, imagesToUse[0], centerX - centerSize / 2, centerY - centerSize / 2, centerSize, centerSize)
+        drawImageWithBorder(ctx, imagesToUse[1], centerX - pointSize / 2, spacing, pointSize, pointSize)
+        drawImageWithBorder(ctx, imagesToUse[2], canvas.width - spacing - pointSize, centerY - pointSize / 2, pointSize, pointSize)
+        drawImageWithBorder(ctx, imagesToUse[3], centerX - pointSize / 2, canvas.height - spacing - pointSize, pointSize, pointSize)
+        drawImageWithBorder(ctx, imagesToUse[4], spacing, centerY - pointSize / 2, pointSize, pointSize)
+      } else if (layout === 'zigzag') {
+        // Zigzag pattern
+        const imgWidth = (canvas.width - spacing * (imagesToUse.length + 1)) / imagesToUse.length
+        const imgHeight = (canvas.height - spacing * 3) / 2
+        imagesToUse.forEach((img, index) => {
+          const x = spacing + index * (imgWidth + spacing)
+          const y = index % 2 === 0 ? spacing : spacing + imgHeight + spacing
+          drawImageWithBorder(ctx, img, x, y, imgWidth, imgHeight)
+        })
+      } else if (layout === 'spiral') {
+        // Spiral arrangement
+        const centerX = canvas.width / 2
+        const centerY = canvas.height / 2
+        const baseSize = Math.min(canvas.width, canvas.height) * 0.15
+        imagesToUse.forEach((img, index) => {
+          const angle = index * 0.8
+          const radius = index * (baseSize * 0.5)
+          const size = baseSize * (1 - index * 0.05)
+          const x = centerX + radius * Math.cos(angle) - size / 2
+          const y = centerY + radius * Math.sin(angle) - size / 2
+          drawImageWithBorder(ctx, img, x, y, size, size)
+        })
+      } else if (layout === 'banner') {
+        // Wide banner style
+        const imgHeight = (canvas.height - spacing * (imagesToUse.length + 1)) / imagesToUse.length
+        const imgWidth = canvas.width - spacing * 2
+        imagesToUse.forEach((img, index) => {
+          const y = spacing + index * (imgHeight + spacing)
+          drawImageWithBorder(ctx, img, spacing, y, imgWidth, imgHeight)
+        })
+      } else if (layout === 'portrait') {
+        // Portrait: vertical stack with varying widths
+        const totalHeight = canvas.height - spacing * (imagesToUse.length + 1)
+        const imgHeight = totalHeight / imagesToUse.length
+        const imgWidth = (canvas.width - spacing * 2) * 0.8
+        imagesToUse.forEach((img, index) => {
+          const y = spacing + index * (imgHeight + spacing)
+          const x = (canvas.width - imgWidth) / 2
+          drawImageWithBorder(ctx, img, x, y, imgWidth, imgHeight)
+        })
+      } else if (layout === 'landscape') {
+        // Landscape: horizontal stack with varying heights
+        const totalWidth = canvas.width - spacing * (imagesToUse.length + 1)
+        const imgWidth = totalWidth / imagesToUse.length
+        const imgHeight = (canvas.height - spacing * 2) * 0.8
+        imagesToUse.forEach((img, index) => {
+          const x = spacing + index * (imgWidth + spacing)
+          const y = (canvas.height - imgHeight) / 2
+          drawImageWithBorder(ctx, img, x, y, imgWidth, imgHeight)
+        })
+      } else if (layout === 'magazine') {
+        // Magazine layout: mixed sizes
+        const bigWidth = (canvas.width - spacing * 3) / 2
+        const bigHeight = (canvas.height - spacing * 3) / 2
+        const smallWidth = (bigWidth - spacing) / 2
+        const smallHeight = (bigHeight - spacing) / 2
+        drawImageWithBorder(ctx, imagesToUse[0], spacing, spacing, bigWidth, bigHeight)
+        drawImageWithBorder(ctx, imagesToUse[1], spacing * 2 + bigWidth, spacing, smallWidth, smallHeight)
+        drawImageWithBorder(ctx, imagesToUse[2], spacing * 2 + bigWidth, spacing * 2 + smallHeight, smallWidth, smallHeight)
+        if (imagesToUse.length > 3) {
+          drawImageWithBorder(ctx, imagesToUse[3], spacing, spacing * 2 + bigHeight, smallWidth, smallHeight)
+        }
+        if (imagesToUse.length > 4) {
+          drawImageWithBorder(ctx, imagesToUse[4], spacing * 2 + smallWidth, spacing * 2 + bigHeight, smallWidth, smallHeight)
+        }
+        if (imagesToUse.length > 5) {
+          drawImageWithBorder(ctx, imagesToUse[5], spacing * 2 + bigWidth, spacing * 3 + smallHeight * 2, smallWidth, smallHeight)
+        }
+      } else if (layout === 'story') {
+        // Story format: vertical with one large at top
+        const topHeight = (canvas.height - spacing * 3) * 0.6
+        const topWidth = canvas.width - spacing * 2
+        const bottomHeight = ((canvas.height - spacing * 3) * 0.4 - spacing * (imagesToUse.length - 1)) / (imagesToUse.length - 1)
+        const bottomWidth = (canvas.width - spacing * (imagesToUse.length + 1)) / (imagesToUse.length - 1)
+        drawImageWithBorder(ctx, imagesToUse[0], spacing, spacing, topWidth, topHeight)
+        for (let i = 1; i < imagesToUse.length; i++) {
+          const x = spacing + (i - 1) * (bottomWidth + spacing)
+          const y = spacing * 2 + topHeight
+          drawImageWithBorder(ctx, imagesToUse[i], x, y, bottomWidth, bottomHeight)
+        }
       } else if (layout === 'collage-free') {
         // Auto grid layout
         const cols = Math.ceil(Math.sqrt(imagesToUse.length))

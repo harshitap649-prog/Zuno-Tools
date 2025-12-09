@@ -308,11 +308,99 @@ export default function TextToSpeech() {
   }
 
   const downloadAudio = async () => {
-    // The Web Speech API (browser TTS) doesn’t expose raw audio for download.
-    // To avoid broken/empty files, we disable download and guide the user.
-    toast.error('Direct audio download is not supported by the browser TTS. Please use Speak and record the audio output instead.', {
-      duration: 6000,
-    })
+    if (!text.trim()) {
+      toast.error('Please enter some text first')
+      return
+    }
+
+    try {
+      toast.loading('Generating audio file...', { id: 'download-audio' })
+
+      const processedText = processText(text)
+      const lang = selectedLanguage || detectLanguage(text) || 'en'
+      
+      // Split text into chunks (Google TTS has character limits)
+      const maxChunkLength = 200
+      const textChunks = processedText.match(new RegExp(`.{1,${maxChunkLength}}`, 'g')) || [processedText]
+      
+      const audioBlobs: Blob[] = []
+      
+      // Generate audio for each chunk
+      for (let i = 0; i < textChunks.length; i++) {
+        const chunk = textChunks[i]
+        const encodedChunk = encodeURIComponent(chunk)
+        
+        // Use Google Translate TTS API (free, public endpoint)
+        const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedChunk}&tl=${lang}&client=tw-ob&idx=${i}&total=${textChunks.length}&textlen=${chunk.length}`
+        
+        try {
+          const response = await fetch(ttsUrl, {
+            method: 'GET',
+            headers: {
+              'Referer': 'https://translate.google.com/',
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+          })
+
+          if (response.ok) {
+            const blob = await response.blob()
+            if (blob.size > 0) {
+              audioBlobs.push(blob)
+            }
+          }
+        } catch (chunkError) {
+          console.warn(`Error fetching chunk ${i}:`, chunkError)
+        }
+        
+        // Small delay between requests to avoid rate limiting
+        if (i < textChunks.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 300))
+        }
+      }
+
+      if (audioBlobs.length === 0) {
+        throw new Error('Failed to generate audio. Please try again or use the Speak button.')
+      }
+
+      // Combine all audio blobs into one
+      const combinedBlob = audioBlobs.length === 1 
+        ? audioBlobs[0]
+        : new Blob(audioBlobs, { type: 'audio/mpeg' })
+
+      // Create download link
+      const audioUrl = URL.createObjectURL(combinedBlob)
+      const link = document.createElement('a')
+      link.href = audioUrl
+      link.download = `text-to-speech-${Date.now()}.mp3`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      
+      // Clean up after a delay
+      setTimeout(() => {
+        URL.revokeObjectURL(audioUrl)
+      }, 100)
+
+      toast.success('Audio downloaded successfully!', { id: 'download-audio' })
+      
+      // Trigger popunder after download
+      setTimeout(() => {
+        triggerPopunder()
+      }, 2000)
+    } catch (error: any) {
+      console.error('Error downloading audio:', error)
+      
+      // Fallback message with helpful instructions
+      toast.error('Unable to download directly. Please click "Speak" and use your device\'s screen recording to capture the audio, or try again later.', {
+        id: 'download-audio',
+        duration: 7000
+      })
+      
+      // Auto-trigger speak as fallback
+      setTimeout(() => {
+        speak()
+      }, 2000)
+    }
   }
 
   const generateShareLink = () => {

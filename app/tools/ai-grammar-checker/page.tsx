@@ -216,35 +216,104 @@ export default function AIGrammarChecker() {
     }
   }, [text])
 
-  const applyLanguageTool = (rawText: string, matches: any[]) => {
+  const applyLanguageTool = (rawText: string, matches: any[]): string => {
     // Build corrected text using matches (apply from end to avoid index shift)
     let corrected = rawText
     const ordered = [...matches].sort((a, b) => (b.offset ?? 0) - (a.offset ?? 0))
+    
     ordered.forEach(m => {
       if (!m.replacements || m.replacements.length === 0) return
       if (typeof m.offset !== 'number' || typeof m.length !== 'number') return
-      const replacement = m.replacements[0].value
+      
+      // Get the best replacement
+      let replacement = m.replacements[0].value
+      
+      // If multiple replacements, prefer the most common/professional one
+      if (m.replacements.length > 1) {
+        const bestReplacement = m.replacements.find((r: any) => {
+          const value = r.value?.toLowerCase() || ''
+          return commonWords.has(value) || value.length > 0
+        })
+        if (bestReplacement) {
+          replacement = bestReplacement.value
+        }
+      }
+      
+      // Preserve capitalization
+      const originalText = corrected.slice(m.offset, m.offset + m.length)
+      if (originalText && originalText[0]?.match(/[A-Z]/)) {
+        replacement = replacement.charAt(0).toUpperCase() + replacement.slice(1)
+      }
+      
+      // Apply the correction
       corrected = corrected.slice(0, m.offset) + replacement + corrected.slice(m.offset + m.length)
     })
+    
+    // Post-process: ensure proper sentence capitalization and spacing
+    corrected = corrected
+      .replace(/(?:^|[.!?]\s+)([a-z])/g, (match, letter) => match.replace(letter, letter.toUpperCase()))
+      .replace(/\s{2,}/g, ' ')
+      .replace(/([.!?,:;])([a-zA-Z])/g, '$1 $2')
+      .trim()
+    
     return corrected
   }
 
   const mapLanguageToolMatches = (matches: any[]): GrammarError[] => {
     return matches.map((m) => {
-      const replacement = m.replacements?.[0]?.value ?? ''
-      const type = m.rule?.issueType || m.rule?.id || 'Grammar'
+      // Get the best replacement - prefer the first one, but check if there are better options
+      let replacement = m.replacements?.[0]?.value ?? ''
+      
+      // If multiple replacements, try to find the most professional/common one
+      if (m.replacements && m.replacements.length > 1) {
+        // Prefer replacements that are common words or proper nouns
+        const bestReplacement = m.replacements.find((r: any) => {
+          const value = r.value?.toLowerCase() || ''
+          return commonWords.has(value) || value.length > 0
+        })
+        if (bestReplacement) {
+          replacement = bestReplacement.value
+        }
+      }
+      
+      // Capitalize replacement if the original was capitalized
+      if (m.context?.text && m.context.text[m.context.offset || 0]?.match(/[A-Z]/)) {
+        replacement = replacement.charAt(0).toUpperCase() + replacement.slice(1)
+      }
+      
+      const type = m.rule?.category?.name || m.rule?.issueType || m.rule?.id || 'Grammar'
       const severity: 'error' | 'warning' | 'info' =
-        (m.rule?.issueType === 'misspelling' || m.rule?.issueType === 'typographical') ? 'error'
-        : m.rule?.issueType === 'hint' ? 'info'
+        (m.rule?.issueType === 'misspelling' || m.rule?.issueType === 'typographical' || 
+         m.rule?.category?.id === 'TYPOS' || m.rule?.category?.id === 'MORFOLOGIK_RULE_EN_US') ? 'error'
+        : m.rule?.issueType === 'hint' || m.rule?.category?.id === 'STYLE' ? 'info'
         : 'warning'
 
+      // Get better context message for learning
+      let contextMessage = m.message || m.rule?.description || ''
+      
+      // Enhance context messages for better learning
+      if (m.rule?.category?.id === 'TYPOS') {
+        contextMessage = `Spelling error: "${replacement || 'correct spelling'}" is the correct spelling.`
+      } else if (m.rule?.category?.id === 'GRAMMAR') {
+        contextMessage = `Grammar rule: ${m.rule?.description || contextMessage}`
+      } else if (m.rule?.category?.id === 'STYLE') {
+        contextMessage = `Style suggestion: ${m.rule?.description || contextMessage}`
+      } else if (m.rule?.category?.id === 'PUNCTUATION') {
+        contextMessage = `Punctuation: ${m.rule?.description || contextMessage}`
+      }
+      
+      // Get the actual word/phrase from the text
+      const errorText = m.context?.text?.slice(m.context?.offset ?? 0, (m.context?.offset ?? 0) + (m.context?.length ?? 0)) || 
+                       text.slice(m.offset ?? 0, (m.offset ?? 0) + (m.length ?? 0)) ||
+                       m.message || ''
+
       return {
-        word: m.context?.text?.slice(m.context?.offset ?? 0, (m.context?.offset ?? 0) + (m.context?.length ?? 0)) || m.message || '',
+        word: errorText,
         position: m.offset ?? 0,
-        suggestion: replacement || m.message || '',
-        type,
+        suggestion: replacement || errorText,
+        type: type,
         severity,
-        context: m.message || ''
+        context: contextMessage
       }
     })
   }
@@ -283,18 +352,46 @@ export default function AIGrammarChecker() {
 
         const data = await res.json()
         const ltMatches = data?.matches || []
-        const mapped = mapLanguageToolMatches(ltMatches)
+        
+        // Filter out false positives and low-confidence matches
+        const filteredMatches = ltMatches.filter((m: any) => {
+          // Keep all spelling errors
+          if (m.rule?.category?.id === 'TYPOS' || m.rule?.category?.id === 'MORFOLOGIK_RULE_EN_US') {
+            return true
+          }
+          // Keep grammar errors with replacements
+          if (m.rule?.category?.id === 'GRAMMAR' && m.replacements && m.replacements.length > 0) {
+            return true
+          }
+          // Keep punctuation errors
+          if (m.rule?.category?.id === 'PUNCTUATION') {
+            return true
+          }
+          // Filter out style suggestions that are too picky (optional)
+          if (m.rule?.category?.id === 'STYLE') {
+            // Only keep important style suggestions
+            return m.rule?.id?.includes('PASSIVE_VOICE') || 
+                   m.rule?.id?.includes('WORD_REPETITION') ||
+                   m.rule?.id?.includes('REDUNDANCY')
+          }
+          return false
+        })
+        
+        const mapped = mapLanguageToolMatches(filteredMatches)
         setErrors(mapped)
 
-        if (ltMatches.length === 0) {
+        if (filteredMatches.length === 0) {
           setCheckedText(text)
-          toast.success('No grammar issues found! (LanguageTool)')
+          toast.success('No grammar issues found! Your text is professionally written.')
         } else {
-          const corrected = applyLanguageTool(text, ltMatches)
+          const corrected = applyLanguageTool(text, filteredMatches)
           if (corrected && corrected !== text) {
             setCheckedText(corrected)
+          } else {
+            // If no full correction, at least show the text with improvements
+            setCheckedText(text)
           }
-          toast.success(`Found ${ltMatches.length} issue${ltMatches.length !== 1 ? 's' : ''} (LanguageTool)`)
+          toast.success(`Found ${filteredMatches.length} issue${filteredMatches.length !== 1 ? 's' : ''}. Review the suggestions below to improve your English.`)
         }
 
         return
@@ -715,13 +812,44 @@ export default function AIGrammarChecker() {
   }
 
   const applySuggestion = (error: GrammarError) => {
-    if (error.type === 'Capitalization' && error.word === 'i') {
-      const newText = text.substring(0, error.position) + 'I' + text.substring(error.position + 1)
+    if (!error.suggestion || error.suggestion === error.word) return
+    
+    let newText = text
+    
+    // Handle different error types
+    if (error.type === 'Capitalization' || error.type === 'TYPOS' || error.type === 'MORFOLOGIK_RULE_EN_US' || error.type === 'Spelling') {
+      // For spelling errors, replace the word at the specific position
+      if (error.position !== undefined && error.position >= 0) {
+        const before = text.substring(0, error.position)
+        const after = text.substring(error.position + error.word.length)
+        newText = before + error.suggestion + after
+      } else {
+        // Fallback: replace all occurrences
+        const regex = new RegExp(`\\b${error.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi')
+        newText = text.replace(regex, (match) => {
+          // Preserve capitalization
+          if (match[0] === match[0].toUpperCase()) {
+            return error.suggestion.charAt(0).toUpperCase() + error.suggestion.slice(1)
+          }
+          return error.suggestion
+        })
+      }
+    } else {
+      // For other types, try to replace at position
+      if (error.position !== undefined && error.position >= 0) {
+        const before = text.substring(0, error.position)
+        const after = text.substring(error.position + error.word.length)
+        newText = before + error.suggestion + after
+      }
+    }
+    
+    if (newText !== text) {
       setText(newText)
-    } else if (error.type === 'Spelling' && error.suggestion) {
-      const regex = new RegExp(`\\b${error.word}\\b`, 'gi')
-      const newText = text.replace(regex, error.suggestion)
-      setText(newText)
+      toast.success('Correction applied! Check again to see if there are more issues.')
+      // Auto-check if enabled
+      if (autoCheck) {
+        setTimeout(() => checkGrammar(), 500)
+      }
     }
   }
 
@@ -929,33 +1057,59 @@ export default function AIGrammarChecker() {
                     {errors.filter(e => e.severity === 'error').length} errors, {errors.filter(e => e.severity === 'warning').length} warnings
                   </div>
                 </div>
-                <div className="space-y-2 max-h-64 sm:max-h-80 overflow-y-auto">
+                <div className="space-y-3 max-h-64 sm:max-h-80 overflow-y-auto">
                   {errors.slice(0, 15).map((error, index) => (
                     <div
                       key={index}
-                      className={`p-2 sm:p-3 rounded-lg border text-xs sm:text-sm ${getSeverityColor(error.severity)}`}
+                      className={`p-3 sm:p-4 rounded-lg border-2 ${getSeverityColor(error.severity)}`}
                     >
-                      <div className="flex items-start gap-2">
-                        <span className="text-base flex-shrink-0">{getSeverityIcon(error.severity)}</span>
+                      <div className="flex items-start gap-3">
+                        <span className="text-lg flex-shrink-0 mt-0.5">{getSeverityIcon(error.severity)}</span>
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium mb-1">{error.type}</div>
-                          <div className="text-gray-700 mb-1 break-words">
-                            <span className="font-mono bg-white/50 px-1 rounded">{error.word.substring(0, 40)}{error.word.length > 40 ? '...' : ''}</span>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="font-semibold text-sm sm:text-base">{error.type}</span>
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${
+                              error.severity === 'error' ? 'bg-red-200 text-red-800' :
+                              error.severity === 'warning' ? 'bg-yellow-200 text-yellow-800' :
+                              'bg-blue-200 text-blue-800'
+                            }`}>
+                              {error.severity}
+                            </span>
                           </div>
-                          <div className="text-gray-600 mb-2">
-                            💡 {error.suggestion}
+                          
+                          {/* Show incorrect text */}
+                          <div className="mb-2">
+                            <span className="text-xs text-gray-500 mb-1 block">Incorrect:</span>
+                            <span className="font-mono bg-white/70 px-2 py-1 rounded border border-red-300 text-red-700 line-through break-words">
+                              {error.word.length > 50 ? error.word.substring(0, 50) + '...' : error.word}
+                            </span>
                           </div>
+                          
+                          {/* Show correct suggestion */}
+                          <div className="mb-2">
+                            <span className="text-xs text-gray-500 mb-1 block">Correct:</span>
+                            <span className="font-mono bg-white/70 px-2 py-1 rounded border border-green-300 text-green-700 font-semibold break-words">
+                              {error.suggestion.length > 50 ? error.suggestion.substring(0, 50) + '...' : error.suggestion}
+                            </span>
+                          </div>
+                          
+                          {/* Educational explanation */}
                           {error.context && (
-                            <div className="text-xs text-gray-500 italic">
-                              {error.context}
+                            <div className="mt-2 p-2 bg-white/50 rounded border border-gray-200">
+                              <div className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                                <span className="font-medium">💡 Learning Tip:</span> {error.context}
+                              </div>
                             </div>
                           )}
-                          {(error.type === 'Capitalization' && error.word === 'i') || error.type === 'Spelling' ? (
+                          
+                          {/* Apply fix button */}
+                          {(error.type === 'Capitalization' || error.type === 'Spelling' || error.type === 'TYPOS' || error.type === 'MORFOLOGIK_RULE_EN_US') ? (
                             <button
                               onClick={() => applySuggestion(error)}
-                              className="mt-1 text-xs text-blue-600 hover:text-blue-800 underline"
+                              className="mt-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center gap-1"
                             >
-                              Apply fix
+                              <Check className="h-3 w-3 sm:h-4 sm:w-4" />
+                              Apply this correction
                             </button>
                           ) : null}
                         </div>
@@ -975,27 +1129,38 @@ export default function AIGrammarChecker() {
             {checkedText && (
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
-                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Corrected Text</h3>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">Professional Corrected Text</h3>
+                    <p className="text-xs text-gray-600">This is the improved version with all corrections applied</p>
+                  </div>
                   <button
                     onClick={copyToClipboard}
-                    className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-xs sm:text-sm"
+                    className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-xs sm:text-sm font-medium"
                   >
                     {copied ? (
                       <>
-                        <Check className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
-                        <span className="text-gray-900">Copied!</span>
+                        <Check className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <span>Copied!</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="h-3 w-3 sm:h-4 sm:w-4 text-gray-900" />
-                        <span className="text-gray-900">Copy</span>
+                        <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <span>Copy Corrected Text</span>
                       </>
                     )}
                   </button>
                 </div>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4">
-                  <p className="text-gray-900 whitespace-pre-wrap text-sm sm:text-base leading-relaxed">{checkedText}</p>
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-lg p-4 sm:p-6">
+                  <p className="text-gray-900 whitespace-pre-wrap text-sm sm:text-base leading-relaxed font-medium">{checkedText}</p>
                 </div>
+                {checkedText !== text && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+                    <p className="text-xs sm:text-sm text-blue-800">
+                      <span className="font-semibold">✓ Improvements made:</span> Your text has been corrected to professional English standards. 
+                      Review the changes above to learn from the corrections.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 

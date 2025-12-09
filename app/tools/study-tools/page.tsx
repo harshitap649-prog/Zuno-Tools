@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import Footer from '@/components/Footer'
 import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
-import { GraduationCap, BookOpen, Plus, X, Search, Download, Upload, Copy, Check, Target, TrendingUp, Calendar, Award, Shuffle, Edit2, Save, FileText, BarChart3, Clock, Zap } from 'lucide-react'
+import { GraduationCap, BookOpen, Plus, X, Search, Download, Upload, Copy, Check, Target, TrendingUp, Calendar, Award, Shuffle, Edit2, Save, FileText, BarChart3, Clock, Zap, Play, Pause, RotateCw, Trash2, Star, StarOff, CheckCircle2, XCircle, Timer } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { usePopunderAd } from '@/hooks/usePopunderAd'
 
@@ -62,6 +62,12 @@ export default function StudyTools() {
     lastStudyDate: ''
   })
   const [studySessions, setStudySessions] = useState<StudySession[]>([])
+  const [studyTimer, setStudyTimer] = useState(0)
+  const [isTimerRunning, setIsTimerRunning] = useState(false)
+  const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set())
+  const [showBulkActions, setShowBulkActions] = useState(false)
+  const [studyMode, setStudyMode] = useState<'review' | 'quiz'>('review')
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null)
   
   const { triggerPopunder } = usePopunderAd()
 
@@ -97,6 +103,56 @@ export default function StudyTools() {
     }))
   }, [flashcards.length])
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (activeTab !== 'flashcards' || quizMode) return
+      
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault()
+        nextCard()
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault()
+        prevCard()
+      } else if (e.key === ' ') {
+        e.preventDefault()
+        setIsFlipped(!isFlipped)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [activeTab, quizMode, currentCard, isFlipped, flashcards.length, searchQuery, selectedCategory])
+
+  // Study timer
+  useEffect(() => {
+    if (isTimerRunning) {
+      timerIntervalRef.current = setInterval(() => {
+        setStudyTimer(prev => prev + 1)
+      }, 1000)
+    } else {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current)
+        timerIntervalRef.current = null
+      }
+    }
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current)
+      }
+    }
+  }, [isTimerRunning])
+
+  // Auto-save timer to stats
+  useEffect(() => {
+    if (studyTimer > 0 && studyTimer % 60 === 0) {
+      setStudyStats(prev => ({
+        ...prev,
+        totalStudyTime: prev.totalStudyTime + 1
+      }))
+    }
+  }, [studyTimer])
+
   const categories = useMemo(() => {
     const cats = new Set(flashcards.map(c => c.category).filter(Boolean))
     return Array.from(cats)
@@ -127,11 +183,89 @@ export default function StudyTools() {
       back: newCard.back,
       category: newCard.category || undefined,
       difficulty: 'medium',
-      reviewCount: 0
+      reviewCount: 0,
+      lastReviewed: undefined
     }
     setFlashcards([...flashcards, card])
     setNewCard({ front: '', back: '', category: '' })
     toast.success('Flashcard added!')
+  }
+
+  const duplicateFlashcard = (id: string) => {
+    const card = flashcards.find(c => c.id === id)
+    if (card) {
+      const newCard: Flashcard = {
+        ...card,
+        id: Date.now().toString(),
+        reviewCount: 0,
+        lastReviewed: undefined
+      }
+      setFlashcards([...flashcards, newCard])
+      toast.success('Card duplicated!')
+    }
+  }
+
+  const markCardDifficulty = (id: string, difficulty: 'easy' | 'medium' | 'hard') => {
+    editFlashcard(id, { 
+      difficulty,
+      lastReviewed: Date.now(),
+      reviewCount: (flashcards.find(c => c.id === id)?.reviewCount || 0) + 1
+    })
+    toast.success(`Marked as ${difficulty}`)
+  }
+
+  const toggleCardSelection = (id: string) => {
+    setSelectedCards(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(id)) {
+        newSet.delete(id)
+      } else {
+        newSet.add(id)
+      }
+      return newSet
+    })
+  }
+
+  const bulkDeleteCards = () => {
+    if (selectedCards.size === 0) {
+      toast.error('No cards selected')
+      return
+    }
+    if (confirm(`Delete ${selectedCards.size} card(s)?`)) {
+      setFlashcards(flashcards.filter(card => !selectedCards.has(card.id)))
+      setSelectedCards(new Set())
+      setShowBulkActions(false)
+      toast.success(`${selectedCards.size} card(s) deleted!`)
+    }
+  }
+
+  const bulkDuplicateCards = () => {
+    if (selectedCards.size === 0) {
+      toast.error('No cards selected')
+      return
+    }
+    const cardsToDuplicate = flashcards.filter(card => selectedCards.has(card.id))
+    const duplicated = cardsToDuplicate.map(card => ({
+      ...card,
+      id: Date.now().toString() + Math.random(),
+      reviewCount: 0,
+      lastReviewed: undefined
+    }))
+    setFlashcards([...flashcards, ...duplicated])
+    setSelectedCards(new Set())
+    setShowBulkActions(false)
+    toast.success(`${selectedCards.size} card(s) duplicated!`)
+  }
+
+  // Spaced repetition - get cards due for review
+  const getCardsDueForReview = () => {
+    const now = Date.now()
+    return flashcards.filter(card => {
+      if (!card.lastReviewed) return true
+      const daysSinceReview = (now - card.lastReviewed) / (1000 * 60 * 60 * 24)
+      const difficultyMultiplier = card.difficulty === 'easy' ? 3 : card.difficulty === 'medium' ? 2 : 1
+      return daysSinceReview >= difficultyMultiplier
+    })
   }
 
   const deleteFlashcard = (id: string) => {
@@ -182,27 +316,51 @@ export default function StudyTools() {
     setQuizScore({ correct: 0, total: 0 })
     setShowAnswer(false)
     setUserAnswer('')
+    setIsTimerRunning(true)
+    setStudyTimer(0)
     toast.success('Quiz started!')
   }
 
+  const startReview = () => {
+    const cardsToReview = getCardsDueForReview()
+    if (cardsToReview.length === 0) {
+      toast.success('No cards due for review! Great job!')
+      return
+    }
+    const shuffled = [...cardsToReview].sort(() => Math.random() - 0.5)
+    setQuizCards(shuffled)
+    setQuizIndex(0)
+    setQuizMode(true)
+    setStudyMode('review')
+    setQuizScore({ correct: 0, total: 0 })
+    setShowAnswer(false)
+    setUserAnswer('')
+    setIsTimerRunning(true)
+    setStudyTimer(0)
+    toast.success(`Reviewing ${cardsToReview.length} card(s)!`)
+  }
+
   const endQuiz = () => {
+    setIsTimerRunning(false)
     setQuizMode(false)
     const percentage = Math.round((quizScore.correct / quizScore.total) * 100)
-    toast.success(`Quiz completed! Score: ${quizScore.correct}/${quizScore.total} (${percentage}%)`)
+    const minutes = Math.floor(studyTimer / 60)
+    toast.success(`Quiz completed! Score: ${quizScore.correct}/${quizScore.total} (${percentage}%) in ${minutes}m ${studyTimer % 60}s`)
     
     // Update stats
     const today = new Date().toISOString().split('T')[0]
     setStudyStats(prev => ({
       ...prev,
       cardsStudied: prev.cardsStudied + quizScore.total,
-      lastStudyDate: today
+      lastStudyDate: today,
+      totalStudyTime: prev.totalStudyTime + minutes
     }))
     
     // Add study session
     const session: StudySession = {
       date: today,
       cardsStudied: quizScore.total,
-      timeSpent: Math.ceil(quizScore.total * 0.5) // Estimate 30 seconds per card
+      timeSpent: minutes || Math.ceil(quizScore.total * 0.5)
     }
     setStudySessions(prev => {
       const existing = prev.find(s => s.date === today)
@@ -217,6 +375,7 @@ export default function StudyTools() {
     
     // Update streak
     updateStreak()
+    setStudyTimer(0)
   }
 
   const checkQuizAnswer = () => {
@@ -224,12 +383,30 @@ export default function StudyTools() {
       setShowAnswer(true)
       setQuizScore(prev => ({ ...prev, total: prev.total + 1 }))
       const current = quizCards[quizIndex]
-      const isCorrect = userAnswer.toLowerCase().trim() === current.back.toLowerCase().trim()
+      const userAnswerLower = userAnswer.toLowerCase().trim()
+      const correctAnswerLower = current.back.toLowerCase().trim()
+      const isCorrect = userAnswerLower === correctAnswerLower || 
+                       correctAnswerLower.includes(userAnswerLower) ||
+                       userAnswerLower.includes(correctAnswerLower)
+      
       if (isCorrect) {
         setQuizScore(prev => ({ ...prev, correct: prev.correct + 1 }))
-        toast.success('Correct!')
+        markCardDifficulty(current.id, 'easy')
+        toast.success('Correct! 🎉')
       } else {
+        markCardDifficulty(current.id, 'hard')
         toast.error(`Incorrect. The answer is: ${current.back}`)
+      }
+    }
+  }
+
+  const markQuizAnswer = (difficulty: 'easy' | 'medium' | 'hard') => {
+    if (studyMode === 'review' && quizCards[quizIndex]) {
+      markCardDifficulty(quizCards[quizIndex].id, difficulty)
+      if (quizIndex + 1 < quizCards.length) {
+        nextCard()
+      } else {
+        endQuiz()
       }
     }
   }
@@ -371,7 +548,7 @@ export default function StudyTools() {
 
           {/* Study Stats Bar */}
           <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 mb-4 sm:mb-6">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
               <div className="text-center">
                 <div className="text-xs sm:text-sm text-gray-500 mb-1">Total Cards</div>
                 <div className="text-lg sm:text-xl font-bold text-gray-900">{studyStats.totalCards}</div>
@@ -393,7 +570,37 @@ export default function StudyTools() {
                   {progressPercentage}%
                 </div>
               </div>
+              <div className="text-center">
+                <div className="text-xs sm:text-sm text-gray-500 mb-1">Due for Review</div>
+                <div className="text-lg sm:text-xl font-bold text-orange-600">
+                  {getCardsDueForReview().length}
+                </div>
+              </div>
             </div>
+            {/* Study Timer */}
+            {(isTimerRunning || studyTimer > 0) && (
+              <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-center gap-3">
+                <Timer className="h-4 w-4 sm:h-5 sm:w-5 text-violet-600" />
+                <span className="text-sm sm:text-base font-medium text-gray-900">
+                  {Math.floor(studyTimer / 60)}:{(studyTimer % 60).toString().padStart(2, '0')}
+                </span>
+                <button
+                  onClick={() => setIsTimerRunning(!isTimerRunning)}
+                  className="px-3 py-1 bg-violet-100 hover:bg-violet-200 text-violet-700 rounded-lg text-xs sm:text-sm font-medium transition-colors"
+                >
+                  {isTimerRunning ? <Pause className="h-3 w-3 sm:h-4 sm:w-4" /> : <Play className="h-3 w-3 sm:h-4 sm:w-4" />}
+                </button>
+                <button
+                  onClick={() => {
+                    setStudyTimer(0)
+                    setIsTimerRunning(false)
+                  }}
+                  className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs sm:text-sm font-medium transition-colors"
+                >
+                  <RotateCw className="h-3 w-3 sm:h-4 sm:w-4" />
+                </button>
+              </div>
+            )}
             {studyGoal.dailyCards > 0 && (
               <div className="mt-3 pt-3 border-t border-gray-200">
                 <div className="flex items-center justify-between mb-1">
@@ -488,6 +695,14 @@ export default function StudyTools() {
                     <>
                       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4 sm:mb-6">
                         <button
+                          onClick={startReview}
+                          disabled={getCardsDueForReview().length === 0}
+                          className="flex-1 sm:flex-none bg-gradient-to-r from-orange-600 to-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                        >
+                          <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
+                          <span>Review ({getCardsDueForReview().length})</span>
+                        </button>
+                        <button
                           onClick={startQuiz}
                           disabled={filteredFlashcards.length === 0}
                           className="flex-1 sm:flex-none bg-gradient-to-r from-violet-600 to-purple-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
@@ -495,6 +710,33 @@ export default function StudyTools() {
                           <Shuffle className="h-4 w-4 sm:h-5 sm:w-5" />
                           <span>Start Quiz</span>
                         </button>
+                        {selectedCards.size > 0 && (
+                          <>
+                            <button
+                              onClick={bulkDeleteCards}
+                              className="px-3 sm:px-4 py-2.5 sm:py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center gap-2 text-sm sm:text-base"
+                            >
+                              <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                              <span className="hidden sm:inline">Delete ({selectedCards.size})</span>
+                            </button>
+                            <button
+                              onClick={bulkDuplicateCards}
+                              className="px-3 sm:px-4 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 text-sm sm:text-base"
+                            >
+                              <Copy className="h-4 w-4 sm:h-5 sm:w-5" />
+                              <span className="hidden sm:inline">Duplicate ({selectedCards.size})</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedCards(new Set())
+                                setShowBulkActions(false)
+                              }}
+                              className="px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm sm:text-base"
+                            >
+                              <X className="h-4 w-4 sm:h-5 sm:w-5" />
+                            </button>
+                          </>
+                        )}
                         <button
                           onClick={exportFlashcards}
                           className="px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex items-center gap-2 text-sm sm:text-base text-gray-900"
@@ -570,22 +812,68 @@ export default function StudyTools() {
                           {filteredFlashcards.length > 0 ? (
                             <div className="space-y-2 max-h-96 overflow-y-auto">
                               {filteredFlashcards.map((card) => (
-                                <div key={card.id} className="border border-gray-200 rounded-lg p-3 sm:p-4 flex justify-between items-start hover:bg-gray-50 transition-colors">
+                                <div 
+                                  key={card.id} 
+                                  className={`border rounded-lg p-3 sm:p-4 flex justify-between items-start hover:bg-gray-50 transition-colors ${
+                                    selectedCards.has(card.id) ? 'border-violet-500 bg-violet-50' : 'border-gray-200'
+                                  }`}
+                                >
                                   <div className="flex-1 min-w-0">
-                                    {card.category && (
-                                      <span className="inline-block text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded mb-1">
-                                        {card.category}
-                                      </span>
-                                    )}
+                                    <div className="flex items-center gap-2 mb-1">
+                                      {card.category && (
+                                        <span className="inline-block text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded">
+                                          {card.category}
+                                        </span>
+                                      )}
+                                      {card.difficulty && (
+                                        <span className={`inline-block text-xs px-2 py-0.5 rounded ${
+                                          card.difficulty === 'easy' ? 'bg-green-100 text-green-700' :
+                                          card.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                                          'bg-red-100 text-red-700'
+                                        }`}>
+                                          {card.difficulty}
+                                        </span>
+                                      )}
+                                      {card.reviewCount && card.reviewCount > 0 && (
+                                        <span className="text-xs text-gray-500">
+                                          Reviewed {card.reviewCount}x
+                                        </span>
+                                      )}
+                                    </div>
                                     <p className="text-sm sm:text-base font-medium text-gray-900 break-words">{card.front}</p>
                                     <p className="text-xs sm:text-sm text-gray-600 mt-1 break-words">{card.back}</p>
                                   </div>
-                                  <button
-                                    onClick={() => deleteFlashcard(card.id)}
-                                    className="text-red-600 hover:text-red-700 ml-2 flex-shrink-0"
-                                  >
-                                    <X className="h-4 w-4 sm:h-5 sm:w-5" />
-                                  </button>
+                                  <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+                                    <button
+                                      onClick={() => toggleCardSelection(card.id)}
+                                      className={`p-1 rounded transition-colors ${
+                                        selectedCards.has(card.id) 
+                                          ? 'text-violet-600 bg-violet-100' 
+                                          : 'text-gray-400 hover:text-gray-600'
+                                      }`}
+                                      title="Select card"
+                                    >
+                                      {selectedCards.has(card.id) ? (
+                                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                                      ) : (
+                                        <StarOff className="h-4 w-4 sm:h-5 sm:w-5" />
+                                      )}
+                                    </button>
+                                    <button
+                                      onClick={() => duplicateFlashcard(card.id)}
+                                      className="p-1 text-blue-600 hover:text-blue-700 rounded transition-colors"
+                                      title="Duplicate card"
+                                    >
+                                      <Copy className="h-4 w-4 sm:h-5 sm:w-5" />
+                                    </button>
+                                    <button
+                                      onClick={() => deleteFlashcard(card.id)}
+                                      className="p-1 text-red-600 hover:text-red-700 rounded transition-colors"
+                                      title="Delete card"
+                                    >
+                                      <X className="h-4 w-4 sm:h-5 sm:w-5" />
+                                    </button>
+                                  </div>
                                 </div>
                               ))}
                             </div>
@@ -604,9 +892,21 @@ export default function StudyTools() {
                         <div className="border-t pt-4 sm:pt-6 mt-4 sm:mt-6">
                           <div className="max-w-2xl mx-auto">
                             <div className="text-center mb-3 sm:mb-4">
-                              <span className="text-xs sm:text-sm text-gray-900">
-                                Card {currentCard + 1} of {filteredFlashcards.length}
-                              </span>
+                              <div className="flex items-center justify-center gap-2 mb-2">
+                                <span className="text-xs sm:text-sm text-gray-900">
+                                  Card {currentCard + 1} of {filteredFlashcards.length}
+                                </span>
+                                {currentCardData?.difficulty && (
+                                  <span className={`text-xs px-2 py-0.5 rounded ${
+                                    currentCardData.difficulty === 'easy' ? 'bg-green-100 text-green-700' :
+                                    currentCardData.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                                    'bg-red-100 text-red-700'
+                                  }`}>
+                                    {currentCardData.difficulty}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-500">Press Space to flip • Arrow keys to navigate</p>
                             </div>
                             <div
                               className="relative h-48 sm:h-64 cursor-pointer touch-manipulation"
@@ -632,11 +932,11 @@ export default function StudyTools() {
                                 onClick={prevCard}
                                 className="px-4 sm:px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base text-gray-900"
                               >
-                                Previous
+                                ← Previous
                               </button>
                               <button
                                 onClick={() => setIsFlipped(!isFlipped)}
-                                className="px-4 sm:px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm sm:text-base"
+                                className="px-4 sm:px-6 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors text-sm sm:text-base"
                               >
                                 {isFlipped ? 'Show Front' : 'Flip Card'}
                               </button>
@@ -644,9 +944,31 @@ export default function StudyTools() {
                                 onClick={nextCard}
                                 className="px-4 sm:px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base text-gray-900"
                               >
-                                Next
+                                Next →
                               </button>
                             </div>
+                            {currentCardData && (
+                              <div className="flex justify-center gap-2 mt-3">
+                                <button
+                                  onClick={() => markCardDifficulty(currentCardData.id, 'easy')}
+                                  className="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-xs sm:text-sm font-medium transition-colors"
+                                >
+                                  Easy
+                                </button>
+                                <button
+                                  onClick={() => markCardDifficulty(currentCardData.id, 'medium')}
+                                  className="px-3 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg text-xs sm:text-sm font-medium transition-colors"
+                                >
+                                  Medium
+                                </button>
+                                <button
+                                  onClick={() => markCardDifficulty(currentCardData.id, 'hard')}
+                                  className="px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs sm:text-sm font-medium transition-colors"
+                                >
+                                  Hard
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}
@@ -694,16 +1016,46 @@ export default function StudyTools() {
                         </div>
                       ) : (
                         <div className="space-y-3 sm:space-y-4">
-                          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4">
+                          <div className={`border rounded-lg p-3 sm:p-4 ${
+                            userAnswer.toLowerCase().trim() === quizCards[quizIndex]?.back.toLowerCase().trim() ||
+                            quizCards[quizIndex]?.back.toLowerCase().trim().includes(userAnswer.toLowerCase().trim()) ||
+                            userAnswer.toLowerCase().trim().includes(quizCards[quizIndex]?.back.toLowerCase().trim())
+                              ? 'bg-green-50 border-green-200' 
+                              : 'bg-red-50 border-red-200'
+                          }`}>
                             <div className="text-xs sm:text-sm text-gray-600 mb-1">Correct Answer:</div>
                             <div className="text-sm sm:text-base font-medium text-gray-900">
                               {quizCards[quizIndex]?.back}
                             </div>
                           </div>
+                          {studyMode === 'review' && (
+                            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                              <button
+                                onClick={() => markQuizAnswer('easy')}
+                                className="flex-1 bg-green-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
+                              >
+                                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                                Easy (Got it!)
+                              </button>
+                              <button
+                                onClick={() => markQuizAnswer('medium')}
+                                className="flex-1 bg-yellow-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-yellow-700 transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
+                              >
+                                Medium
+                              </button>
+                              <button
+                                onClick={() => markQuizAnswer('hard')}
+                                className="flex-1 bg-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
+                              >
+                                <XCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                                Hard (Need practice)
+                              </button>
+                            </div>
+                          )}
                           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                             <button
                               onClick={nextCard}
-                              className="flex-1 bg-primary-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-sm sm:text-base"
+                              className="flex-1 bg-violet-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-violet-700 transition-colors text-sm sm:text-base"
                             >
                               {quizIndex + 1 < quizCards.length ? 'Next Question' : 'Finish Quiz'}
                             </button>

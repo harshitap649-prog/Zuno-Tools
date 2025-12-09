@@ -14,7 +14,7 @@ import {
   RefreshCw, Hash, Lock, Link as LinkIcon,
   Palette, Calculator, Clock, Key, Code, Search, X,
   Crop, RotateCw, Globe, Filter, Heart, Calendar,
-  HardDrive, Shield, DollarSign, CheckSquare, Target,
+  Shield, DollarSign, CheckSquare, Target,
   Instagram, Eye, EyeOff, Mail, Grid, Wand2,
   PenTool, Video
 } from 'lucide-react'
@@ -227,14 +227,6 @@ const allTools = [
     icon: Palette,
     color: 'from-pink-500 to-rose-500',
     category: 'Design Tools',
-  },
-  {
-    id: 'file-size-converter',
-    name: 'File Size Converter',
-    description: 'Convert between different file size units',
-    icon: HardDrive,
-    color: 'from-indigo-500 to-purple-500',
-    category: 'Utility Tools',
   },
   {
     id: 'currency-converter',
