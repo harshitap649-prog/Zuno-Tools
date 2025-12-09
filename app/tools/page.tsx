@@ -354,7 +354,6 @@ const categories = ['All', 'Image Tools', 'Document Tools', 'AI Tools', 'Creativ
 export default function ToolsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [mobileCategoryMenuOpen, setMobileCategoryMenuOpen] = useState(false)
   const [favorites, setFavorites] = useState<string[]>([])
   const [showFavorites, setShowFavorites] = useState(false)
   const [showRecent, setShowRecent] = useState(false)
@@ -442,23 +441,6 @@ export default function ToolsPage() {
       
       <main className="flex-grow py-5 sm:py-8 md:py-12">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Mobile hamburger to toggle categories */}
-          <button
-            onClick={() => setMobileCategoryMenuOpen(!mobileCategoryMenuOpen)}
-            className="md:hidden absolute right-2 top-2 p-2 rounded-lg border border-gray-200 bg-white shadow-sm text-gray-800 active:scale-95"
-            aria-label="Toggle categories"
-          >
-            {mobileCategoryMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <div className="space-y-1">
-                <span className="block h-0.5 w-5 bg-gray-800"></span>
-                <span className="block h-0.5 w-5 bg-gray-800"></span>
-                <span className="block h-0.5 w-5 bg-gray-800"></span>
-              </div>
-            )}
-          </button>
-
           <div className="text-center mb-6 sm:mb-12">
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               Powerful Tools at Your Fingertips
@@ -490,7 +472,7 @@ export default function ToolsPage() {
             </div>
           </div>
 
-          {/* Category Filter - Desktop */}
+          {/* Category Filter - Desktop Only (hidden on mobile) */}
           <div className="mb-6 sm:mb-8 hidden md:block">
             <div className="flex flex-wrap gap-2 justify-center">
               {categories.map((category) => (
@@ -507,30 +489,6 @@ export default function ToolsPage() {
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Category Filter - Mobile (hidden until hamburger tapped) */}
-          <div className="mb-4 md:hidden">
-            {mobileCategoryMenuOpen && (
-              <div className="mt-3 bg-white border-2 border-gray-200 rounded-2xl shadow-xl p-2 space-y-1 max-h-64 overflow-y-auto">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => {
-                      setSelectedCategory(category)
-                      setMobileCategoryMenuOpen(false)
-                    }}
-                    className={`w-full text-left px-4 py-3 rounded-xl font-medium transition-all touch-manipulation active:scale-95 ${
-                      selectedCategory === category
-                        ? 'bg-gradient-to-r from-pink-500 to-pink-400 text-white shadow-md'
-                        : 'text-gray-900 hover:bg-pink-50'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Filter Indicators */}
