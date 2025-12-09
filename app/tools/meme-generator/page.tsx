@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Footer from '@/components/Footer'
-import MobileBottomNav from '@/components/MobileBottomNav'
+import MobileBottomNavWrapper from '@/components/MobileBottomNavWrapper'
 import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { Upload, Download, X, Image as ImageIcon, Type, Loader2, Plus, Smile, PenTool, Layers, Trash2, Move, RotateCw } from 'lucide-react'
@@ -1301,7 +1301,7 @@ export default function MemeGenerator() {
 
       <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <Footer />
-      <MobileBottomNav />
+      <MobileBottomNavWrapper />
     </div>
   )
 }

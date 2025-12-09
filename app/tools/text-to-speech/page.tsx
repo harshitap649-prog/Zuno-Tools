@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Footer from '@/components/Footer'
-import MobileBottomNav from '@/components/MobileBottomNav'
+import MobileBottomNavWrapper from '@/components/MobileBottomNavWrapper'
 import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
@@ -881,7 +881,7 @@ export default function TextToSpeech() {
 
       <MobileBottomAd adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <Footer />
-      <MobileBottomNav />
+      <MobileBottomNavWrapper />
     </div>
   )
 }
