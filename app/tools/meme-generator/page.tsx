@@ -3,7 +3,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Footer from '@/components/Footer'
-import MobileBottomNavWrapper from '@/components/MobileBottomNavWrapper'
 import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { Upload, Download, X, Image as ImageIcon, Type, Loader2, Plus, Smile, PenTool, Layers, Trash2, Move, RotateCw } from 'lucide-react'
@@ -679,6 +678,53 @@ export default function MemeGenerator() {
     setCurrentPath('')
   }
 
+  // Touch drawing support
+  const startDrawingTouch = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!drawingCanvasRef.current || activeTab !== 'draw') return
+    e.preventDefault()
+    setIsDrawing(true)
+    const canvas = drawingCanvasRef.current
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    const rect = canvas.getBoundingClientRect()
+    const touch = e.touches[0]
+    const x = touch.clientX - rect.left
+    const y = touch.clientY - rect.top
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+    setCurrentPath(`M ${x} ${y}`)
+  }
+
+  const drawTouch = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing || !drawingCanvasRef.current || activeTab !== 'draw') return
+    e.preventDefault()
+    const canvas = drawingCanvasRef.current
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    const rect = canvas.getBoundingClientRect()
+    const touch = e.touches[0]
+    const x = touch.clientX - rect.left
+    const y = touch.clientY - rect.top
+    ctx.strokeStyle = drawColor
+    ctx.lineWidth = drawWidth
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    ctx.lineTo(x, y)
+    ctx.stroke()
+  }
+
+  const stopDrawingTouch = (e?: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e) e.preventDefault()
+    if (!isDrawing) return
+    setIsDrawing(false)
+    if (drawingCanvasRef.current) {
+      const ctx = drawingCanvasRef.current.getContext('2d')
+      if (ctx) {
+        ctx.beginPath()
+      }
+    }
+  }
+
   useEffect(() => {
     if (drawingCanvasRef.current && baseImage && memeRef.current) {
       const canvas = drawingCanvasRef.current
@@ -1244,18 +1290,23 @@ export default function MemeGenerator() {
                           <img src={baseImage} alt="Meme base" className="w-full h-auto block" />
                           
                           {/* Drawing Canvas */}
-                          {activeTab === 'draw' && baseImage && (
+                          {baseImage && (
                             <canvas
                               ref={drawingCanvasRef}
                               onMouseDown={startDrawing}
                               onMouseMove={draw}
                               onMouseUp={stopDrawing}
                               onMouseLeave={stopDrawing}
+                              onTouchStart={startDrawingTouch}
+                              onTouchMove={drawTouch}
+                              onTouchEnd={stopDrawingTouch}
+                              onTouchCancel={stopDrawingTouch}
                               className="absolute top-0 left-0 cursor-crosshair"
                               style={{ 
                                 width: '100%',
                                 height: '100%',
-                                pointerEvents: 'auto'
+                                pointerEvents: 'auto',
+                                touchAction: 'none'
                               }}
                             />
                           )}
@@ -1348,7 +1399,6 @@ export default function MemeGenerator() {
 
       <MobileBottomAd adKey="36d691042d95ac1ac33375038ec47a5c" />
       <Footer />
-      <MobileBottomNavWrapper />
     </div>
   )
 }
