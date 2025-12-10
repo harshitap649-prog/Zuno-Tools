@@ -210,6 +210,13 @@ const knowledgeBase: { [key: string]: string } = {
   'who is president of usa': 'Joe Biden is the President of the United States.',
   'prime minister of uk': 'Rishi Sunak',
   'who is prime minister of uk': 'Rishi Sunak is the Prime Minister of the United Kingdom.',
+  // Australia specifics
+  'president of australia': 'Australia does not have a president. The head of state is King Charles III, represented by the Governor-General (currently David Hurley). The head of government is the Prime Minister (currently Anthony Albanese).',
+  'who is president of australia': 'Australia does not have a president. The head of state is King Charles III, represented by Governor-General David Hurley. The head of government is Prime Minister Anthony Albanese.',
+  'prime minister of australia': 'Anthony Albanese is the Prime Minister of Australia. He has served since May 2022.',
+  'who is prime minister of australia': 'Anthony Albanese is the Prime Minister of Australia. He has served since May 2022.',
+  'head of state of australia': 'King Charles III is the head of state of Australia, represented by Governor-General David Hurley.',
+  'governor general of australia': 'David Hurley is the Governor-General of Australia, representing the head of state King Charles III.',
   'capital of usa': 'Washington D.C.',
   'capital of uk': 'London',
   'capital of france': 'Paris',
