@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Footer from '@/components/Footer'
 import MobileBottomNavWrapper from '@/components/MobileBottomNavWrapper'
 import SidebarAd from '@/components/SidebarAd'
@@ -46,7 +47,8 @@ const examples = [
   'Today is a beautiful day. The sun is shining, birds are singing, and everything seems perfect.',
 ]
 
-export default function TextToSpeech() {
+function TextToSpeech() {
+  const searchParams = useSearchParams()
   const [text, setText] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
@@ -68,6 +70,8 @@ export default function TextToSpeech() {
   const [musicVolume, setMusicVolume] = useState(0.3)
   const [shareLink, setShareLink] = useState<string>('')
   const [linkCopied, setLinkCopied] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [paramsLoaded, setParamsLoaded] = useState(false)
   
   const synthRef = useRef<SpeechSynthesis | null>(null)
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
@@ -93,6 +97,47 @@ export default function TextToSpeech() {
       }
     }
   }, [])
+
+  // Detect mobile screen
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile)
+    }
+  }, [])
+
+  // Load parameters from share link
+  useEffect(() => {
+    if (paramsLoaded) return
+    
+    const textParam = searchParams.get('text')
+    const rateParam = searchParams.get('rate')
+    const pitchParam = searchParams.get('pitch')
+    const volumeParam = searchParams.get('volume')
+    const langParam = searchParams.get('lang')
+
+    if (textParam) {
+      try {
+        setText(decodeURIComponent(textParam))
+        if (rateParam) setRate(parseFloat(rateParam))
+        if (pitchParam) setPitch(parseFloat(pitchParam))
+        if (volumeParam) setVolume(parseFloat(volumeParam))
+        if (langParam) setSelectedLanguage(langParam)
+        setParamsLoaded(true)
+        toast.success('Shared text loaded!')
+      } catch (error) {
+        console.error('Error loading shared parameters:', error)
+      }
+    } else {
+      setParamsLoaded(true)
+    }
+  }, [searchParams, paramsLoaded])
 
   useEffect(() => {
     // Calculate reading time and words per minute
@@ -403,7 +448,12 @@ export default function TextToSpeech() {
     }
   }
 
-  const generateShareLink = () => {
+  const generateShareLink = async () => {
+    if (!text.trim()) {
+      toast.error('Please enter some text first')
+      return
+    }
+
     const params = new URLSearchParams({
       text: encodeURIComponent(text),
       rate: rate.toString(),
@@ -413,11 +463,37 @@ export default function TextToSpeech() {
     })
     const link = `${window.location.origin}${window.location.pathname}?${params.toString()}`
     setShareLink(link)
-    navigator.clipboard.writeText(link).then(() => {
+
+    // Use Web Share API if available (mobile devices)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Text to Speech - Zuno Tools',
+          text: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
+          url: link,
+        })
+        toast.success('Shared successfully!')
+        setLinkCopied(true)
+        setTimeout(() => setLinkCopied(false), 2000)
+        return
+      } catch (error: any) {
+        // User cancelled or error occurred, fall back to copy
+        if (error.name !== 'AbortError') {
+          console.error('Error sharing:', error)
+        }
+      }
+    }
+
+    // Fallback to copying to clipboard
+    try {
+      await navigator.clipboard.writeText(link)
       setLinkCopied(true)
       toast.success('Link copied to clipboard!')
       setTimeout(() => setLinkCopied(false), 2000)
-    })
+    } catch (error) {
+      console.error('Error copying to clipboard:', error)
+      toast.error('Failed to copy link. Please try again.')
+    }
   }
 
   const formatTime = (seconds: number): string => {
@@ -869,8 +945,25 @@ export default function TextToSpeech() {
 
       <MobileBottomAd adKey="36d691042d95ac1ac33375038ec47a5c" />
       <Footer />
-      <MobileBottomNavWrapper />
+      {!isMobile && <MobileBottomNavWrapper />}
     </div>
   )
 }
+
+function TextToSpeechPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <TextToSpeech />
+    </Suspense>
+  )
+}
+
+export default TextToSpeechPage
 

@@ -18,6 +18,11 @@ export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey
     
     // Create a wrapper function that sets atOptions and loads the script
     const loadAd = () => {
+      // Double check mobile before loading
+      if (!checkMobile()) {
+        return
+      }
+      
       if (!containerRef.current) return
 
       // Set atOptions right before loading the script
@@ -82,8 +87,16 @@ export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey
             setTimeout(loadAd, 500)
           }
         } else {
-          // Hide on desktop
+          // Hide on desktop - completely remove scripts
           containerRef.current.style.display = 'none'
+          containerRef.current.style.visibility = 'hidden'
+          containerRef.current.style.opacity = '0'
+          // Remove script if on desktop
+          const existingScript = document.getElementById('ad-script-mobile-bottom')
+          if (existingScript) {
+            existingScript.remove()
+            scriptLoadedRef.current = false
+          }
         }
       }
     }
@@ -91,9 +104,11 @@ export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey
     // Check initial screen size
     const isMobile = checkMobile()
     if (!isMobile) {
-      // Hide container on desktop
+      // Hide container on desktop completely
       if (containerRef.current) {
         containerRef.current.style.display = 'none'
+        containerRef.current.style.visibility = 'hidden'
+        containerRef.current.style.opacity = '0'
       }
       window.addEventListener('resize', handleResize)
       return () => {

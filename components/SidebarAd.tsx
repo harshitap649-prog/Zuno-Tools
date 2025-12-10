@@ -17,6 +17,11 @@ export default function SidebarAd({ position, adKey }: { position: 'left' | 'rig
 
     // Create a wrapper function that sets atOptions and loads the script
     const loadAd = () => {
+      // Double check desktop before loading
+      if (!checkDesktop()) {
+        return
+      }
+      
       if (!containerRef.current || scriptLoadedRef.current) return
       
       // Ensure container ID is set
@@ -65,7 +70,7 @@ export default function SidebarAd({ position, adKey }: { position: 'left' | 'rig
       script.onload = () => {
         scriptLoadedRef.current = true
         // Clear placeholder once ad loads
-        if (containerRef.current) {
+        if (containerRef.current && checkDesktop()) {
           const placeholder = containerRef.current.querySelector('.text-xs')
           if (placeholder) {
             placeholder.remove()
@@ -80,7 +85,7 @@ export default function SidebarAd({ position, adKey }: { position: 'left' | 'rig
         console.error(`Failed to load ad script for ${position} position`)
         scriptLoadedRef.current = false
         // Show error message
-        if (containerRef.current) {
+        if (containerRef.current && checkDesktop()) {
           const placeholder = containerRef.current.querySelector('.text-xs')
           if (placeholder) {
             placeholder.textContent = 'Ad unavailable'
@@ -106,15 +111,23 @@ export default function SidebarAd({ position, adKey }: { position: 'left' | 'rig
           // Load ad if not already loaded
           if (!scriptLoadedRef.current) {
             const delay = position === 'left' ? 500 : 2500
-            setTimeout(() => {
+            timeoutRef.current = setTimeout(() => {
               if (checkDesktop() && containerRef.current) {
                 loadAd()
               }
             }, delay)
           }
         } else {
-          // Hide on mobile
+          // Hide on mobile - completely remove scripts
           containerRef.current.style.display = 'none'
+          containerRef.current.style.visibility = 'hidden'
+          containerRef.current.style.opacity = '0'
+          // Remove script if on mobile
+          const existingScript = document.getElementById(`ad-script-${position}`)
+          if (existingScript) {
+            existingScript.remove()
+            scriptLoadedRef.current = false
+          }
         }
       }
     }
@@ -122,26 +135,41 @@ export default function SidebarAd({ position, adKey }: { position: 'left' | 'rig
     // Check initial screen size
     const isDesktop = checkDesktop()
     if (!isDesktop) {
-      // Hide container on mobile
+      // Hide container on mobile completely
       if (containerRef.current) {
         containerRef.current.style.display = 'none'
+        containerRef.current.style.visibility = 'hidden'
+        containerRef.current.style.opacity = '0'
       }
       window.addEventListener('resize', handleResize)
       return () => {
         window.removeEventListener('resize', handleResize)
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
       }
     }
 
     const containerId = `sidebar-ad-${position}`
-    if (containerRef.current) {
-      containerRef.current.id = containerId
-      // Ensure container is visible and ready
-      containerRef.current.style.display = 'flex'
-      containerRef.current.style.visibility = 'visible'
-      containerRef.current.style.opacity = '1'
-      // Make sure container is in viewport
-      containerRef.current.style.position = 'relative'
+    // Use a small delay to ensure ref is attached
+    const initContainer = () => {
+      if (containerRef.current && checkDesktop()) {
+        containerRef.current.id = containerId
+        // Ensure container is visible and ready
+        containerRef.current.style.display = 'flex'
+        containerRef.current.style.visibility = 'visible'
+        containerRef.current.style.opacity = '1'
+        // Make sure container is in viewport
+        containerRef.current.style.position = 'relative'
+      }
     }
+    
+    // Try immediately
+    initContainer()
+    
+    // Also try after a short delay in case ref isn't ready
+    setTimeout(initContainer, 100)
 
     // Wait for DOM to be fully ready before loading ads
     const waitForDOM = () => {
@@ -202,9 +230,6 @@ export default function SidebarAd({ position, adKey }: { position: 'left' | 'rig
         style={{ 
           minHeight: '600px', 
           minWidth: '160px',
-          display: 'flex',
-          visibility: 'visible',
-          opacity: '1',
           position: 'relative',
           zIndex: 40
         }}
