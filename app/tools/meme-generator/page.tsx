@@ -522,11 +522,15 @@ export default function MemeGenerator() {
     }
 
     const handleGlobalTouchMove = (e: TouchEvent) => {
+      // Only prevent scrolling when actually dragging an element
+      if (dragState.current.isDragging && dragState.current.elementId) {
       e.preventDefault() // Prevent scrolling while dragging
       if (e.touches.length > 0) {
         const touch = e.touches[0]
         updateElementPosition(touch.clientX, touch.clientY)
       }
+      }
+      // If not dragging, allow normal scrolling
     }
 
     const handleGlobalMouseUp = () => {

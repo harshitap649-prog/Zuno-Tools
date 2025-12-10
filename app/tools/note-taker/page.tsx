@@ -185,7 +185,7 @@ interface NoteRelationship {
 
 const NOTE_COLORS = [
   { name: 'Default', value: 'bg-white border-gray-200' },
-  { name: 'Blue', value: 'bg-blue-50 border-blue-200' },
+  { name: 'Blue', value: 'bg-pink-50 border-pink-200' },
   { name: 'Green', value: 'bg-green-50 border-green-200' },
   { name: 'Yellow', value: 'bg-yellow-50 border-yellow-200' },
   { name: 'Red', value: 'bg-red-50 border-red-200' },
@@ -239,6 +239,7 @@ const DEFAULT_TEMPLATES: NoteTemplate[] = [
 ]
 
 export default function NoteTaker() {
+  const [isMobile, setIsMobile] = useState(false)
   const [notes, setNotes] = useState<Note[]>([])
   const [selectedNote, setSelectedNote] = useState<Note | null>(null)
   const [title, setTitle] = useState('')
@@ -431,6 +432,16 @@ export default function NoteTaker() {
   
   // Focus mode ref
   const focusModeRef = useRef<HTMLDivElement>(null)
+
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     const savedNotes = localStorage.getItem('zuno-notes')
@@ -2237,6 +2248,77 @@ export default function NoteTaker() {
     return html
   }
 
+  // Mobile-only message component
+  if (isMobile) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 px-4">
+        <div className="max-w-md w-full">
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border-2 border-pink-200 p-8 sm:p-10 text-center">
+            {/* Icon */}
+            <div className="relative inline-flex items-center justify-center mb-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 via-rose-400 to-pink-500 rounded-full blur-xl opacity-40 animate-pulse"></div>
+              <div className="relative inline-flex p-4 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 shadow-lg">
+                <FileText className="h-10 w-10 text-white" />
+              </div>
+            </div>
+            
+            {/* Title */}
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+              Desktop Experience Required
+            </h1>
+            
+            {/* Message */}
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              The Note Taker tool is optimized for desktop screens to provide you with the best writing and organization experience. Please access this tool from a desktop or laptop computer.
+            </p>
+            
+            {/* Features list */}
+            <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 mb-6 border border-pink-200">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center justify-center gap-2">
+                <Sparkles className="h-5 w-5 text-pink-600" />
+                <span>Available Features</span>
+              </h3>
+              <ul className="space-y-2 text-left text-sm text-gray-700">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-pink-600 flex-shrink-0 mt-0.5" />
+                  <span>Rich text editing with Markdown support</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-pink-600 flex-shrink-0 mt-0.5" />
+                  <span>Advanced note organization and tagging</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-pink-600 flex-shrink-0 mt-0.5" />
+                  <span>Real-time collaboration and sharing</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-pink-600 flex-shrink-0 mt-0.5" />
+                  <span>Writing analytics and insights</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-pink-600 flex-shrink-0 mt-0.5" />
+                  <span>Export to multiple formats</span>
+                </li>
+              </ul>
+            </div>
+            
+            {/* Decorative elements */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="h-1 w-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full"></div>
+              <div className="h-1 w-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full"></div>
+              <div className="h-1 w-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full"></div>
+            </div>
+            
+            <p className="text-sm text-gray-500">
+              We're working on bringing this experience to mobile devices soon!
+            </p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
   return (
     <>
       <style jsx global>{`
@@ -2264,7 +2346,7 @@ export default function NoteTaker() {
       <main className="flex-grow py-4 sm:py-6 md:py-8 lg:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">
-            <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 mb-4">
+            <div className="inline-flex p-3 rounded-lg bg-gradient-to-r from-pink-500 to-rose-500 mb-4">
               <FileText className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-xl sm:text-2xl md:text-2xl font-bold mb-2 text-black">Note Taker</h1>
@@ -2317,7 +2399,7 @@ export default function NoteTaker() {
                     setHighlightSearch(e.target.value.length > 0)
                   }}
                   placeholder="Search notes by title, content, or tags..."
-                  className="w-full pl-11 pr-20 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-gray-900 bg-gray-50/50 transition-all placeholder:text-gray-400"
+                  className="w-full pl-11 pr-20 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 text-gray-900 bg-gray-50/50 transition-all placeholder:text-gray-400"
                 />
                 {searchQuery && (
                   <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
@@ -2359,7 +2441,7 @@ export default function NoteTaker() {
                           if (name) saveSearch(name)
                         }
                       }}
-                      className="text-xs text-blue-600 hover:text-blue-700"
+                      className="text-xs text-pink-600 hover:text-pink-700"
                     >
                       Save Current
                     </button>
@@ -2389,7 +2471,7 @@ export default function NoteTaker() {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer"
+                  className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all cursor-pointer"
                 >
                   <option value="all">All Categories</option>
                   {CATEGORIES.map(cat => (
@@ -2401,7 +2483,7 @@ export default function NoteTaker() {
                 <select
                   value={selectedColor}
                   onChange={(e) => setSelectedColor(e.target.value)}
-                  className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer"
+                  className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all cursor-pointer"
                 >
                   <option value="all">All Colors</option>
                   {NOTE_COLORS.map(color => (
@@ -2425,7 +2507,7 @@ export default function NoteTaker() {
                         }}
                         className={`px-2 py-1 rounded-lg text-xs font-medium transition-all ${
                           selectedTags.includes(tag)
-                            ? 'bg-blue-600 text-white'
+                            ? 'bg-pink-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
@@ -2452,7 +2534,7 @@ export default function NoteTaker() {
                     onClick={() => setShowPinned(!showPinned)}
                     className={`p-2 rounded-lg transition-all ${
                       showPinned
-                        ? 'bg-blue-100 text-blue-600'
+                        ? 'bg-pink-100 text-pink-600'
                         : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                     }`}
                     title="Show Pinned"
@@ -2516,18 +2598,18 @@ export default function NoteTaker() {
                 <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-gray-100">
                   <span className="text-xs font-medium text-gray-500">Active filters:</span>
                   {searchQuery && (
-                    <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium border border-blue-100">
+                    <span className="px-2.5 py-1 bg-pink-50 text-pink-700 rounded-lg text-xs font-medium border border-pink-100">
                       Search: "{searchQuery}"
                     </span>
                   )}
                   {selectedCategory !== 'all' && (
-                    <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-blue-100">
+                    <span className="px-2.5 py-1 bg-pink-50 text-pink-700 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-pink-100">
                       <Folder className="h-3.5 w-3.5" />
                       {selectedCategory}
                     </span>
                   )}
                   {selectedTags.map(tag => (
-                    <span key={tag} className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-blue-100">
+                    <span key={tag} className="px-2.5 py-1 bg-pink-50 text-pink-700 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-pink-100">
                       <Tag className="h-3.5 w-3.5" />
                       #{tag}
                     </span>
@@ -2560,7 +2642,7 @@ export default function NoteTaker() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => createNewNote()}
-                      className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-2 text-sm sm:text-base"
+                      className="flex-1 bg-gradient-to-r from-pink-600 to-rose-600 text-white px-4 py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-pink-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-2 text-sm sm:text-base"
                     >
                       <Plus className="h-5 w-5" />
                       <span className="hidden sm:inline">New Note</span>
@@ -2696,7 +2778,7 @@ export default function NoteTaker() {
                         }}
                         className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
                           showArchive
-                            ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            ? 'bg-pink-50 text-pink-700 border-pink-200'
                             : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-200'
                         }`}
                       >
@@ -2751,7 +2833,7 @@ export default function NoteTaker() {
                           onClick={() => selectNote(note)}
                           className={`p-3 sm:p-4 rounded-xl cursor-pointer transition-all border ${
                             selectedNote?.id === note.id
-                              ? 'border-blue-500 shadow-md shadow-blue-500/10 bg-blue-50/50'
+                              ? 'border-pink-500 shadow-md shadow-pink-500/10 bg-pink-50/50'
                               : 'border-gray-200 hover:border-gray-300 hover:shadow-sm bg-white'
                           }`}
                           style={{
@@ -2776,7 +2858,7 @@ export default function NoteTaker() {
                           <div className="flex items-start justify-between mb-2.5">
                             <div className="flex items-center gap-1.5 flex-1 min-w-0">
                               {note.isPinned && (
-                                <Pin className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" fill="currentColor" />
+                                <Pin className="h-3.5 w-3.5 text-pink-600 flex-shrink-0" fill="currentColor" />
                               )}
                               <h3 className="font-semibold text-gray-900 truncate text-sm sm:text-base">{note.title}</h3>
                             </div>
@@ -2848,7 +2930,7 @@ export default function NoteTaker() {
                               <Trash2 className="h-3 w-3 text-red-400" aria-label="Trashed" role="img" />
                             )}
                             {note.linkedNotes && note.linkedNotes.length > 0 && (
-                              <Link2 className="h-3 w-3 text-blue-400" aria-label={`Linked to ${note.linkedNotes.length} note(s)`} role="img" />
+                              <Link2 className="h-3 w-3 text-pink-400" aria-label={`Linked to ${note.linkedNotes.length} note(s)`} role="img" />
                             )}
                           </div>
                         </div>
@@ -2876,7 +2958,7 @@ export default function NoteTaker() {
                             onClick={() => togglePin(selectedNote.id)}
                             className={`p-2.5 rounded-xl transition-all ${
                               selectedNote.isPinned
-                                ? 'bg-blue-100 text-blue-600 shadow-sm'
+                                ? 'bg-pink-100 text-pink-600 shadow-sm'
                                 : 'bg-white text-gray-400 hover:bg-gray-100 hover:text-gray-600 border border-gray-200'
                             }`}
                             title={selectedNote.isPinned ? 'Unpin' : 'Pin'}
@@ -2903,12 +2985,12 @@ export default function NoteTaker() {
                         {selectedNote.tags?.map(tag => (
                           <span
                             key={tag}
-                            className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-blue-100"
+                            className="px-2.5 py-1 bg-pink-50 text-pink-700 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-pink-100"
                           >
                             #{tag}
                             <button
                               onClick={() => removeTag(selectedNote.id, tag)}
-                              className="hover:text-blue-900 transition-colors"
+                              className="hover:text-pink-900 transition-colors"
                             >
                               <X className="h-3 w-3" />
                             </button>
@@ -2926,7 +3008,7 @@ export default function NoteTaker() {
                                 }
                               }}
                               placeholder="Tag name"
-                              className="px-3 py-1.5 border border-gray-300 rounded-lg text-xs text-gray-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                              className="px-3 py-1.5 border border-gray-300 rounded-lg text-xs text-gray-900 focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
                               autoFocus
                             />
                             <button
@@ -2934,7 +3016,7 @@ export default function NoteTaker() {
                                 if (newTag.trim()) addTag(selectedNote.id, newTag)
                                 else setShowTagInput(false)
                               }}
-                              className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors"
+                              className="px-3 py-1.5 bg-pink-600 text-white rounded-lg text-xs font-medium hover:bg-pink-700 transition-colors"
                             >
                               Add
                             </button>
@@ -2995,7 +3077,7 @@ export default function NoteTaker() {
                           <select
                             value={selectedNote.category || 'Personal'}
                             onChange={(e) => updateNoteCategory(selectedNote.id, e.target.value)}
-                            className="px-3 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer"
+                            className="px-3 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all cursor-pointer"
                           >
                             {CATEGORIES.map(cat => (
                               <option key={cat} value={cat}>{cat}</option>
@@ -3007,7 +3089,7 @@ export default function NoteTaker() {
                           <span className="text-xs font-medium text-gray-500">Color:</span>
                           <div className="flex items-center gap-1.5">
                             {NOTE_COLORS.map(color => {
-                              const bgColor = color.value.includes('blue') ? 'bg-blue-200' :
+                              const bgColor = color.value.includes('blue') ? 'bg-pink-200' :
                                             color.value.includes('green') ? 'bg-green-200' :
                                             color.value.includes('yellow') ? 'bg-yellow-200' :
                                             color.value.includes('red') ? 'bg-red-200' :
@@ -3212,7 +3294,7 @@ export default function NoteTaker() {
                           onClick={toggleFocusMode}
                           className={`p-2 rounded-lg transition-colors active:scale-95 ${
                             focusMode
-                              ? 'bg-blue-100 text-blue-700'
+                              ? 'bg-pink-100 text-pink-700'
                               : 'hover:bg-gray-100 text-gray-700'
                           }`}
                           title="Focus Mode"
@@ -3364,7 +3446,7 @@ export default function NoteTaker() {
                             onClick={() => setShowComments(!showComments)}
                             className={`p-2 rounded-lg transition-all ${
                               showComments
-                                ? 'bg-blue-100 text-blue-600'
+                                ? 'bg-pink-100 text-pink-600'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                             title="Comments"
@@ -3378,7 +3460,7 @@ export default function NoteTaker() {
                             onClick={() => setShowVersionHistory(!showVersionHistory)}
                             className={`p-2 rounded-lg transition-all ${
                               showVersionHistory
-                                ? 'bg-blue-100 text-blue-600'
+                                ? 'bg-pink-100 text-pink-600'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                             title="Version History"
@@ -3389,7 +3471,7 @@ export default function NoteTaker() {
                             onClick={() => setShowPermissions(!showPermissions)}
                             className={`p-2 rounded-lg transition-all ${
                               showPermissions
-                                ? 'bg-blue-100 text-blue-600'
+                                ? 'bg-pink-100 text-pink-600'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                             title="Permissions"
@@ -3510,16 +3592,16 @@ export default function NoteTaker() {
                       
                       {/* Word Count Goal Progress */}
                       {selectedNote.wordCountGoal && selectedNote.wordCount && (
-                        <div className="px-4 py-2 bg-blue-50 border-b border-blue-100">
+                        <div className="px-4 py-2 bg-pink-50 border-b border-pink-100">
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-medium text-blue-700">Word Count Goal</span>
-                            <span className="text-xs font-medium text-blue-700">
+                            <span className="text-xs font-medium text-pink-700">Word Count Goal</span>
+                            <span className="text-xs font-medium text-pink-700">
                               {selectedNote.wordCount} / {selectedNote.wordCountGoal}
                             </span>
                           </div>
-                          <div className="w-full bg-blue-200 rounded-full h-2">
+                          <div className="w-full bg-pink-200 rounded-full h-2">
                             <div
-                              className="bg-blue-600 h-2 rounded-full transition-all"
+                              className="bg-pink-600 h-2 rounded-full transition-all"
                               style={{ width: `${Math.min(100, (selectedNote.wordCount / selectedNote.wordCountGoal) * 100)}%` }}
                             />
                           </div>
@@ -3527,7 +3609,7 @@ export default function NoteTaker() {
                       )}
                       <button
                         onClick={saveNote}
-                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3.5 rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-2 text-sm sm:text-base"
+                        className="w-full bg-gradient-to-r from-pink-600 to-rose-600 text-white px-6 py-3.5 rounded-xl font-semibold hover:shadow-lg hover:shadow-pink-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-2 text-sm sm:text-base"
                       >
                         <Save className="h-5 w-5" />
                         <span>Save</span>
@@ -3599,7 +3681,7 @@ export default function NoteTaker() {
                           <button
                             onClick={() => addComment(selectedNote.id)}
                             disabled={!newComment.trim()}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 bg-pink-600 text-white rounded-lg text-sm font-medium hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Add
                           </button>
@@ -3641,7 +3723,7 @@ export default function NoteTaker() {
                                   </div>
                                   <button
                                     onClick={() => restoreVersion(selectedNote.id, version)}
-                                    className="ml-2 px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700"
+                                    className="ml-2 px-3 py-1 bg-pink-600 text-white rounded text-xs font-medium hover:bg-pink-700"
                                   >
                                     Restore
                                   </button>
@@ -3746,7 +3828,7 @@ export default function NoteTaker() {
                   />
                   <button
                     onClick={() => copyShareLink(sharedLink || generateShareLink(selectedNote.id))}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center gap-2"
+                    className="px-4 py-2 bg-pink-600 text-white rounded-lg text-sm font-medium hover:bg-pink-700 flex items-center gap-2"
                   >
                     {linkCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                     {linkCopied ? 'Copied!' : 'Copy'}
@@ -3777,7 +3859,7 @@ export default function NoteTaker() {
                   </div>
                   <button
                     onClick={() => shareNote(selectedNote.id, shareEmail, sharePermission)}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+                    className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg text-sm font-medium hover:bg-pink-700"
                   >
                     Share
                   </button>
@@ -3833,8 +3915,8 @@ export default function NoteTaker() {
                 return (
                   <>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="bg-blue-50 p-4 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-600">{stats.totalNotes}</div>
+                      <div className="bg-pink-50 p-4 rounded-lg">
+                        <div className="text-2xl font-bold text-pink-600">{stats.totalNotes}</div>
                         <div className="text-sm text-gray-600">Total Notes</div>
                       </div>
                       <div className="bg-green-50 p-4 rounded-lg">
@@ -3875,7 +3957,7 @@ export default function NoteTaker() {
                       </div>
                     )}
                     {selectedNote && (
-                      <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="bg-pink-50 p-4 rounded-lg">
                         <div className="text-lg font-semibold text-gray-900 mb-2">Current Note</div>
                         <div className="grid grid-cols-2 gap-4">
                           <div>
@@ -3963,7 +4045,7 @@ export default function NoteTaker() {
                     type="checkbox"
                     checked={autoSaveEnabled}
                     onChange={(e) => setAutoSaveEnabled(e.target.checked)}
-                    className="w-4 h-4 text-blue-600 rounded"
+                    className="w-4 h-4 text-pink-600 rounded"
                   />
                 </label>
               </div>
@@ -4012,7 +4094,7 @@ export default function NoteTaker() {
                     type="checkbox"
                     checked={findCaseSensitive}
                     onChange={(e) => setFindCaseSensitive(e.target.checked)}
-                    className="w-4 h-4 text-blue-600 rounded"
+                    className="w-4 h-4 text-pink-600 rounded"
                   />
                   <span className="text-sm text-gray-700">Case sensitive</span>
                 </label>
@@ -4020,7 +4102,7 @@ export default function NoteTaker() {
               <div className="flex gap-2">
                 <button
                   onClick={() => findAndReplace(findText, replaceText, findCaseSensitive)}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="flex-1 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700"
                 >
                   Replace
                 </button>
@@ -4071,7 +4153,7 @@ export default function NoteTaker() {
                   </div>
                   <button
                     onClick={() => unlockNote(selectedNote.id, unlockPassword)}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700"
                   >
                     Unlock
                   </button>
@@ -4090,7 +4172,7 @@ export default function NoteTaker() {
                   </div>
                   <button
                     onClick={() => lockNote(selectedNote.id, lockPassword)}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700"
                   >
                     Lock Note
                   </button>
@@ -4179,7 +4261,7 @@ export default function NoteTaker() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowCustomTemplateModal(true)}
-                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm"
+                  className="px-3 py-1.5 bg-pink-600 text-white rounded-lg text-sm"
                 >
                   Create Custom
                 </button>
@@ -4230,7 +4312,7 @@ export default function NoteTaker() {
               />
               <button
                 onClick={createFolder}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700"
               >
                 Create
               </button>
@@ -4279,7 +4361,7 @@ export default function NoteTaker() {
               </div>
               <button
                 onClick={() => insertTable(tableRows, tableCols)}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700"
               >
                 Insert Table
               </button>
@@ -4311,7 +4393,7 @@ export default function NoteTaker() {
               />
               <button
                 onClick={() => insertMathEquation(mathEquation)}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700"
               >
                 Insert Equation
               </button>
@@ -4335,7 +4417,7 @@ export default function NoteTaker() {
             </div>
             <div className="space-y-4">
               <label className="block">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-pink-500 transition-colors">
                   <Upload className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
                   <input
@@ -4427,7 +4509,7 @@ export default function NoteTaker() {
                           setNotesToMerge(notesToMerge.filter(id => id !== note.id))
                         }
                       }}
-                      className="w-4 h-4 text-blue-600 rounded"
+                      className="w-4 h-4 text-pink-600 rounded"
                     />
                     <div className="flex-1">
                       <div className="font-medium text-gray-900">{note.title}</div>
@@ -4439,7 +4521,7 @@ export default function NoteTaker() {
               <button
                 onClick={() => mergeNotes(notesToMerge)}
                 disabled={notesToMerge.length < 2}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Merge {notesToMerge.length} Notes
               </button>
@@ -4512,8 +4594,8 @@ export default function NoteTaker() {
             </div>
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{getNoteStats().totalNotes}</div>
+                <div className="bg-pink-50 p-4 rounded-lg">
+                  <div className="text-2xl font-bold text-pink-600">{getNoteStats().totalNotes}</div>
                   <div className="text-sm text-gray-600">Total Notes</div>
                 </div>
                 <div className="bg-green-50 p-4 rounded-lg">
@@ -4537,7 +4619,7 @@ export default function NoteTaker() {
                     analyzeTopics()
                     analyzeProductiveTime()
                   }}
-                  className="mb-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="mb-3 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700"
                 >
                   Analyze Topics
                 </button>
@@ -4625,9 +4707,9 @@ export default function NoteTaker() {
             </div>
             <div className="p-6 space-y-4">
               {readabilityScore > 0 && (
-                <div className="p-4 bg-blue-50 rounded-lg">
+                <div className="p-4 bg-pink-50 rounded-lg">
                   <div className="font-semibold text-gray-900 mb-2">Readability Score</div>
-                  <div className="text-3xl font-bold text-blue-600">{readabilityScore.toFixed(1)}</div>
+                  <div className="text-3xl font-bold text-pink-600">{readabilityScore.toFixed(1)}</div>
                   <div className="text-sm text-gray-600 mt-1">
                     {readabilityScore >= 70 ? 'Easy to read' : readabilityScore >= 50 ? 'Moderate' : 'Difficult'}
                   </div>
@@ -4690,7 +4772,7 @@ export default function NoteTaker() {
                 }}
                 className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg flex items-center gap-3"
               >
-                <Mail className="h-5 w-5 text-blue-600" />
+                <Mail className="h-5 w-5 text-pink-600" />
                 <span>Email Note</span>
               </button>
               <button

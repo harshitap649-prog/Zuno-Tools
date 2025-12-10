@@ -391,9 +391,9 @@ export default function TextToSpeech() {
       console.error('Error downloading audio:', error)
       
       // Fallback message with helpful instructions
-      toast.error('Unable to download directly. Please click "Speak" and use your device\'s screen recording to capture the audio, or try again later.', {
+      toast.error('Download feature is currently unavailable. We\'re working on bringing it back soon!', {
         id: 'download-audio',
-        duration: 7000
+        duration: 5000
       })
       
       // Auto-trigger speak as fallback

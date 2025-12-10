@@ -462,48 +462,126 @@ export default function AIResumeBuilder() {
     }
   }
 
+  // Helper function to clip image to shape using canvas
+  const clipImageToShape = (imageSrc: string, size: number, shape: 'circle' | 'square' | 'rounded'): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas')
+          canvas.width = size
+          canvas.height = size
+          const ctx = canvas.getContext('2d')
+          if (!ctx) {
+            reject(new Error('Could not get canvas context'))
+            return
+          }
+
+          // Create clipping path based on shape
+          if (shape === 'circle') {
+            ctx.beginPath()
+            ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2)
+            ctx.clip()
+          } else if (shape === 'rounded') {
+            const radius = size * 0.1 // 10% rounded corners
+            ctx.beginPath()
+            ctx.moveTo(radius, 0)
+            ctx.lineTo(size - radius, 0)
+            ctx.quadraticCurveTo(size, 0, size, radius)
+            ctx.lineTo(size, size - radius)
+            ctx.quadraticCurveTo(size, size, size - radius, size)
+            ctx.lineTo(radius, size)
+            ctx.quadraticCurveTo(0, size, 0, size - radius)
+            ctx.lineTo(0, radius)
+            ctx.quadraticCurveTo(0, 0, radius, 0)
+            ctx.closePath()
+            ctx.clip()
+          }
+          // For square, no clipping needed
+
+          // Calculate dimensions to maintain aspect ratio and fill the shape
+          const imgAspect = img.width / img.height
+          const canvasAspect = size / size
+          let drawWidth = size
+          let drawHeight = size
+          let drawX = 0
+          let drawY = 0
+
+          if (imgAspect > canvasAspect) {
+            // Image is wider - fit to height
+            drawHeight = size
+            drawWidth = size * imgAspect
+            drawX = (size - drawWidth) / 2
+          } else {
+            // Image is taller - fit to width
+            drawWidth = size
+            drawHeight = size / imgAspect
+            drawY = (size - drawHeight) / 2
+          }
+
+          // Draw white background first (for transparency)
+          ctx.fillStyle = '#FFFFFF'
+          ctx.fillRect(0, 0, size, size)
+
+          // Draw the image
+          ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight)
+
+          // Convert canvas to data URL
+          const dataUrl = canvas.toDataURL('image/png')
+          resolve(dataUrl)
+        } catch (error) {
+          reject(error)
+        }
+      }
+      img.onerror = () => reject(new Error('Failed to load image'))
+      img.src = imageSrc
+    })
+  }
+
   // Helper function to add profile image with shape
-  const addProfileImage = (pdf: jsPDF, x: number, y: number, size: number, shape: 'circle' | 'square' | 'rounded') => {
+  const addProfileImage = async (pdf: jsPDF, x: number, y: number, size: number, shape: 'circle' | 'square' | 'rounded') => {
     if (!profileImage) return
     
     try {
-      // Add image first
-      pdf.addImage(profileImage, 'JPEG', x, y, size, size, undefined, 'FAST')
+      // Clip image to shape first
+      const clippedImage = await clipImageToShape(profileImage, size, shape)
+      
+      // Add the clipped image to PDF
+      const format = profileImage.startsWith('data:image/png') ? 'PNG' : 'JPEG'
+      pdf.addImage(clippedImage, format, x, y, size, size, undefined, 'FAST')
       
       // Draw border based on shape
+        pdf.setDrawColor(200, 200, 200)
+        pdf.setLineWidth(1)
+      
       if (shape === 'circle') {
         // Draw circular border
-        pdf.setDrawColor(200, 200, 200)
-        pdf.setLineWidth(1)
         pdf.circle(x + size/2, y + size/2, size/2, 'D')
       } else if (shape === 'rounded') {
-        // Draw rounded square border
-        pdf.setDrawColor(200, 200, 200)
-        pdf.setLineWidth(1)
-        // jsPDF doesn't have roundedRect, so we'll use regular rect with rounded corners approximation
+        // Draw rounded square border (jsPDF doesn't support roundedRect natively, so use regular rect)
+        // The image itself is already clipped to rounded shape, so just draw a square border
         pdf.rect(x, y, size, size, 'D')
       } else {
         // Square border
-        pdf.setDrawColor(200, 200, 200)
-        pdf.setLineWidth(1)
         pdf.rect(x, y, size, size, 'D')
       }
     } catch (e) {
       console.error('Error adding image:', e)
-      // Try with PNG if JPEG fails
+      // Fallback: try adding image without clipping
       try {
-        pdf.addImage(profileImage, 'PNG', x, y, size, size, undefined, 'FAST')
-        if (shape === 'circle') {
+        const format = profileImage.startsWith('data:image/png') ? 'PNG' : 'JPEG'
+        pdf.addImage(profileImage, format, x, y, size, size, undefined, 'FAST')
           pdf.setDrawColor(200, 200, 200)
           pdf.setLineWidth(1)
+        if (shape === 'circle') {
           pdf.circle(x + size/2, y + size/2, size/2, 'D')
         } else {
-          pdf.setDrawColor(200, 200, 200)
-          pdf.setLineWidth(1)
           pdf.rect(x, y, size, size, 'D')
         }
       } catch (e2) {
-        console.error('Error adding image as PNG:', e2)
+        console.error('Error adding image fallback:', e2)
+        toast.error('Failed to add profile image to resume')
       }
     }
   }
@@ -734,7 +812,7 @@ export default function AIResumeBuilder() {
     
     // Profile image in left sidebar (circular)
     if (profileImage) {
-      addProfileImage(pdf, margin, 60, 40, 'circle')
+      await addProfileImage(pdf, margin, 60, 40, 'circle')
     }
 
     // Render content sections in main area
@@ -764,7 +842,7 @@ export default function AIResumeBuilder() {
     if (profileImage) {
       const imgSize = 35
       const imgX = (pageWidth - imgSize) / 2
-      addProfileImage(pdf, imgX, yPos, imgSize, 'circle')
+      await addProfileImage(pdf, imgX, yPos, imgSize, 'circle')
       yPos += imgSize + 10
     }
 
@@ -823,7 +901,7 @@ export default function AIResumeBuilder() {
 
     // Profile image in left sidebar area (circular)
     if (profileImage) {
-      addProfileImage(pdf, sidebarWidth + margin, 40, 35, 'circle')
+      await addProfileImage(pdf, sidebarWidth + margin, 40, 35, 'circle')
     }
 
     renderCommonSections(pdf, 40, sidebarWidth + margin + 10, margin, pageWidth, rgb)
@@ -849,7 +927,7 @@ export default function AIResumeBuilder() {
 
     // Profile image at top (circular)
     if (profileImage) {
-      addProfileImage(pdf, margin, yPos, 30, 'circle')
+      await addProfileImage(pdf, margin, yPos, 30, 'circle')
       yPos += 35
     }
 
@@ -904,7 +982,7 @@ export default function AIResumeBuilder() {
 
     // Profile image in sidebar (circular)
     if (profileImage) {
-      addProfileImage(pdf, margin, 55, 35, 'circle')
+      await addProfileImage(pdf, margin, 55, 35, 'circle')
     }
 
     renderCommonSections(pdf, 55, sidebarWidth + margin + 10, margin, pageWidth, rgb)
@@ -932,7 +1010,7 @@ export default function AIResumeBuilder() {
     if (profileImage) {
       const imgSize = 32
       const imgX = (pageWidth - imgSize) / 2
-      addProfileImage(pdf, imgX, yPos, imgSize, 'circle')
+      await addProfileImage(pdf, imgX, yPos, imgSize, 'circle')
       yPos += imgSize + 8
     }
 
@@ -986,7 +1064,7 @@ export default function AIResumeBuilder() {
 
     // Profile image in sidebar (rounded square)
     if (profileImage) {
-      addProfileImage(pdf, margin, 50, 40, 'rounded')
+      await addProfileImage(pdf, margin, 50, 40, 'rounded')
     }
 
     renderCommonSections(pdf, 50, sidebarWidth + margin + 10, margin, pageWidth, rgb)
@@ -1034,7 +1112,7 @@ export default function AIResumeBuilder() {
 
     // Profile image in sidebar (circular)
     if (profileImage) {
-      addProfileImage(pdf, margin, 50, 45, 'circle')
+      await addProfileImage(pdf, margin, 50, 45, 'circle')
     }
 
     renderCommonSections(pdf, 50, sidebarWidth + margin + 10, margin, pageWidth, rgb)

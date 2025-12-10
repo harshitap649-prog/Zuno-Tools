@@ -11,20 +11,11 @@ export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey
   useEffect(() => {
     if (!containerRef.current || scriptLoadedRef.current) return
 
-    // Only load on mobile devices (screen width < 1024px)
-    const isMobile = window.innerWidth < 1024
-    if (!isMobile) return
-
-    const containerId = 'mobile-bottom-ad'
-    containerRef.current.id = containerId
-
-    // Ensure container is visible
-    if (containerRef.current) {
-      containerRef.current.style.display = 'flex'
-      containerRef.current.style.visibility = 'visible'
-      containerRef.current.style.opacity = '1'
+    // Helper function to check if mobile
+    const checkMobile = () => {
+      return window.innerWidth < 1024
     }
-
+    
     // Create a wrapper function that sets atOptions and loads the script
     const loadAd = () => {
       if (!containerRef.current) return
@@ -44,7 +35,7 @@ export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey
         existingScript.remove()
       }
 
-      // Create and append the invoke script to document head
+      // Create and append the invoke script
       const script = document.createElement('script')
       script.type = 'text/javascript'
       script.src = `//www.highperformanceformat.com/${adKey}/invoke.js`
@@ -71,15 +62,64 @@ export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey
         }
       }
       
-      // Append script to document head for better loading
-      document.head.appendChild(script)
+      // Append script to container for better control
+      if (containerRef.current) {
+        containerRef.current.appendChild(script)
+      }
+    }
+    
+    // Handle window resize to show/hide based on screen size
+    const handleResize = () => {
+      const isMobileNow = checkMobile()
+      if (containerRef.current) {
+        if (isMobileNow) {
+          // Show on mobile
+          containerRef.current.style.display = 'flex'
+          containerRef.current.style.visibility = 'visible'
+          containerRef.current.style.opacity = '1'
+          // Load ad if not already loaded
+          if (!scriptLoadedRef.current) {
+            setTimeout(loadAd, 500)
+          }
+        } else {
+          // Hide on desktop
+          containerRef.current.style.display = 'none'
+        }
+      }
+    }
+    
+    // Check initial screen size
+    const isMobile = checkMobile()
+    if (!isMobile) {
+      // Hide container on desktop
+      if (containerRef.current) {
+        containerRef.current.style.display = 'none'
+      }
+      window.addEventListener('resize', handleResize)
+      return () => {
+        window.removeEventListener('resize', handleResize)
+      }
+    }
+
+    const containerId = 'mobile-bottom-ad'
+    containerRef.current.id = containerId
+
+    // Ensure container is visible
+    if (containerRef.current) {
+      containerRef.current.style.display = 'flex'
+      containerRef.current.style.visibility = 'visible'
+      containerRef.current.style.opacity = '1'
     }
 
     // Load ad after a short delay to ensure DOM is ready
     const timeoutId = setTimeout(loadAd, 1000)
+    
+    // Add resize listener
+    window.addEventListener('resize', handleResize)
 
     return () => {
       clearTimeout(timeoutId)
+      window.removeEventListener('resize', handleResize)
       if (containerRef.current) {
         containerRef.current.innerHTML = ''
         scriptLoadedRef.current = false

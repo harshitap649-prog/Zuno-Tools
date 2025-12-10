@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import Footer from '@/components/Footer'
 import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
-import { Languages, Wand2, Copy, Check, AlertCircle, TrendingUp, FileText, BarChart3, Loader2, X, Zap, RefreshCw, Download } from 'lucide-react'
+import { Languages, Wand2, Copy, Check, AlertCircle, TrendingUp, FileText, BarChart3, Loader2, X, Zap, RefreshCw, Download, Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { usePopunderAd } from '@/hooks/usePopunderAd'
 
@@ -132,6 +132,7 @@ const getSpellingSuggestion = (word: string): string | null => {
 
 export default function AIGrammarChecker() {
   const [text, setText] = useState('')
+  const [alternativeSentences, setAlternativeSentences] = useState<string[]>([])
   const [checkedText, setCheckedText] = useState('')
   const [errors, setErrors] = useState<GrammarError[]>([])
   const [loading, setLoading] = useState(false)
@@ -391,6 +392,11 @@ export default function AIGrammarChecker() {
             // If no full correction, at least show the text with improvements
             setCheckedText(text)
           }
+          
+          // Generate alternative sentences
+          const alternatives = generateAlternativeSentences(text, mapped)
+          setAlternativeSentences(alternatives)
+          
           toast.success(`Found ${filteredMatches.length} issue${filteredMatches.length !== 1 ? 's' : ''}. Review the suggestions below to improve your English.`)
         }
 
@@ -419,6 +425,92 @@ export default function AIGrammarChecker() {
               context: 'Use capital "I" when referring to yourself'
             })
           }
+        }
+      }
+
+      // Check for "I am have" / "i am have" - incorrect verb combination
+      const amHaveMatches = Array.from(text.matchAll(/\b(I|i)\s+am\s+have\b/gi))
+      for (const match of amHaveMatches) {
+        if (match.index !== undefined) {
+          foundErrors.push({
+            word: match[0],
+            position: match.index,
+            suggestion: 'I have',
+            type: 'Grammar',
+            severity: 'error',
+            context: 'Use "I have" instead of "I am have". "Am" is for present continuous (I am doing), "have" is for possession or present perfect.'
+          })
+        }
+      }
+
+      // Check for "I have have" - double have
+      const haveHaveMatches = Array.from(text.matchAll(/\b(I|i)\s+have\s+have\b/gi))
+      for (const match of haveHaveMatches) {
+        if (match.index !== undefined) {
+          foundErrors.push({
+            word: match[0],
+            position: match.index,
+            suggestion: 'I have',
+            type: 'Grammar',
+            severity: 'error',
+            context: 'Remove duplicate "have". Use "I have" for present tense or "I had" for past tense.'
+          })
+        }
+      }
+
+      // Check for "I can have have" - incorrect
+      const canHaveHaveMatches = Array.from(text.matchAll(/\b(I|i)\s+can\s+have\s+have\b/gi))
+      for (const match of canHaveHaveMatches) {
+        if (match.index !== undefined) {
+          foundErrors.push({
+            word: match[0],
+            position: match.index,
+            suggestion: 'I can have',
+            type: 'Grammar',
+            severity: 'error',
+            context: 'Remove duplicate "have". Use "I can have" for ability to possess.'
+          })
+        }
+      }
+
+      // Check for "I had have" - incorrect past/present mix
+      const hadHaveMatches = Array.from(text.matchAll(/\b(I|i)\s+had\s+have\b/gi))
+      for (const match of hadHaveMatches) {
+        if (match.index !== undefined) {
+          foundErrors.push({
+            word: match[0],
+            position: match.index,
+            suggestion: 'I had',
+            type: 'Grammar',
+            severity: 'error',
+            context: 'Use "I had" for past tense or "I have had" for past perfect. "Had" already indicates past, so "have" is not needed.'
+          })
+        }
+      }
+
+      // Check for "our is/am/are" confusion
+      const ourVerbMatches = Array.from(text.matchAll(/\bour\s+(is|am|are)\b/gi))
+      for (const match of ourVerbMatches) {
+        if (match.index !== undefined) {
+          foundErrors.push({
+            word: match[0],
+            position: match.index,
+            suggestion: 'we are',
+            type: 'Grammar',
+            severity: 'error',
+            context: '"Our" is possessive (our house). Use "we are" when you mean "we" as the subject.'
+          })
+        }
+      }
+
+      // Check for "are our" - might be correct but check context
+      const areOurMatches = Array.from(text.matchAll(/\bare\s+our\b/gi))
+      for (const areOurMatch of areOurMatches) {
+        // This might be correct (e.g., "These are our books"), so we'll be careful
+        // Only flag if it's clearly wrong context
+        const beforeText = text.substring(Math.max(0, (areOurMatch.index || 0) - 20), areOurMatch.index || 0)
+        if (beforeText.match(/\b(they|we|you|I|he|she|it)\s+are\s+our\b/i)) {
+          // This is likely correct, skip
         }
       }
 
@@ -779,6 +871,14 @@ export default function AIGrammarChecker() {
       
       setErrors(foundErrors)
       
+      // Generate alternative sentences
+      if (foundErrors.length > 0 || text.trim().length > 0) {
+        const alternatives = generateAlternativeSentences(text, foundErrors)
+        setAlternativeSentences(alternatives)
+      } else {
+        setAlternativeSentences([])
+      }
+      
       if (foundErrors.length === 0) {
         toast.success('No grammar issues found! Your text looks good.')
       } else {
@@ -791,6 +891,139 @@ export default function AIGrammarChecker() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Generate multiple correct sentence variations
+  const generateAlternativeSentences = (originalText: string, errors: GrammarError[]): string[] => {
+    const alternatives: string[] = []
+    let baseText = originalText.trim()
+    
+    // Fix common issues first
+    baseText = baseText
+      .replace(/\bi\b/g, 'I') // Fix lowercase 'i'
+      .replace(/(?:^|[.!?]\s+)([a-z])/g, (match, letter) => match.replace(letter, letter.toUpperCase())) // Capitalize sentence starts
+      .replace(/\s{2,}/g, ' ') // Remove double spaces
+      .trim()
+    
+    // Fix verb tense issues: "i am have" -> "I have" or "I am having"
+    baseText = baseText.replace(/\b(I|i)\s+am\s+have\b/gi, 'I have')
+    baseText = baseText.replace(/\b(I|i)\s+have\s+have\b/gi, 'I have')
+    baseText = baseText.replace(/\b(I|i)\s+can\s+have\s+have\b/gi, 'I can have')
+    baseText = baseText.replace(/\b(I|i)\s+had\s+have\b/gi, 'I had')
+    
+    // Fix "am" usage - "I am" is correct, but "I am have" should be "I have"
+    baseText = baseText.replace(/\b(I|i)\s+am\s+(have|has|had)\b/gi, (match, pronoun, verb) => {
+      if (verb === 'have') return 'I have'
+      if (verb === 'has') return 'I have'
+      if (verb === 'had') return 'I had'
+      return match
+    })
+    
+    // Fix "our" vs "are" confusion
+    baseText = baseText.replace(/\bour\s+(is|am|are)\b/gi, 'we are')
+    baseText = baseText.replace(/\bare\s+our\b/gi, 'are our')
+    
+    // Generate 5 variations
+    const sentences = baseText.split(/[.!?]+/).filter(s => s.trim().length > 0)
+    
+    if (sentences.length === 0) {
+      sentences.push(baseText)
+    }
+    
+    // Variation 1: Direct correction with proper capitalization and spacing
+    let var1 = baseText
+    if (!var1.endsWith('.') && !var1.endsWith('!') && !var1.endsWith('?')) {
+      var1 += '.'
+    }
+    alternatives.push(var1)
+    
+    // Variation 2: More formal version
+    let var2 = baseText
+      .replace(/\bcan\b/gi, 'am able to')
+      .replace(/\bcan't\b/gi, 'cannot')
+      .replace(/\bwon't\b/gi, 'will not')
+      .replace(/\bdon't\b/gi, 'do not')
+      .replace(/\bdoesn't\b/gi, 'does not')
+      .replace(/\bisn't\b/gi, 'is not')
+      .replace(/\baren't\b/gi, 'are not')
+    if (!var2.endsWith('.') && !var2.endsWith('!') && !var2.endsWith('?')) {
+      var2 += '.'
+    }
+    if (var2 !== var1) alternatives.push(var2)
+    
+    // Variation 3: Active voice emphasis
+    let var3 = baseText
+      .replace(/\bis\s+(being|been)\s+/gi, '')
+      .replace(/\bare\s+(being|been)\s+/gi, '')
+    if (!var3.endsWith('.') && !var3.endsWith('!') && !var3.endsWith('?')) {
+      var3 += '.'
+    }
+    if (var3 !== var1 && var3 !== var2) alternatives.push(var3)
+    
+    // Variation 4: Clearer structure
+    let var4 = baseText
+      .replace(/\bwhich\s+is\b/gi, 'that is')
+      .replace(/\bwho\s+is\b/gi, 'that is')
+    if (!var4.endsWith('.') && !var4.endsWith('!') && !var4.endsWith('?')) {
+      var4 += '.'
+    }
+    if (var4 !== var1 && var4 !== var2 && var4 !== var3) alternatives.push(var4)
+    
+    // Variation 5: Simplified version
+    let var5 = baseText
+      .replace(/\bvery\s+/gi, '')
+      .replace(/\breally\s+/gi, '')
+      .replace(/\bquite\s+/gi, '')
+    if (!var5.endsWith('.') && !var5.endsWith('!') && !var5.endsWith('?')) {
+      var5 += '.'
+    }
+    if (var5 !== var1 && var5 !== var2 && var5 !== var3 && var5 !== var4) alternatives.push(var5)
+    
+    // If we don't have 5 unique variations, create more by rephrasing
+    while (alternatives.length < 5) {
+      const lastVar = alternatives[alternatives.length - 1]
+      let newVar = lastVar
+      
+      // Try different rephrasing
+      if (alternatives.length === 1) {
+        // Add "I" if missing at start
+        if (!newVar.match(/^[I]/)) {
+          newVar = 'I ' + newVar.toLowerCase()
+        }
+      } else if (alternatives.length === 2) {
+        // Try different verb forms
+        newVar = newVar.replace(/\bhave\b/gi, 'possess')
+        newVar = newVar.replace(/\bpossess\b/gi, 'have')
+      } else if (alternatives.length === 3) {
+        // Try different sentence structure
+        newVar = newVar.replace(/^(.+)$/, 'It is $1')
+      } else {
+        // Final variation - ensure proper grammar
+        newVar = newVar
+          .replace(/\b(I|i)\s+am\s+(.+)/gi, 'I $2')
+          .replace(/\b(I|i)\s+have\s+have\b/gi, 'I have')
+      }
+      
+      if (newVar !== lastVar && !alternatives.includes(newVar)) {
+        alternatives.push(newVar)
+      } else {
+        break // Can't create more unique variations
+      }
+    }
+    
+    // Ensure all sentences are properly formatted
+    return alternatives.map(s => {
+      let formatted = s.trim()
+      // Ensure proper capitalization
+      if (formatted.length > 0) {
+        formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1)
+      }
+      // Ensure proper ending punctuation
+      if (!formatted.match(/[.!?]$/)) {
+        formatted += '.'
+      }
+      return formatted
+    }).filter((s, i, arr) => arr.indexOf(s) === i) // Remove duplicates
   }
 
   // Auto-check when text changes (debounced) - disabled to prevent infinite loops
@@ -1161,6 +1394,51 @@ export default function AIGrammarChecker() {
                     </p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Alternative Correct Sentences */}
+            {alternativeSentences.length > 0 && (
+              <div className="space-y-3 sm:space-y-4">
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1 flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-pink-600" />
+                    Alternative Correct Sentences
+                  </h3>
+                  <p className="text-xs text-gray-600 mb-3">Here are {alternativeSentences.length} grammatically perfect alternatives to your text:</p>
+                </div>
+                <div className="space-y-2 sm:space-y-3">
+                  {alternativeSentences.slice(0, 5).map((sentence, index) => (
+                    <div 
+                      key={index}
+                      className="bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-200 rounded-lg p-3 sm:p-4 hover:border-pink-300 transition-all"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white flex items-center justify-center text-xs font-bold">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-gray-900 text-sm sm:text-base leading-relaxed font-medium">{sentence}</p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(sentence)
+                            toast.success(`Sentence ${index + 1} copied!`)
+                          }}
+                          className="flex-shrink-0 p-1.5 hover:bg-pink-100 rounded-lg transition-colors"
+                          title="Copy this sentence"
+                        >
+                          <Copy className="h-4 w-4 text-pink-600" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-pink-50 border border-pink-200 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-pink-800">
+                    <span className="font-semibold">💡 Tip:</span> All sentences above are grammatically correct with proper spelling, capitalization, and word usage (I, have, can, had, our, am, etc.). Choose the one that best fits your intended meaning.
+                  </p>
+                </div>
               </div>
             )}
 

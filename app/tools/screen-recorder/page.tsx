@@ -559,15 +559,6 @@ export default function ScreenRecorder() {
               </div>
             )}
 
-            {/* Browser Support Warning */}
-            {!isSupported && (
-              <div className="bg-yellow-50 border-2 border-yellow-500 rounded-lg p-4 text-center">
-                <p className="text-sm text-yellow-800">
-                  <strong>Browser not supported:</strong> Screen recording requires a modern browser with MediaRecorder API support. Please use Chrome, Edge, Firefox, or Opera.
-                </p>
-              </div>
-            )}
-
             {/* Recording Controls */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               {!isRecording ? (
