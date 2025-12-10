@@ -16,10 +16,18 @@ import {
   Crop, RotateCw, Globe, Filter, Heart, Calendar,
   Shield, DollarSign, CheckSquare, Target,
   Instagram, Eye, EyeOff, Mail, Wand2,
-  PenTool, Video
+  PenTool, Video, MessageCircle
 } from 'lucide-react'
 
 const allTools = [
+  {
+    id: 'chat-assistance',
+    name: 'Chat Assistance',
+    description: 'Ask anything, share anything - Your AI assistant is here to help',
+    icon: MessageCircle,
+    color: 'from-blue-500 via-purple-500 to-pink-500',
+    category: 'AI Tools',
+  },
   {
     id: 'ai-image-generator',
     name: 'AI Image Generator',
