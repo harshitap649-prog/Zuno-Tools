@@ -21,35 +21,11 @@ import {
 
 const allTools = [
   {
-    id: 'chat-assistance',
-    name: 'Chat Assistance',
-    description: 'Ask anything, share anything - Your AI assistant is here to help',
-    icon: MessageCircle,
-    color: 'from-blue-500 via-purple-500 to-pink-500',
-    category: 'AI Tools',
-  },
-  {
     id: 'ai-image-generator',
     name: 'AI Image Generator',
     description: 'Generate images from text prompts using AI',
     icon: Wand2,
     color: 'from-indigo-500 to-purple-500',
-    category: 'AI Tools',
-  },
-  {
-    id: 'ai-grammar-checker',
-    name: 'AI Grammar Checker',
-    description: 'Check and improve your grammar with AI',
-    icon: Languages,
-    color: 'from-blue-500 to-indigo-500',
-    category: 'AI Tools',
-  },
-  {
-    id: 'ai-resume-builder',
-    name: 'AI Resume Builder',
-    description: 'Build professional resumes with AI assistance',
-    icon: FileCheck,
-    color: 'from-green-500 to-emerald-500',
     category: 'AI Tools',
   },
   {
@@ -147,6 +123,22 @@ const allTools = [
     icon: Hash,
     color: 'from-gray-700 to-gray-900',
     category: 'Utility Tools',
+  },
+  {
+    id: 'ai-grammar-checker',
+    name: 'AI Grammar Checker',
+    description: 'Check and improve your grammar with AI',
+    icon: Languages,
+    color: 'from-blue-500 to-indigo-500',
+    category: 'AI Tools',
+  },
+  {
+    id: 'ai-resume-builder',
+    name: 'AI Resume Builder',
+    description: 'Build professional resumes with AI assistance',
+    icon: FileCheck,
+    color: 'from-green-500 to-emerald-500',
+    category: 'AI Tools',
   },
   {
     id: 'email-template-builder',
@@ -538,8 +530,8 @@ function ToolsPageContent() {
                   </button>
                   </div>
                   {(index + 1) % 10 === 0 && (
-                    <div className="col-span-2 sm:col-span-2 lg:hidden">
-                      <MobileBottomAd />
+                    <div className="col-span-2 sm:col-span-2 lg:hidden" key={`mobile-ad-${index}`}>
+                      <MobileBottomAd adKey="36d691042d95ac1ac33375038ec47a5c" />
                     </div>
                   )}
                 </React.Fragment>
