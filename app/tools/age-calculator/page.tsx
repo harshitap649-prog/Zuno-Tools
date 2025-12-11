@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import Footer from '@/components/Footer'
 import MobileBottomNavWrapper from '@/components/MobileBottomNavWrapper'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
   Calendar, Clock, Star, Users, TrendingUp, Share2, 
@@ -694,10 +693,6 @@ export default function AgeCalculator() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/30">
-      {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      
       <main className="flex-grow py-3 sm:py-5 md:py-8 pb-20 md:pb-0">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
           {/* Header */}

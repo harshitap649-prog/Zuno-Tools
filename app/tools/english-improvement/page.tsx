@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react'
 import Footer from '@/components/Footer'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { Languages, Loader2, Copy, Check, Sparkles, X, Download, BarChart3, TrendingUp, FileText, Zap, RefreshCw, AlertCircle, Info } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -1177,8 +1176,6 @@ export default function EnglishImprovement() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
       <main className="flex-grow py-4 sm:py-6 md:py-8 lg:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-4 sm:mb-6 md:mb-8">

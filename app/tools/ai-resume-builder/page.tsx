@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import Footer from '@/components/Footer'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { FileCheck, Download, Plus, X, Loader2, Upload, Palette, Layout, Eye, User, Briefcase, GraduationCap, Code, Globe, Award, Users, BookOpen } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -1120,10 +1119,6 @@ export default function AIResumeBuilder() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
-      {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      
       <main className="flex-grow py-4 sm:py-6 md:py-8">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           {/* Hero Section */}

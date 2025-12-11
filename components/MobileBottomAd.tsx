@@ -11,18 +11,8 @@ export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey
   useEffect(() => {
     if (!containerRef.current || scriptLoadedRef.current) return
 
-    // Helper function to check if mobile
-    const checkMobile = () => {
-      return window.innerWidth < 1024
-    }
-    
     // Create a wrapper function that sets atOptions and loads the script
     const loadAd = () => {
-      // Double check mobile before loading
-      if (!checkMobile()) {
-        return
-      }
-      
       if (!containerRef.current) return
 
       // Set atOptions right before loading the script
@@ -73,48 +63,20 @@ export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey
       }
     }
     
-    // Handle window resize to show/hide based on screen size
+    // Handle window resize - always show the ad
     const handleResize = () => {
-      const isMobileNow = checkMobile()
       if (containerRef.current) {
-        if (isMobileNow) {
-          // Show on mobile
-          containerRef.current.style.display = 'flex'
-          containerRef.current.style.visibility = 'visible'
-          containerRef.current.style.opacity = '1'
-          // Load ad if not already loaded
-          if (!scriptLoadedRef.current) {
-            setTimeout(loadAd, 500)
-          }
-        } else {
-          // Hide on desktop - completely remove scripts
-          containerRef.current.style.display = 'none'
-          containerRef.current.style.visibility = 'hidden'
-          containerRef.current.style.opacity = '0'
-          // Remove script if on desktop
-          const existingScript = document.getElementById('ad-script-mobile-bottom')
-          if (existingScript) {
-            existingScript.remove()
-            scriptLoadedRef.current = false
-          }
+        containerRef.current.style.display = 'flex'
+        containerRef.current.style.visibility = 'visible'
+        containerRef.current.style.opacity = '1'
+        // Load ad if not already loaded
+        if (!scriptLoadedRef.current) {
+          setTimeout(loadAd, 500)
         }
       }
     }
     
-    // Check initial screen size
-    const isMobile = checkMobile()
-    if (!isMobile) {
-      // Hide container on desktop completely
-      if (containerRef.current) {
-        containerRef.current.style.display = 'none'
-        containerRef.current.style.visibility = 'hidden'
-        containerRef.current.style.opacity = '0'
-      }
-      window.addEventListener('resize', handleResize)
-      return () => {
-        window.removeEventListener('resize', handleResize)
-      }
-    }
+    window.addEventListener('resize', handleResize)
 
     const containerId = 'mobile-bottom-ad'
     containerRef.current.id = containerId
@@ -129,9 +91,6 @@ export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey
     // Load ad after a short delay to ensure DOM is ready
     const timeoutId = setTimeout(loadAd, 1000)
     
-    // Add resize listener
-    window.addEventListener('resize', handleResize)
-
     return () => {
       clearTimeout(timeoutId)
       window.removeEventListener('resize', handleResize)
@@ -152,7 +111,7 @@ export default function MobileBottomAd({ adKey = MOBILE_INLINE_AD_KEY }: { adKey
   }, [adKey])
 
   return (
-    <div className="lg:hidden w-full flex justify-center items-center py-3 px-2 sm:px-4 bg-gray-50 border-t border-gray-200">
+    <div className="w-full flex justify-center items-center py-3 px-2 sm:px-4 bg-gray-50 border-t border-gray-200">
       <div 
         ref={containerRef} 
         id="mobile-bottom-ad"

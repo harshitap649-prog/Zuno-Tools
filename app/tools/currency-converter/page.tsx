@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Footer from '@/components/Footer'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import toast from 'react-hot-toast'
 import {
@@ -495,9 +494,6 @@ export default function CurrencyConverter() {
           }
         `
       }} />
-      {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
       
       <main className="flex-grow py-4 sm:py-6 md:py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

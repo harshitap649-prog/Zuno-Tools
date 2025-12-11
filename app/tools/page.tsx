@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import Footer from '@/components/Footer'
 import MobileBottomNavWrapper from '@/components/MobileBottomNavWrapper'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
   Image, FileText, Sparkles, Mic, QrCode, 
@@ -377,10 +376,6 @@ function ToolsPageContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white pb-16 md:pb-0">
-      {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      
       <main className="flex-grow py-5 sm:py-8 md:py-12">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-12">

@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import JsBarcode from 'jsbarcode'
 import Footer from '@/components/Footer'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
   Hash, Download, Copy, Check, RefreshCw, Share2, 
@@ -262,8 +261,6 @@ export default function BarcodeGenerator() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
       
       <main className="flex-grow py-4 sm:py-6 md:py-8 lg:py-12">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">

@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Footer from '@/components/Footer'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { Upload, Download, X, Maximize2, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -172,9 +171,6 @@ export default function ImageResizer() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-blue-50/30 to-cyan-50/20">
-      {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
       
       <main className="flex-grow py-4 sm:py-6 md:py-8">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">

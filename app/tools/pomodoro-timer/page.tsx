@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Footer from '@/components/Footer'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { usePopunderAd } from '@/hooks/usePopunderAd'
 import { 
@@ -661,9 +660,6 @@ export default function PomodoroTimer() {
         <source src={getSoundPath()} type="audio/wav" />
       </audio>
       
-      {/* Sidebar Ads for Desktop - 160x600 Banner Ads */}
-      <SidebarAd position="left" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
-      <SidebarAd position="right" adKey="e1c8b9ca26b310c0a3bef912e548c08d" />
       
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

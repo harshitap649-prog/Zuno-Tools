@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Footer from '@/components/Footer'
 import MobileBottomNavWrapper from '@/components/MobileBottomNavWrapper'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
   Mic, Play, Pause, Volume2, Download, FileText, 
@@ -520,10 +519,6 @@ function TextToSpeech() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-pink-50/30 to-rose-50/20">
-      {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      
       <main className="flex-grow py-3 sm:py-5 md:py-8 pb-16 md:pb-0">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <div className="text-center mb-8">

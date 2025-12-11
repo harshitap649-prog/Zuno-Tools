@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Footer from '@/components/Footer'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
   FileText, Plus, Trash2, Save, Bold, Italic, 
@@ -2339,10 +2338,6 @@ export default function NoteTaker() {
         }
       `}</style>
       <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      
       <main className="flex-grow py-4 sm:py-6 md:py-8 lg:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">

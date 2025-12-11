@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Footer from '@/components/Footer'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { MessageCircle, Send, Loader2, Copy, Check, Trash2, Sparkles, User, Bot } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -146,10 +145,6 @@ export default function ChatAssistance() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-pink-50/30 to-rose-50/20 md:bg-gradient-to-br md:from-gray-50 md:via-pink-50/30 md:to-rose-50/20">
-      {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      
       {/* Mobile Header - Full Width */}
       <div className="md:hidden bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white px-4 py-3 flex items-center justify-between shadow-lg sticky top-0 z-50">
         <div className="flex items-center gap-3">

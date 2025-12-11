@@ -9,7 +9,6 @@ import toast from 'react-hot-toast'
 import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 // Dynamically import ad components to avoid SSR issues
-const SidebarAd = dynamic(() => import('@/components/SidebarAd'), { ssr: false })
 const MobileBottomAd = dynamic(() => import('@/components/MobileBottomAd'), { ssr: false })
 
 type FilterType = 'none' | 'grayscale' | 'sepia' | 'blur' | 'brightness' | 'contrast' | 'invert' | 'saturate' | 'hue' | 'vintage' | 'warm' | 'cool' | 'sharpen' | 'emboss' | 'posterize'
@@ -482,10 +481,6 @@ export default function ImageFilters() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      <SidebarAd position="right" adKey="9a58c0a87879d1b02e85ebd073651ab3" />
-      
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">

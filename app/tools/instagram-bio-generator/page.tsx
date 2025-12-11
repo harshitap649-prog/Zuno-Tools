@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import Footer from '@/components/Footer'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
   Instagram, Copy, Check, Share2, Heart, 
@@ -801,8 +800,6 @@ export default function InstagramBioGenerator() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-50 via-white to-rose-50">
-      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
       
       <main className="flex-grow py-6 sm:py-8 md:py-10 lg:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

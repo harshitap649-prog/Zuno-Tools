@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import Footer from '@/components/Footer'
-import SidebarAd from '@/components/SidebarAd'
 import MobileBottomAd from '@/components/MobileBottomAd'
 import { 
   Key, Copy, Check, RefreshCw, Eye, EyeOff, History, 
@@ -867,8 +866,6 @@ export default function PasswordGenerator() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
-      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
       
       <main className="flex-grow py-4 sm:py-6 md:py-8 lg:py-10">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">

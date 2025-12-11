@@ -9,7 +9,6 @@ import toast from 'react-hot-toast'
 import { usePopunderAd } from '@/hooks/usePopunderAd'
 
 // Dynamically import ad components to avoid SSR issues
-const SidebarAd = dynamic(() => import('@/components/SidebarAd'), { ssr: false })
 const MobileBottomAd = dynamic(() => import('@/components/MobileBottomAd'), { ssr: false })
 
 export default function PDFTools() {
@@ -655,9 +654,6 @@ export default function PDFTools() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Sidebar Ads for Desktop */}
-      <SidebarAd position="left" adKey="36d691042d95ac1ac33375038ec47a5c" />
-      <SidebarAd position="right" adKey="36d691042d95ac1ac33375038ec47a5c" />
       
       <main className="flex-grow py-6 sm:py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
