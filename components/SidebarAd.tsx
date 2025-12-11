@@ -3,6 +3,10 @@
 import { useEffect, useRef } from 'react'
 
 export default function SidebarAd({ position, adKey }: { position: 'left' | 'right', adKey: string }) {
+  // Component completely disabled - return null immediately
+  return null
+  
+  /* DISABLED - All 160x600 sidebar ads removed
   const containerRef = useRef<HTMLDivElement>(null)
   const outerContainerRef = useRef<HTMLDivElement>(null)
   const scriptLoadedRef = useRef(false)
@@ -294,5 +298,6 @@ export default function SidebarAd({ position, adKey }: { position: 'left' | 'rig
       </div>
     </div>
   )
+  */
 }
 
