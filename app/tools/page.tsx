@@ -546,8 +546,8 @@ function ToolsPageContent() {
                     <div className="flex flex-col items-center text-center">
                       <div className="mb-6 sm:mb-8">
                         <div className="relative">
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
-                          <div className="relative bg-gradient-to-r from-blue-500 to-indigo-600 p-4 sm:p-5 rounded-full">
+                          <div className="absolute inset-0 bg-gradient-to-r from-pink-300 to-pink-400 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                          <div className="relative bg-gradient-to-r from-pink-400 to-pink-500 p-4 sm:p-5 rounded-full">
                             <Clock className="h-8 w-8 sm:h-10 sm:w-10 text-white" strokeWidth={2} />
                           </div>
                         </div>
@@ -566,7 +566,7 @@ function ToolsPageContent() {
                           setSearchQuery('')
                           window.history.replaceState({}, '', '/tools')
                         }}
-                        className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2 active:scale-95 touch-manipulation"
+                        className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-pink-400 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2 active:scale-95 touch-manipulation"
                       >
                         <Sparkles className="h-5 w-5" />
                         <span>Explore Tools</span>
