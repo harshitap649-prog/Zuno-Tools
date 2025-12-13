@@ -1,5 +1,7 @@
 let scriptLoaded = false
 let scriptLoading = false
+let lastTriggerTime = 0
+const MIN_TRIGGER_INTERVAL = 30000 // 30 seconds minimum between triggers
 
 const loadPopunderScript = (): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -48,39 +50,9 @@ const loadPopunderScript = (): Promise<void> => {
   })
 }
 
-// Load script early when module loads (if in browser)
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  try {
-    // Load script on first page interaction or after a short delay
-    const loadEarly = () => {
-      loadPopunderScript().catch(() => {
-        // Silently fail if script can't load
-      })
-    }
-    
-    // Try to load on first user interaction
-    const events = ['mousedown', 'touchstart', 'keydown']
-    const loadOnInteraction = () => {
-      events.forEach(event => {
-        document.addEventListener(event, loadEarly, { once: true, passive: true })
-      })
-    }
-    
-    // Also try to load after page load
-    if (document.readyState === 'complete') {
-      setTimeout(loadEarly, 1000)
-    } else {
-      window.addEventListener('load', () => {
-        setTimeout(loadEarly, 1000)
-      })
-    }
-    
-    loadOnInteraction()
-  } catch (error) {
-    // Silently fail if initialization fails
-    console.warn('Popunder ad initialization failed:', error)
-  }
-}
+// REMOVED: Early script loading on user interaction
+// Script will ONLY load when triggerPopunder() is explicitly called
+// This prevents popunder ads from showing on every click
 
 export const usePopunderAd = () => {
   const triggerPopunder = async () => {
@@ -89,11 +61,21 @@ export const usePopunderAd = () => {
       return
     }
 
+    // Throttle: Don't trigger if called too soon after last trigger
+    const now = Date.now()
+    if (now - lastTriggerTime < MIN_TRIGGER_INTERVAL) {
+      console.log('Popunder throttled - too soon after last trigger')
+      return
+    }
+
     try {
-      // Ensure script is loaded
+      // Only load script when explicitly triggered (on download/save/share)
       await loadPopunderScript()
       
-      // Wait 2 seconds after download click before triggering the popunder
+      // Update last trigger time
+      lastTriggerTime = now
+      
+      // Wait 2 seconds after action before triggering the popunder
       setTimeout(() => {
         // Popunder scripts typically need to be triggered within a user interaction context
         // Since we're 2 seconds after the click, we need to simulate a user interaction

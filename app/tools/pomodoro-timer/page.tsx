@@ -45,9 +45,6 @@ interface DailyStats {
 }
 
 export default function PomodoroTimer() {
-  // Initialize popunder ad hook (script loads automatically)
-  usePopunderAd()
-  
   const [minutes, setMinutes] = useState(25)
   const [seconds, setSeconds] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
